@@ -1,0 +1,24 @@
+﻿const path = require('path');
+
+module.exports = {
+    mode: 'production',
+    entry: {
+        atlas: "./tsgen/atlas.js",
+    },
+    output: {
+        filename: "[name].js",
+        path: path.resolve(__dirname, 'wwwroot'),
+        library: {
+            type: "module",
+        },
+    },
+    experiments: {
+        outputModule: true,
+    },
+    externalsType: 'var',
+    externals: {
+        "azure-maps-control": "atlas",
+        "azure-maps-animations": "atlas",
+        "azure-maps-spatial-io": "atlas",
+    },
+};
