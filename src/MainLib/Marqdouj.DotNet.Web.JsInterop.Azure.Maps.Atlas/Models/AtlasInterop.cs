@@ -5,24 +5,56 @@ using Microsoft.JSInterop;
 
 namespace Marqdouj.DotNet.JsInterop.AzureMaps.Models
 {
-    internal class AtlasInterop : IAsyncDisposable
+    /// <summary>
+    /// <inheritdoc cref="AtlasInterop"/>
+    /// </summary>
+    public interface IAtlasInterop : IAsyncDisposable
+    {
+        /// <summary>
+        /// <inheritdoc cref="IAtlasData"/>
+        /// </summary>
+        IAtlasData Data { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasMath"/>
+        /// </summary>
+        IAtlasMath Math { get; }
+    }
+
+    /// <summary>
+    /// JSInterop interaction module for the Azure Maps SDK.
+    /// </summary>
+    public class AtlasInterop : IAtlasInterop
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask;
-        private readonly DotNetObjectReference<ComponentBase> dotNetRef;
 
-        public AtlasInterop(IJSRuntime jsRuntime, ComponentBase component)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="jsRuntime"></param>
+        public AtlasInterop(IJSRuntime jsRuntime)
         {
             moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
-               "import", "./_content/Marqdouj.DotNet.JsInterop.AzureMaps/atlas.js").AsTask());
-            dotNetRef = DotNetObjectReference.Create(component);
+               "import", "./_content/Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas/atlas.js").AsTask());
 
             Data = new AzData(moduleTask);
             Math = new AzMath(moduleTask);
         }
 
+        /// <summary>
+        /// <inheritdoc cref="IAtlasData"/>
+        /// </summary>
         public IAtlasData Data { get; }
-        public IAtlasMath Math  { get; }
 
+        /// <summary>
+        /// <inheritdoc cref="IAtlasMath"/>
+        /// </summary>
+        public IAtlasMath Math { get; }
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns></returns>
         public async ValueTask DisposeAsync()
         {
             if (moduleTask.IsValueCreated)
@@ -30,8 +62,6 @@ namespace Marqdouj.DotNet.JsInterop.AzureMaps.Models
                 var module = await moduleTask.Value;
                 await module.DisposeAsync();
             }
-
-            ((IDisposable)dotNetRef)?.Dispose();
         }
     }
 }
