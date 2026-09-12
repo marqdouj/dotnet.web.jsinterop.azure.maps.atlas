@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Marqdouj.DotNet.JsInterop.AzureMaps.Converters
+namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Converters
 {
     internal class CamelCaseEnumConverter<T> : JsonConverter<T> where T : struct, Enum
     {

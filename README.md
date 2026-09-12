@@ -16,4 +16,7 @@
 ## [Release Notes (All)](Documents/ReleaseNotes.md)
 
 ## Release Notes (Current)
-- `11.0.0-Preview-1.0`: Initial pre-release.
+- `11.0.0-Preview-2.0`
+   - `Namespaces`. Changed all namespaces to match folder structure (copy and paste issue).
+   - `DistanceProperties`. Renamed `distance` to `Distance`.
+

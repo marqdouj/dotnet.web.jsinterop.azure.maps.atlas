@@ -1,6 +1,6 @@
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules;
 
-namespace Marqdouj.DotNet.JsInterop.AzureMaps.Models.Math
+namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Math
 {
     /// <summary>
     /// The properties object returned by

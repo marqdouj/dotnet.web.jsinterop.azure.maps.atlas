@@ -1,7 +1,7 @@
-using Marqdouj.DotNet.JsInterop.AzureMaps.Converters;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Converters;
 using System.Text.Json.Serialization;
 
-namespace Marqdouj.DotNet.JsInterop.AzureMaps.Models.Math
+namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Math
 {
     /// <summary>
     /// Units of measurement for areas.
