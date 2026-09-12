@@ -1,11 +1,12 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace Marqdouj.DotNet.JsInterop.AzureMaps.Models
+namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
 {
     internal enum JsModule
     {
         BoundingBox,
         Math,
+        MercatorPoint,
     }
 
     internal static class ModuleExtensions

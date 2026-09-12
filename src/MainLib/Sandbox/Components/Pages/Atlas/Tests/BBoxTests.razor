@@ -5,6 +5,8 @@
 @inject INotificationService ToastService
 @inject IJSRuntime JSRuntime
 
+<PageTitle>@title</PageTitle>
+
 <FluentStack Orientation="Orientation.Vertical">
     <Toolbar>
         <FluentButton Disabled="@buttonsDisabled" IconStart="@(new Icons.Regular.Size20.Run())" Title="Run Tests" OnClick="@RunTests" />
@@ -24,23 +26,16 @@
 
 @code {
     private const string sourceUrl = "https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.data.boundingbox?view=azure-maps-typescript-latest";
-    private const string name = "BBox";
-    private string title => $"Atlas.Data - {name}";
-    private string mapId = $"map{name}";
+    private const string name = "BoundingBox";
+    private string title => $"atlas.data.{name}";
     private IAtlasInterop? maps;
     private bool mapReady => maps != null;
     private bool mapNotReady => !mapReady;
     private bool overlay;
     private bool buttonsDisabled => mapNotReady | overlay;
     private List<MathTestRun> testRuns = [];
-    private readonly BoundingBox bbox = new BoundingBox(12.803766, 43.033716, 13.129083, 43.33345);
-    private readonly Polygon poly = new Polygon(new List<Position> {
-                new Position(-122.35, 47.65),
-                new Position(-122.30, 47.65),
-                new Position(-122.30, 47.60),
-                new Position(-122.35, 47.60),
-                new Position(-122.35, 47.65)
-            });
+    private readonly BoundingBox bbox = TestData.BBox;
+    private readonly Polygon poly = TestData.Poly;
 
     protected override void OnInitialized()
     {
@@ -568,22 +563,6 @@
         }
 
         return result;
-    }
-
-    private enum MathTestRunStatus
-    {
-        None,
-        Success,
-        Failed,
-    }
-
-    private class MathTestRun(string name)
-    {
-        public string Name { get; } = name.Replace("Test", "");
-        public MathTestRunStatus Status { get; set; }
-        public string? Result { get; set; }
-        public Exception? Exception { get; set; }
-        public string? Error => Exception?.Message;
     }
 
     #endregion

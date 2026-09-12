@@ -3,8 +3,14 @@
 <FluentNav Id="main-menu" Width="260px">
     <FluentNavItem Href="/" Match="NavLinkMatch.All" IconRest="@(new Icons.Regular.Size20.Home())" IconActive="@(new Icons.Filled.Size20.Home())">Home</FluentNavItem>
 
-    <FluentNavCategory Title="Tests" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
+    <FluentNavSectionHeader Title="Tests" />
+
+    <FluentNavCategory Title="Modules" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
+        <FluentNavSectionHeader Title="Data" />
         <FluentNavItem Href="tests-bbox" IconRest="@(new Icons.Regular.Size20.DesignIdeas())">BoundingBox</FluentNavItem>
+        <FluentNavItem Href="tests-mercator-point" IconRest="@(new Icons.Regular.Size20.DesignIdeas())">MercatorPoint</FluentNavItem>
+
+        <FluentNavSectionHeader Title="General" />
         <FluentNavItem Href="tests-math" IconRest="@(new Icons.Regular.Size20.DesignIdeas())">Math</FluentNavItem>
     </FluentNavCategory>
 </FluentNav>

@@ -1,8 +1,9 @@
-﻿using Marqdouj.DotNet.Web.JsInterop.GeoJson;
+﻿using Marqdouj.DotNet.JsInterop.AzureMaps.Models.Math;
+using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
 
-namespace Marqdouj.DotNet.JsInterop.AzureMaps.Models.Math
+namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
 {
     /// <summary>
     /// Interface for atlas.math interactions. <see href="https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.math?view=azure-maps-typescript-latest"/>

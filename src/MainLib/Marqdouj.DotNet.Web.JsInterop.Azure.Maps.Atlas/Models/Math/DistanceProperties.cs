@@ -1,3 +1,5 @@
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules;
+
 namespace Marqdouj.DotNet.JsInterop.AzureMaps.Models.Math
 {
     /// <summary>

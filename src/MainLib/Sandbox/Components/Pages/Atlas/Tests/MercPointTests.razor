@@ -1,0 +1,255 @@
+﻿@page "/tests-mercator-point"
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@inject ILogger<MercPointTests> Logger
+@inject INotificationService ToastService
+@inject IJSRuntime JSRuntime
+
+<PageTitle>@title</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical">
+    <Toolbar>
+        <FluentButton Disabled="@buttonsDisabled" IconStart="@(new Icons.Regular.Size20.Run())" Title="Run Tests" OnClick="@RunTests" />
+    </Toolbar>
+
+    <div style="overflow:auto;height:100%">
+        <FluentDataGrid Items="@testRuns.AsQueryable()"
+                        MultiLine="true"
+                        GenerateHeader="DataGridGeneratedHeaderType.Sticky">
+            <PropertyColumn Property="@(p => p.Name)" />
+            <PropertyColumn Property="@(p => p.Status)" />
+            <PropertyColumn Property="@(p => p.Result)" />
+            <PropertyColumn Property="@(p => p.Error)" />
+        </FluentDataGrid>
+    </div>
+</FluentStack>
+
+@code {
+	private const string sourceUrl = "https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.data.mercatorpoint?view=azure-maps-typescript-latest";
+	private const string name = "MercatorPoint";
+	private string title => $"atlas.data.{name}";
+	private IAtlasInterop? maps;
+	private bool mapReady => maps != null;
+	private bool mapNotReady => !mapReady;
+	private bool overlay;
+	private bool buttonsDisabled => mapNotReady | overlay;
+	private List<MathTestRun> testRuns = [];
+	private readonly BoundingBox bbox = TestData.BBox;
+
+	protected override void OnInitialized()
+	{
+		maps = new AtlasInterop(JSRuntime);
+
+		// Type type = typeof(IAtlasMercatorPoint);
+
+		// // Retrieve all methods (public, non-public, instance, static, declared only in this class)
+		// var methods = type.GetMethods(
+		//     System.Reflection.BindingFlags.Public |
+		//     System.Reflection.BindingFlags.NonPublic |
+		//     System.Reflection.BindingFlags.Instance |
+		//     System.Reflection.BindingFlags.Static |
+		//     System.Reflection.BindingFlags.DeclaredOnly
+		// );
+
+		// foreach (var method in methods.OrderBy(m => m.Name))
+		// {
+		//     Console.WriteLine(method.Name);
+		// }
+	}
+
+	#region Math Tests
+
+	private async Task RunTests()
+	{
+		try
+		{
+			ShowOverlay(true);
+
+			var tests = new List<MathTestRun>();
+
+			tests.Add(await FromPositionTest());
+			tests.Add(await FromPositionsTest());
+			tests.Add(await MercatorScaleTest());
+			tests.Add(await MeterInMercatorUnitsTest());
+			tests.Add(await ToFloat32ArrayTest());
+			tests.Add(await ToPositionTest());
+			tests.Add(await ToPositionsTest());
+
+			testRuns = tests;
+		}
+		catch (Exception ex)
+		{
+			Logger.LogError(ex, null);
+			await ToastService.ShowError(ex.Message);
+		}
+		finally
+		{
+			ShowOverlay(false);
+		}
+	}
+
+	private async Task<MathTestRun> FromPositionTest()
+	{
+		var result = new MathTestRun(nameof(FromPositionTest));
+
+		try
+		{
+			var data = await maps!.Data.MercatorPoint.FromPosition(bbox.Northeast!);
+			result.Result = JsonSerializer.Serialize(data);
+			result.Status = MathTestRunStatus.Success;
+		}
+		catch (Exception ex)
+		{
+			result.Status = MathTestRunStatus.Failed;
+			result.Exception = ex;
+			Logger.LogError(ex, null);
+			await ToastService.ShowError(ex.Message);
+		}
+
+		return result;
+	}
+
+	private async Task<MathTestRun> FromPositionsTest()
+	{
+		var result = new MathTestRun(nameof(FromPositionsTest));
+
+		try
+		{
+			var data = await maps!.Data.MercatorPoint.FromPositions(new List<Position> { bbox.Northeast!, bbox.Southwest! });
+			result.Result = JsonSerializer.Serialize(data);
+			result.Status = MathTestRunStatus.Success;
+		}
+		catch (Exception ex)
+		{
+			result.Status = MathTestRunStatus.Failed;
+			result.Exception = ex;
+			Logger.LogError(ex, null);
+			await ToastService.ShowError(ex.Message);
+		}
+
+		return result;
+	}
+
+	private async Task<MathTestRun> MercatorScaleTest()
+	{
+		var result = new MathTestRun(nameof(MercatorScaleTest));
+
+		try
+		{
+			var data = await maps!.Data.MercatorPoint.MercatorScale(bbox.Northeast!.Latitude);
+			result.Result = JsonSerializer.Serialize(data);
+			result.Status = MathTestRunStatus.Success;
+		}
+		catch (Exception ex)
+		{
+			result.Status = MathTestRunStatus.Failed;
+			result.Exception = ex;
+			Logger.LogError(ex, null);
+			await ToastService.ShowError(ex.Message);
+		}
+
+		return result;
+	}
+
+	private async Task<MathTestRun> MeterInMercatorUnitsTest()
+	{
+		var result = new MathTestRun(nameof(MeterInMercatorUnitsTest));
+
+		try
+		{
+			var data = await maps!.Data.MercatorPoint.MeterInMercatorUnits(bbox.Northeast!.Latitude);
+			result.Result = JsonSerializer.Serialize(data);
+			result.Status = MathTestRunStatus.Success;
+		}
+		catch (Exception ex)
+		{
+			result.Status = MathTestRunStatus.Failed;
+			result.Exception = ex;
+			Logger.LogError(ex, null);
+			await ToastService.ShowError(ex.Message);
+		}
+
+		return result;
+	}
+
+	private async Task<MathTestRun> ToFloat32ArrayTest()
+	{
+		var result = new MathTestRun(nameof(ToFloat32ArrayTest));
+
+		try
+		{
+			var data = await maps!.Data.MercatorPoint.ToFloat32Array(new List<Position> { bbox.Northeast!, bbox.Southwest! });
+			result.Result = JsonSerializer.Serialize(data);
+			result.Status = MathTestRunStatus.Success;
+		}
+		catch (Exception ex)
+		{
+			result.Status = MathTestRunStatus.Failed;
+			result.Exception = ex;
+			Logger.LogError(ex, null);
+			await ToastService.ShowError(ex.Message);
+		}
+
+		return result;
+	}
+
+	private async Task<MathTestRun> ToPositionTest()
+	{
+		var result = new MathTestRun(nameof(ToPositionTest));
+
+		try
+		{
+			var mp = await maps!.Data.MercatorPoint.FromPosition(bbox.Northeast!);
+			var data = await maps!.Data.MercatorPoint.ToPosition(mp);
+			result.Result = $"Source: {bbox.Northeast!} MP: {mp} Data: {data}";
+			result.Status = MathTestRunStatus.Success;
+		}
+		catch (Exception ex)
+		{
+			result.Status = MathTestRunStatus.Failed;
+			result.Exception = ex;
+			Logger.LogError(ex, null);
+			await ToastService.ShowError(ex.Message);
+		}
+
+		return result;
+	}
+
+	private async Task<MathTestRun> ToPositionsTest()
+	{
+		var result = new MathTestRun(nameof(ToPositionsTest));
+
+		try
+		{
+			List<MercatorPoint> mps = new();
+			mps.Add(await maps!.Data.MercatorPoint.FromPosition(bbox.Northeast!));
+			mps.Add(await maps!.Data.MercatorPoint.FromPosition(bbox.Southwest!));
+			var data = await maps!.Data.MercatorPoint.ToPositions(mps);
+			result.Result = $"MPs: {JsonSerializer.Serialize(mps)} Data: {JsonSerializer.Serialize(data)}";
+			result.Status = MathTestRunStatus.Success;
+		}
+		catch (Exception ex)
+		{
+			result.Status = MathTestRunStatus.Failed;
+			result.Exception = ex;
+			Logger.LogError(ex, null);
+			await ToastService.ShowError(ex.Message);
+		}
+
+		return result;
+	}
+
+    #endregion
+
+    private void ShowOverlay(bool isVisible)
+    {
+        overlay = isVisible;
+        StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (maps != null)
+            await maps.DisposeAsync();
+    }
+}

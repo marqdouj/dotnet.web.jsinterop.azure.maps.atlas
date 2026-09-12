@@ -2,7 +2,7 @@
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
 
-namespace Marqdouj.DotNet.JsInterop.AzureMaps.Models.Data
+namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Data
 {
     /// <summary>
     /// Interface for atlas.data.BoundingBox interactions. <see href="https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.data.boundingbox?view=azure-maps-typescript-latest"/>

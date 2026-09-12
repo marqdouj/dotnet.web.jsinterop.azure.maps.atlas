@@ -1,9 +1,8 @@
-﻿using Marqdouj.DotNet.JsInterop.AzureMaps.Models.Data;
-using Marqdouj.DotNet.JsInterop.AzureMaps.Models.Math;
-using Microsoft.AspNetCore.Components;
+﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Data;
 using Microsoft.JSInterop;
 
-namespace Marqdouj.DotNet.JsInterop.AzureMaps.Models
+namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
 {
     /// <summary>
     /// <inheritdoc cref="AtlasInterop"/>
