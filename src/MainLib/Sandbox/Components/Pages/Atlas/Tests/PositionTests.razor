@@ -1,0 +1,214 @@
+﻿@page "/tests-position"
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@inject ILogger<PositionTests> Logger
+@inject INotificationService ToastService
+@inject IJSRuntime JSRuntime
+
+<PageTitle>@title</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical">
+	<Toolbar>
+		<FluentButton Disabled="@buttonsDisabled" IconStart="@(new Icons.Regular.Size20.Run())" Title="Run Tests" OnClick="@RunTests" />
+	</Toolbar>
+
+	<div style="overflow:auto;height:100%">
+		<FluentDataGrid Items="@testRuns.AsQueryable()"
+						MultiLine="true"
+						GenerateHeader="DataGridGeneratedHeaderType.Sticky">
+			<PropertyColumn Property="@(p => p.Name)" />
+			<PropertyColumn Property="@(p => p.Status)" />
+			<PropertyColumn Property="@(p => p.Result)" />
+			<PropertyColumn Property="@(p => p.Error)" />
+		</FluentDataGrid>
+	</div>
+</FluentStack>
+
+@code {
+	private const string sourceUrl = "https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.data.mercatorpoint?view=azure-maps-typescript-latest";
+	private const string name = "Position";
+	private string title => $"atlas.data.{name}";
+	private IAtlasInterop? maps;
+	private bool mapReady => maps != null;
+	private bool mapNotReady => !mapReady;
+	private bool overlay;
+	private bool buttonsDisabled => mapNotReady | overlay;
+	private List<MathTestRun> testRuns = [];
+	private readonly BoundingBox bbox = TestData.BBox;
+
+	protected override void OnInitialized()
+	{
+		maps = new AtlasInterop(JSRuntime);
+		//TestData.WriteNamesToConsole(typeof(IAtlasPosition));
+	}
+
+	#region Math Tests
+
+	private async Task RunTests()
+	{
+		try
+		{
+			ShowOverlay(true);
+
+			var tests = new List<MathTestRun>();
+
+			tests.Add(await AreEqualTest());
+			tests.Add(await FromLatLngTest());
+			tests.Add(await FromLatLngArrayTest());
+			tests.Add(await FromLatLngValuesTest());
+			tests.Add(await FromLatLngsTest());
+			tests.Add(await FromPositionTest());
+
+			testRuns = tests;
+		}
+		catch (Exception ex)
+		{
+			Logger.LogError(ex, null);
+			await ToastService.ShowError(ex.Message);
+		}
+		finally
+		{
+			ShowOverlay(false);
+		}
+	}
+
+	private async Task<MathTestRun> AreEqualTest()
+	{
+		var result = new MathTestRun(nameof(AreEqualTest));
+
+		try
+		{
+			var data = await maps!.Data.Position.AreEqual(bbox.Northeast!, bbox.Northeast!);
+			result.Result = JsonSerializer.Serialize(data);
+			result.Status = MathTestRunStatus.Success;
+		}
+		catch (Exception ex)
+		{
+			result.Status = MathTestRunStatus.Failed;
+			result.Exception = ex;
+			Logger.LogError(ex, null);
+			await ToastService.ShowError(ex.Message);
+		}
+
+		return result;
+	}
+
+	private async Task<MathTestRun> FromLatLngTest()
+	{
+		var result = new MathTestRun(nameof(FromLatLngTest));
+
+		try
+		{
+			var data = await maps!.Data.Position.FromLatLng(bbox.Northeast!);
+			result.Result = JsonSerializer.Serialize(data);
+			result.Status = MathTestRunStatus.Success;
+		}
+		catch (Exception ex)
+		{
+			result.Status = MathTestRunStatus.Failed;
+			result.Exception = ex;
+			Logger.LogError(ex, null);
+			await ToastService.ShowError(ex.Message);
+		}
+
+		return result;
+	}
+
+	private async Task<MathTestRun> FromLatLngArrayTest()
+	{
+		var result = new MathTestRun(nameof(FromLatLngArrayTest));
+
+		try
+		{
+			var data = await maps!.Data.Position.FromLatLng(new List<double> { bbox.Northeast!.Longitude, bbox.Northeast.Latitude });
+			result.Result = JsonSerializer.Serialize(data);
+			result.Status = MathTestRunStatus.Success;
+		}
+		catch (Exception ex)
+		{
+			result.Status = MathTestRunStatus.Failed;
+			result.Exception = ex;
+			Logger.LogError(ex, null);
+			await ToastService.ShowError(ex.Message);
+		}
+
+		return result;
+	}
+
+	private async Task<MathTestRun> FromLatLngValuesTest()
+	{
+		var result = new MathTestRun(nameof(FromLatLngValuesTest));
+
+		try
+		{
+			var data = await maps!.Data.Position.FromLatLng(bbox.Northeast!.Longitude, bbox.Northeast.Latitude);
+			result.Result = JsonSerializer.Serialize(data);
+			result.Status = MathTestRunStatus.Success;
+		}
+		catch (Exception ex)
+		{
+			result.Status = MathTestRunStatus.Failed;
+			result.Exception = ex;
+			Logger.LogError(ex, null);
+			await ToastService.ShowError(ex.Message);
+		}
+
+		return result;
+	}
+
+	private async Task<MathTestRun> FromLatLngsTest()
+	{
+		var result = new MathTestRun(nameof(FromLatLngsTest));
+
+		try
+		{
+			var data = await maps!.Data.Position.FromLatLngs(new List<object> { bbox.Northeast!, bbox.Southwest!, new List<double> { bbox.Northeast!.Longitude, bbox.Northeast.Latitude } });
+			result.Result = JsonSerializer.Serialize(data);
+			result.Status = MathTestRunStatus.Success;
+		}
+		catch (Exception ex)
+		{
+			result.Status = MathTestRunStatus.Failed;
+			result.Exception = ex;
+			Logger.LogError(ex, null);
+			await ToastService.ShowError(ex.Message);
+		}
+
+		return result;
+	}
+
+	private async Task<MathTestRun> FromPositionTest()
+	{
+		var result = new MathTestRun(nameof(FromPositionTest));
+
+		try
+		{
+			var data = await maps!.Data.Position.FromPosition(bbox.Northeast!);
+			result.Result = JsonSerializer.Serialize(data);
+			result.Status = MathTestRunStatus.Success;
+		}
+		catch (Exception ex)
+		{
+			result.Status = MathTestRunStatus.Failed;
+			result.Exception = ex;
+			Logger.LogError(ex, null);
+			await ToastService.ShowError(ex.Message);
+		}
+
+		return result;
+	}
+
+	#endregion
+
+	private void ShowOverlay(bool isVisible)
+	{
+		overlay = isVisible;
+		StateHasChanged();
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		if (maps != null)
+			await maps.DisposeAsync();
+	}
+}

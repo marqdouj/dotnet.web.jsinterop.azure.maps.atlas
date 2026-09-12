@@ -10,6 +10,7 @@
 - [Data](https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.data?view=azure-maps-typescript-latest)
   - [BoundingBox](https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.data.boundingbox?view=azure-maps-typescript-latest)
   - [MercatorPoint](https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.data.mercatorpoint?view=azure-maps-typescript-latest)
+  - [Position](https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.data.position?view=azure-maps-typescript-latest)
 - [Math](https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.math?view=azure-maps-typescript-latest)
 
 ## [Release Notes (All)](Documents/ReleaseNotes.md)

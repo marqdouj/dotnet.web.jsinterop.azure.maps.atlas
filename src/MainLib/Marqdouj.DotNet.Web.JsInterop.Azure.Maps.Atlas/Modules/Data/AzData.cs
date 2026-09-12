@@ -16,11 +16,17 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Data
         /// <inheritdoc cref="IAtlasMercatorPoint"/>
         /// </summary>
         IAtlasMercatorPoint MercatorPoint { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasPosition"/>
+        /// </summary>
+        IAtlasPosition Position { get; }
     }
 
     internal class AzData(Lazy<Task<IJSObjectReference>> moduleTask) : IAtlasData
     {
         public IAtlasBoundingBox BoundingBox { get; } = new AzBoundingBox(moduleTask);
         public IAtlasMercatorPoint MercatorPoint { get; } = new AzMercatorPoint(moduleTask);
+        public IAtlasPosition Position { get; } = new AzPosition(moduleTask);
     }
 }

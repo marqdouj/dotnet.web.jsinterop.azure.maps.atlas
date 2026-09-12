@@ -39,22 +39,7 @@
 	protected override void OnInitialized()
 	{
 		maps = new AtlasInterop(JSRuntime);
-
-		// Type type = typeof(IAtlasMercatorPoint);
-
-		// // Retrieve all methods (public, non-public, instance, static, declared only in this class)
-		// var methods = type.GetMethods(
-		//     System.Reflection.BindingFlags.Public |
-		//     System.Reflection.BindingFlags.NonPublic |
-		//     System.Reflection.BindingFlags.Instance |
-		//     System.Reflection.BindingFlags.Static |
-		//     System.Reflection.BindingFlags.DeclaredOnly
-		// );
-
-		// foreach (var method in methods.OrderBy(m => m.Name))
-		// {
-		//     Console.WriteLine(method.Name);
-		// }
+		//TestData.WriteNamesToConsole(typeof(IAtlasMercatorPoint));
 	}
 
 	#region Math Tests
