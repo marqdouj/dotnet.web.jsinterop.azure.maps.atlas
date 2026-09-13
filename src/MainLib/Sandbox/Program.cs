@@ -1,6 +1,7 @@
 using Microsoft.FluentUI.AspNetCore.Components;
 using Sandbox;
 using Sandbox.Components;
+using Sandbox.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,9 @@ builder.Services.AddFluentUIComponents();
 
 //Azure Maps JS Interop
 builder.Services.ConfigureMarqdoujAzureMaps(builder.Configuration, builder.Environment.IsDevelopment());
+
+//App Config Helper
+builder.Services.AddSingleton(new AppConfiguration(builder));
 
 var app = builder.Build();
 

@@ -1,11 +1,17 @@
 ﻿@rendermode InteractiveServer
+@inject AppConfiguration AppConfig
 
 <FluentNav Id="main-menu" Width="260px">
+    @if (AppConfig.IsDevelopment && showDev)
+    {
+        <FluentNavItem Href="design" IconRest="@((new Icons.Regular.Size20.DesignIdeas()))">Design</FluentNavItem>
+    } 
+
     <FluentNavItem Href="/" Match="NavLinkMatch.All" IconRest="@(new Icons.Regular.Size20.Home())" IconActive="@(new Icons.Filled.Size20.Home())">Home</FluentNavItem>
 
-    <FluentNavItem Href="map-basic" IconRest="@((new Icons.Regular.Size20.Map()))">Basic Map</FluentNavItem>
-
-    <FluentNavSectionHeader Title="Tests" />
+    <FluentNavCategory Title="Maps" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
+        <FluentNavItem Href="map-basic" IconRest="@((new Icons.Regular.Size20.Map()))">Basic Map</FluentNavItem>
+    </FluentNavCategory>
 
     <FluentNavCategory Title="Modules" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
         <FluentNavSectionHeader Title="Data" />
@@ -19,4 +25,5 @@
 </FluentNav>
 
 @code {
+    private bool showDev = false;
 }

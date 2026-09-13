@@ -1,0 +1,129 @@
+﻿@page "/design"
+@rendermode InteractiveServer
+@inject IOptions<MapConfiguration> Configuration
+@inject IJSRuntime JSRuntime
+@inject ILogger<Design> Logger
+@inject INotificationService ToastService
+
+<MapPage Title="@title">
+    <SummaryContent>
+        <FluentText As="TextTag.Paragraph">
+            This page demonstrates how to create a basic map.
+            <br />
+            The map is intialized to a specific camera setting (location, zoom, style etc.).
+        </FluentText>
+    </SummaryContent>
+
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@createMapDisabled" IconStart="@(new Icons.Regular.Size20.Add())" Title="Create Map" OnClick="@CreateMap" />
+            <FluentButton Disabled="@removeMapDisabled" IconStart="@(new Icons.Regular.Size20.Delete())" Title="Remove Map" OnClick="@RemoveMap" />
+        </Toolbar>
+
+        <MapContainer MapId="@mapId" />
+    </ChildContent>
+</MapPage>
+
+@code {
+    private const string mapId = "mapBasic";
+    private const string title = "Basic Map";
+    private DotNetObjectReference<ComponentBase>? dotNetRef;
+    private AtlasInterop atlasInterop = default!;
+    private MapConfiguration? config;
+    private Map? map;
+    private bool hasInterop => atlasInterop != null;
+    private bool createMapDisabled => !hasInterop || map != null;
+    private bool removeMapDisabled => !hasInterop || map == null;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                config = Configuration?.Value ?? throw new Exception($"Injection of {nameof(MapConfiguration)} returned null.");
+                Debug.Assert(dotNetRef == null);
+
+                atlasInterop = new(JSRuntime);
+                dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
+
+                await CreateMap();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Initialization caused an exception.");
+                await ToastService.ShowError("Initialization caused an exception.");
+            }
+            finally
+            {
+                StateHasChanged();
+            }
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            dotNetRef?.Dispose();
+
+            if (map != null)
+                await map.DisposeAsync();
+
+            if (atlasInterop != null)
+                await atlasInterop.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+
+    #region Map
+
+    private async Task CreateMap()
+    {
+        try
+        {
+            if (map != null)
+                return;
+
+            //overrride the default map options (if any) that were set.
+            config?.MapOptions = MapExtensions.GetDefaultMapOptions();
+            map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config!);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task RemoveMap()
+    {
+        try
+        {
+            if (map == null)
+                return;
+
+            await atlasInterop.Factory.RemoveMap(map);
+            map = null;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    [JSInvokable]
+    public async Task NotifyMapEvent(MapEventArgs e)
+    {
+        await Task.CompletedTask;
+        await ToastService.ShowInfo($"MapEvent: {e.Type}");
+
+        var test = e.GetPayloadItem<ErrorPayload>("test");
+        Console.WriteLine(test?.BuildMessage());
+    }
+
+    #endregion
+}
