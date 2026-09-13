@@ -15,6 +15,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         IAtlasData Data { get; }
 
         /// <summary>
+        /// <inheritdoc cref="IAtlasFactory"/>
+        /// </summary>
+        IAtlasFactory Factory { get; }
+
+        /// <summary>
         /// <inheritdoc cref="IAtlasMath"/>
         /// </summary>
         IAtlasMath Math { get; }
@@ -23,7 +28,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
     /// <summary>
     /// JSInterop interaction module for the Azure Maps SDK.
     /// </summary>
-    public class AtlasInterop : IAtlasInterop
+    public sealed class AtlasInterop : IAtlasInterop
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask;
 
@@ -37,6 +42,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
                "import", "./_content/Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas/atlas.js").AsTask());
 
             Data = new AzData(moduleTask);
+            Factory = new AzFactory(moduleTask);
             Math = new AzMath(moduleTask);
         }
 
@@ -44,6 +50,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         /// <inheritdoc cref="IAtlasData"/>
         /// </summary>
         public IAtlasData Data { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasFactory"/>
+        /// </summary>
+        public IAtlasFactory Factory { get; }
 
         /// <summary>
         /// <inheritdoc cref="IAtlasMath"/>

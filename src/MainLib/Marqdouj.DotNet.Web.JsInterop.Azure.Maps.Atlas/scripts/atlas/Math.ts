@@ -1,5 +1,4 @@
 import * as atlas from "azure-maps-control"
-//import { Logger, LogLevel } from "./common/";
 
 export class Math {
     public static boundingBoxToPolygon(bboxes: atlas.data.BoundingBox[]): atlas.data.Polygon[] {
