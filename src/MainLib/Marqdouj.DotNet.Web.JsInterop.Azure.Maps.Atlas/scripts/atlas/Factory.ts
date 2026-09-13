@@ -3,8 +3,6 @@ import { Helpers } from "../common/Helpers";
 
 export class Factory {
     public static createMap(dotNetRef: any, mapId: string, config: MapConfiguration) {
-        const options = this.#buildOptions(config);
-        const map = new atlas.Map(mapId, options);
         const eventNames: CreateMapEventNames = (config as any).eventNames as CreateMapEventNames ?? {};
 
         if (Helpers.isEmptyOrNull(eventNames.error)) {
@@ -14,10 +12,14 @@ export class Factory {
             eventNames.ready = MapEventNotify.NotifyMapEvent;
         }
 
-        map.events.addOnce(MapEventType.Ready, event => {
+        const options = this.#buildOptions(config);
+        const azmap = new atlas.Map(mapId, options);
 
-            map.events.add(MapEventType.Error, event => {
-                const error: JsError = { name: event.error.name, message: event.error.message, stack: event.error.stack }
+        azmap.events.addOnce(MapEventType.Ready, event => {
+            
+
+            azmap.events.add(MapEventType.Error, event => {
+                const error: JsError = { name: event.error.name, message: event.error.message, stack: event.error.stack, cause: event.error.cause?.toString() }
                 const payload: atlas.Properties = { error: error };
                 const errorArgs: MapEventArgs = { mapId: mapId, target: MapEventTarget.Map, type: event.type, payload: payload };
                 dotNetRef.invokeMethodAsync(eventNames.error, errorArgs);
@@ -27,14 +29,14 @@ export class Factory {
             dotNetRef.invokeMethodAsync(eventNames.ready, readyArgs);
         });
 
-        return map;
+        return azmap;
     }
 
     public static removeMap(map?: atlas.Map) {
         map?.dispose();
     }
 
-    static #buildOptions(config: MapConfiguration): atlas.AuthenticationOptions {
+    static #buildOptions(config: MapConfiguration): CreateMapOptions {
         let options: CreateMapOptions = {};
 
         const mapOptions = Helpers.nullToUndefined(config.mapOptions);
@@ -116,13 +118,14 @@ interface JsError {
     name: string;
     message?: string;
     stack?: string;
+    cause?: string;
 }
 
 interface MapEventArgs {
     mapId: string;
     target: MapEventTarget;
     type: string;
-    payload?: atlas.Properties;
+    payload?: atlas.Properties | undefined;
 }
 
 enum MapEventNotify {

@@ -127,6 +127,9 @@
     {
         await Task.CompletedTask;
         await ToastService.ShowInfo($"MapEvent: {e.Type}");
+
+        var test = e.GetPayloadItem<ErrorPayload>("test");
+        Console.WriteLine(test?.BuildMessage());
     }
 
     #endregion

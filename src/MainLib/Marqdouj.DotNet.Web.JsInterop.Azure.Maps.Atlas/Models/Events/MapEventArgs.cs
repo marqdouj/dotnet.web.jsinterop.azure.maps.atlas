@@ -1,4 +1,5 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.GeoJson;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events
@@ -17,7 +18,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events
     /// <summary>
     /// Specifies the type of map-related events.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter<MapEventTarget>))]
+    [JsonConverter(typeof(JsonStringEnumConverter<MapEventType>))]
     public enum MapEventType
     {
         error,
@@ -30,6 +31,8 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events
     /// </summary>
     public class MapEventArgs
     {
+        private static readonly JsonSerializerOptions serializerOptions = new(JsonSerializerDefaults.Web);
+
         /// <summary>
         /// The id of the html element where the map is displayed.
         /// </summary>
@@ -55,10 +58,16 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events
         /// </summary>
         /// <param name="key"></param>
         /// <returns>The item or null if not found.</returns>
-        public object? GetPayloadItem(string key)
+        public T? GetPayloadItem<T>(string key) where T: class
         {
             if (Payload?.TryGetValue(key, out var payloadItem) ?? false)
-                return payloadItem;
+            {
+                if (payloadItem is JsonElement elem)
+                {
+                    var item = elem.Deserialize<T?>(serializerOptions);
+                    return item;
+                }
+            }
 
             return null;
         }
