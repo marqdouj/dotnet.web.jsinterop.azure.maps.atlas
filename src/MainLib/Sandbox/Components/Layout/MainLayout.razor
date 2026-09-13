@@ -1,7 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
 <FluentLayout>
-    <FluentLayoutItem Area="LayoutArea.Header">
+    <FluentLayoutItem Area="LayoutArea.Header" Sticky="true">
         <FluentLayoutHamburger />
         Sandbox
     </FluentLayoutItem>
@@ -9,21 +9,25 @@
         <NavMenu />
     </FluentLayoutItem>
     <FluentLayoutItem Area="LayoutArea.Content" Class="main">
-        <div class="content">
+        <div class="content" style="height: 100%;">
             @Body
         </div>
     </FluentLayoutItem>
 
-    <FluentLayoutItem Area="LayoutArea.Footer">
-        <div style="display: flex">
+    <FluentLayoutItem Area="LayoutArea.Footer" Sticky="true">
+        <FluentStack>
             <FluentLink Href="https://www.fluentui-blazor.net" Target="LinkTarget.Blank" IconEnd="@(new Icons.Regular.Size16.ArrowExit())">
-                Documentation and demos
-                </FluentLink>
+                Fluent UI Blazor
+            </FluentLink>
             <FluentSpacer />
-                <FluentLink Href="https://learn.microsoft.com/en-us/aspnet/core/blazor" Target="LinkTarget.Blank" IconEnd="@(new Icons.Regular.Size16.ArrowExit())">
+            <FluentLink Href="https://github.com/marqdouj" Target="LinkTarget.Blank" IconEnd="@(new Icons.Regular.Size16.ArrowExit())">
+                &copy; Doug Marquardt @DateTime.Now.Year
+            </FluentLink>
+            <FluentSpacer />
+            <FluentLink Href="https://learn.microsoft.com/en-us/aspnet/core/blazor" Target="LinkTarget.Blank" IconEnd="@(new Icons.Regular.Size16.ArrowExit())">
                 About Blazor
             </FluentLink>
-        </div>
+        </FluentStack>
     </FluentLayoutItem>
 </FluentLayout>
 

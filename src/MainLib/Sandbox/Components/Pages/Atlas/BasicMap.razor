@@ -5,16 +5,24 @@
 @inject ILogger<BasicMap> Logger
 @inject INotificationService ToastService
 
-<PageTitle>@title</PageTitle>
+<MapPage Title="@title">
+    <SummaryContent>
+        <FluentText As="TextTag.Paragraph">
+            This page demonstrates how to create a basic map.
+            <br />
+            The map is intialized to a specific camera setting (location, zoom, style etc.).
+        </FluentText>
+    </SummaryContent>
 
-<FluentStack Orientation="Orientation.Vertical" Height="100%">
-    <FluentStack Wrap="true" VerticalAlignment="VerticalAlignment.Center">
-        <FluentButton Disabled="@createMapDisabled" IconStart="@(new Icons.Regular.Size20.Add())" Title="Create Map" OnClick="@CreateMap" />
-        <FluentButton Disabled="@removeMapDisabled" IconStart="@(new Icons.Regular.Size20.Delete())" Title="Remove Map" OnClick="@RemoveMap" />
-    </FluentStack>
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@createMapDisabled" IconStart="@(new Icons.Regular.Size20.Add())" Title="Create Map" OnClick="@CreateMap" />
+            <FluentButton Disabled="@removeMapDisabled" IconStart="@(new Icons.Regular.Size20.Delete())" Title="Remove Map" OnClick="@RemoveMap" />
+        </Toolbar>
 
-    <MapContainer MapId="@mapId" Height="400px" Width="400px"/>
-</FluentStack>
+        <MapContainer MapId="@mapId" />
+    </ChildContent>
+</MapPage>
 
 @code {
     private const string mapId = "mapBasic";
@@ -33,30 +41,13 @@
         {
             try
             {
-                config = Configuration?.Value;
-                var auth = config?.AuthOptions;
-
-                if (config == null)
-                    throw new Exception($"Injection of {nameof(MapConfiguration)} returned null.");
-
-                if (auth == null)
-                    throw new Exception($"Injection of {nameof(MapConfiguration)}.{nameof(MapConfiguration.AuthOptions)} returned null.");
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Map authentication failed.");
-                await ToastService.ShowError("Map authentication failed.");
-                return;
-            }
-
-            try
-            {
-                if (atlasInterop != null)
-                    await atlasInterop.DisposeAsync();
-                dotNetRef?.Dispose();
+                config = Configuration?.Value ?? throw new Exception($"Injection of {nameof(MapConfiguration)} returned null.");
+                Debug.Assert(dotNetRef == null);
 
                 atlasInterop = new(JSRuntime);
                 dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
+
+                await CreateMap();
             }
             catch (Exception ex)
             {
@@ -96,6 +87,8 @@
             if (map != null)
                 return;
 
+            //overrride the default map options (if any) that were set.
+            config?.MapOptions = MapExtensions.GetDefaultMapOptions();
             map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config!);
         }
         catch (Exception ex)

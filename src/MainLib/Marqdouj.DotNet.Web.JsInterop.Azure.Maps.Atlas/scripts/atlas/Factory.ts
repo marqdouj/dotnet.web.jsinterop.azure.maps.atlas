@@ -16,8 +16,6 @@ export class Factory {
         const azmap = new atlas.Map(mapId, options);
 
         azmap.events.addOnce(MapEventType.Ready, event => {
-            
-
             azmap.events.add(MapEventType.Error, event => {
                 const error: JsError = { name: event.error.name, message: event.error.message, stack: event.error.stack, cause: event.error.cause?.toString() }
                 const payload: atlas.Properties = { error: error };

@@ -6,7 +6,7 @@ using Microsoft.JSInterop;
 
 namespace Sandbox
 {
-    internal static class MapsSetup
+    public static class MapsSetup
     {
         private static MapConfiguration? mapConfiguration;
         private static string clientSecret = "";
@@ -54,19 +54,22 @@ namespace Sandbox
             if (!string.IsNullOrWhiteSpace(config.AuthOptions.SasToken))
                 return;
 
-            config.AuthOptions.TokenInfo = new("Sandbox", "GetSasToken", AuthenticationType.sas);
+            config.AuthOptions.TokenInfo = new(nameof(Sandbox), nameof(GetSasToken), AuthenticationType.sas);
         }
 
         /// <summary>
         /// Only used for SasToken AuthOptions.
-        /// Requires token callback be configured in App.razor.
+        /// Requires AuthOptions.TokenInfo to be configured.
         /// </summary>
         /// <returns></returns>
-        [JSInvokable]
+        [JSInvokable("GetSasToken")]
         public static async Task<string?> GetSasToken()
         {
             //TODO: Implement logic to generate SasToken.
-            var sasToken = "[ADD LOGIC TO GET SAS TOKEN]";
+            //var sasToken = "[ADD LOGIC TO GET SAS TOKEN]";
+
+            // For the purpose of testing, I manually generate a SasToken (via Azure Maps Account/Shared Access Signature)
+            var sasToken = "[INSERT GENERATED TOKEN FOR TESTING]";
             return sasToken;
         }
 
@@ -86,15 +89,15 @@ namespace Sandbox
             config.AuthOptions.ClientId = configuration["AzureMaps:ClientId"];
             clientSecret = configuration["AzureMaps:ClientSecret"] ?? "";
 
-            config.AuthOptions.TokenInfo = new("Sandbox", "GetAccessToken", AuthenticationType.anonymous);
+            config.AuthOptions.TokenInfo = new(nameof(Sandbox), nameof(GetAccessToken), AuthenticationType.anonymous);
         }
 
         /// <summary>
         /// Only used for Anonymous AuthOptions.
-        /// Requires token callback be configured in App.razor.
+        /// Requires AuthOptions.TokenInfo to be configured.
         /// </summary>
         /// <returns></returns>
-        [JSInvokable]
+        [JSInvokable("GetAccessToken")]
         public static async Task<string> GetAccessToken()
         {
             IConfidentialClientApplication daemonClient;
