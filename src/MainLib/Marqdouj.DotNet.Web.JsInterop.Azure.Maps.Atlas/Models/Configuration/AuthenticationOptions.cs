@@ -127,7 +127,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration
         public string? SasTokenUrl { get; set; }
 
         /// <summary>
-        /// When a TokenInfo is assigned, a call be will be <inheritdoc cref="AuthenticationTokenInfo"/>
+        /// When a TokenInfo is assigned, a callback will be created based on <inheritdoc cref="AuthenticationTokenInfo"/>.
         /// </summary>
         public AuthenticationTokenInfo? TokenInfo { get; set; }
     }
