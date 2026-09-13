@@ -11,7 +11,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddFluentUIComponents();
 
 //Azure Maps JS Interop
-builder.Services.ConfigureMarqdoujAzureMaps(builder.Configuration, builder.Environment.IsDevelopment());
+builder.Services.ConfigureMarqdoujAtlasMaps(builder.Configuration, builder.Environment.IsDevelopment());
 
 //App Config Helper
 builder.Services.AddSingleton(new AppConfiguration(builder));

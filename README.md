@@ -6,17 +6,25 @@
 
 ## NOTE: This library is in preview and is not yet production-ready.
 
-## Modules:
+## [Configuration](Documents/Configuration.md)
+
+## [Build Solution](Documents/BuildSolution.md)
+
+## Modules: Accessed using `AtlasInterop`.
 - [Data](https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.data?view=azure-maps-typescript-latest)
   - [BoundingBox](https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.data.boundingbox?view=azure-maps-typescript-latest)
   - [MercatorPoint](https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.data.mercatorpoint?view=azure-maps-typescript-latest)
   - [Position](https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.data.position?view=azure-maps-typescript-latest)
 - [Math](https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.math?view=azure-maps-typescript-latest)
+- `Factory` Create/Remove `IJSObjectReference` instances of the atlas.Map.
 
-## [Release Notes (All)](Documents/ReleaseNotes.md)
+## Components
+- `MapContainer`. Helper component to display the map. Use is not required, but recommended for simple control of the map display.
 
 ## Release Notes (Current)
-- `11.0.0-Preview-2.0`
-   - `Namespaces`. Changed all namespaces to match folder structure (copy and paste issue).
-   - `DistanceProperties`. Renamed `distance` to `Distance`.
+- `11.0.0-Preview-3.0`
+   - `Map Instances`. You can now create/remove instances of the atlas.Map via `AtlasInterop.Factory`.
+	- For app configuration see `Sandbox.Program.cs` and `Sandbox.MapsSetup.cs`.
+	- For implementation see `Sandbox.Components.Pages.Atlas.BasicMap.razor`.
 
+## [Release Notes (All)](Documents/ReleaseNotes.md)

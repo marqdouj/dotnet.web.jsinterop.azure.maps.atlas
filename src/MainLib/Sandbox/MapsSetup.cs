@@ -13,7 +13,7 @@ namespace Sandbox
         private static readonly string authorityFormat = "https://login.microsoftonline.com/{0}/oauth2/v2.0";
         private static readonly string graphScope = "https://atlas.microsoft.com/.default";
 
-        public static IServiceCollection ConfigureMarqdoujAzureMaps(this IServiceCollection services, IConfiguration configuration, bool isDevelopment)
+        public static IServiceCollection ConfigureMarqdoujAtlasMaps(this IServiceCollection services, IConfiguration configuration, bool isDevelopment)
         {
             //User Secrets for local development; Azure Key Vault for Production?:
             //"AzureMaps": {
