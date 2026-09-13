@@ -24,7 +24,5 @@
 ## Release Notes (Current)
 - `11.0.0-Preview-3.0`
    - `Map Instances`. You can now create/remove instances of the atlas.Map via `AtlasInterop.Factory`.
-	- For app configuration see `Sandbox.Program.cs` and `Sandbox.MapsSetup.cs`.
-	- For implementation see `Sandbox.Components.Pages.Atlas.BasicMap.razor`.
 
 ## [Release Notes (All)](Documents/ReleaseNotes.md)
