@@ -3,7 +3,7 @@
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models
 {
     /// <summary>
-    /// <see cref="IJSObjectReference"/> Wrapper to an atlas.Map.
+    /// <see cref="IJSObjectReference"/> Wrapper to an atlas Map.
     /// Ensure this class is disposed when done using the map.
     /// </summary>
     public sealed class Map : IAsyncDisposable

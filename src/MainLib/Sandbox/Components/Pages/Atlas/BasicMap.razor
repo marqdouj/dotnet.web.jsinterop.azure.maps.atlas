@@ -8,7 +8,7 @@
 <MapPage Title="@title">
     <SummaryContent>
         <FluentText As="TextTag.Paragraph">
-            This page demonstrates how to create a basic map.
+            This page demonstrates how to create/remove a map instance, and add/remove controls.
             <br />
             The map is intialized to a specific camera setting (location, zoom, style etc.).
         </FluentText>
@@ -16,8 +16,14 @@
 
     <ChildContent>
         <Toolbar>
+            <FluentLabel>Map:</FluentLabel>
             <FluentButton Disabled="@createMapDisabled" IconStart="@(new Icons.Regular.Size20.Add())" Title="Create Map" OnClick="@CreateMap" />
             <FluentButton Disabled="@removeMapDisabled" IconStart="@(new Icons.Regular.Size20.Delete())" Title="Remove Map" OnClick="@RemoveMap" />
+            <FluentSpacer Width="10px"/>
+            <FluentLabel>Controls:</FluentLabel>
+            <FluentButton Disabled="@addControlsDisabled" IconStart="@(new Icons.Regular.Size20.Add())" Title="Add Controls" OnClick="@AddControls" />
+            <FluentButton Disabled="@removeControlsDisabled" IconStart="@(new Icons.Regular.Size20.Delete())" Title="Remove Controls" OnClick="@RemoveControls" />
+            <FluentButton Disabled="@removeControlsDisabled" IconStart="@(new Icons.Regular.Size20.DeleteArrowBack())" Title="Remove Controls By Reference" OnClick="@RemoveControls" />
         </Toolbar>
 
         <MapContainer MapId="@mapId" />
@@ -34,6 +40,9 @@
     private bool hasInterop => atlasInterop != null;
     private bool createMapDisabled => !hasInterop || map != null;
     private bool removeMapDisabled => !hasInterop || map == null;
+    private List<ControlBase>? addedControls;
+    private bool addControlsDisabled => !hasInterop || addedControls != null || map == null;
+    private bool removeControlsDisabled => !hasInterop || addedControls == null || map == null;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -80,6 +89,66 @@
 
     #region Map
 
+    private async Task AddControls()
+    {
+        try
+        {
+            var items = new List<ControlBase>
+            {
+                new FullscreenControl(),
+                new ZoomControl(),
+                new CompassControl(),
+                new PitchControl(),
+                new ScaleControl(),
+                new StyleControl(),
+                new TrafficControl(),
+                new TrafficLegendControl(),
+            };
+
+            await atlasInterop.Controls.Add(map!, items);
+            addedControls = items;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task RemoveControls()
+    {
+        try
+        {
+            var items = addedControls?.Select(c => c.Type).ToList();
+            await atlasInterop.Controls.Remove(map!, items);
+            addedControls = null;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task RemoveControlsByRef()
+    {
+        try
+        {
+            var refs = await atlasInterop.Controls.GetControls(map!);
+            await atlasInterop.Controls.RemoveControls(map!, refs);
+
+            foreach (var item in refs)
+                await item.DisposeAsync();
+
+            addedControls = null;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
     private async Task CreateMap()
     {
         try
@@ -107,6 +176,7 @@
 
             await atlasInterop.Factory.RemoveMap(map);
             map = null;
+            addedControls = null;
         }
         catch (Exception ex)
         {

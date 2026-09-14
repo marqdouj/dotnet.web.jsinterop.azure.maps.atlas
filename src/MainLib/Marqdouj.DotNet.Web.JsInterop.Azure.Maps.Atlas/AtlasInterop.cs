@@ -9,6 +9,12 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
     /// </summary>
     public interface IAtlasInterop : IAsyncDisposable
     {
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasControls"/>
+        /// </summary>
+        IAtlasControls Controls { get; }
+
         /// <summary>
         /// <inheritdoc cref="IAtlasData"/>
         /// </summary>
@@ -41,10 +47,16 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
             moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
                "import", "./_content/Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas/atlas.js").AsTask());
 
+            Controls = new AzControls(moduleTask);
             Data = new AzData(moduleTask);
             Factory = new AzFactory(moduleTask);
             Math = new AzMath(moduleTask);
         }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasControls"/>
+        /// </summary>
+        public IAtlasControls Controls { get; }
 
         /// <summary>
         /// <inheritdoc cref="IAtlasData"/>
