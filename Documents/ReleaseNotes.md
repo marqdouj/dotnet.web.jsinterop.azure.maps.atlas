@@ -4,6 +4,7 @@
 - `11.0.0-Preview-3.1`
    - `Map Controls`. You can now create/remove instances of basic atlas map controls via `AtlasInterop.Controls`.
    - `IOptions<MapConfiguration>`. Added extension method `GetValue()`.
+   - `MapConfiguration`. Now implements `ICloneable`.
 - `11.0.0-Preview-3.0`
    - `Map Instances`. You can now create/remove instances of the atlas Map via `AtlasInterop.Factory`.
 - `11.0.0-Preview-2.0`

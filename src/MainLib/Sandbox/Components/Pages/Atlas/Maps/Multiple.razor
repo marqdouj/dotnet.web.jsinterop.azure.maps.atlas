@@ -1,0 +1,253 @@
+﻿@page "/maps-multiple"
+@rendermode InteractiveServer
+@inject IOptions<MapConfiguration> Configuration
+@inject IJSRuntime JSRuntime
+@inject ILogger<Multiple> Logger
+@inject INotificationService ToastService
+
+<MapPage Title="@title">
+    <SummaryContent>
+        <FluentText As="TextTag.Paragraph">
+            This page demonstrates how to create/remove multiple map instances.
+        </FluentText>
+    </SummaryContent>
+
+    <ChildContent>
+        <FluentGrid>
+            @foreach (var manager in mapManagers)
+            {
+                <FluentGridItem>
+                    <FluentCard>
+                        <Toolbar>
+                            <FluentLabel>Map:</FluentLabel>
+                            <FluentButton Disabled="@manager.CreateMapDisabled" IconStart="@(new Icons.Regular.Size20.Add())" Title="Create Map" OnClick="@(() => CreateMap(manager))" />
+                            <FluentButton Disabled="@manager.RemoveMapDisabled" IconStart="@(new Icons.Regular.Size20.Delete())" Title="Remove Map" OnClick="@(() => RemoveMap(manager))" />
+                        </Toolbar>
+                        <MapContainer MapId="@manager.MapId" Height="400px" Width="400px" />
+                    </FluentCard>
+                </FluentGridItem>
+            }
+        </FluentGrid>
+    </ChildContent>
+</MapPage>
+
+@code {
+    private const string title = "Maps - Multiple";
+    private DotNetObjectReference<ComponentBase>? dotNetRef;
+    private AtlasInterop atlasInterop = default!;
+    private MapConfiguration? config;
+    private List<MapManager> mapManagers = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            config = Configuration.GetValue();
+            atlasInterop = new(JSRuntime);
+            dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
+            var mapManagerA = new MapManager(Logger, ToastService, atlasInterop, "mapA", dotNetRef, config);
+            var mapManagerB = new MapManager(Logger, ToastService, atlasInterop, "mapB", dotNetRef, config);
+            mapManagerB.MapOptions!.Style!.Style = MapStyle.night;
+            mapManagers.AddRange([mapManagerA, mapManagerB]);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                foreach (var manager in mapManagers)
+                {
+                    await manager.CreateMap();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Initialization caused an exception.");
+                await ToastService.ShowError("Initialization caused an exception.");
+            }
+            finally
+            {
+                StateHasChanged();
+            }
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            dotNetRef?.Dispose();
+
+            foreach (var manager in mapManagers)
+            {
+                await manager.DisposeAsync();
+            }
+
+            if (atlasInterop != null)
+                await atlasInterop.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+
+    #region Map
+
+    private async Task CreateMap(MapManager mapManager)
+    {
+        try
+        {
+            await mapManager.CreateMap();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task RemoveMap(MapManager mapManager)
+    {
+        try
+        {
+            await mapManager.RemoveMap();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    [JSInvokable]
+    public async Task NotifyMapEvent(MapEventArgs e)
+    {
+        await Task.CompletedTask;
+        await ToastService.ShowInfo($"MapEvent: {e.MapId} : {e.Type}");
+    }
+
+    private class MapManager : IAsyncDisposable
+    {
+        public MapManager(
+            ILogger logger,
+            INotificationService notificationService,
+            AtlasInterop atlasInterop,
+            string mapId,
+            DotNetObjectReference<ComponentBase> dotNetRef,
+            MapConfiguration config,
+            List<ControlBase>? controls = null)
+        {
+            this.logger = logger;
+            this.toastService = notificationService;
+            this.atlasInterop = atlasInterop;
+            this.MapId = mapId;
+            this.dotNetRef = dotNetRef;
+            this.config = config = (MapConfiguration)config.Clone();
+            this.controls = controls ??
+                new List<ControlBase>
+                {
+                    new FullscreenControl(),
+                    new ZoomControl(),
+                    new CompassControl(),
+                    new PitchControl(),
+                    new ScaleControl(),
+                    new StyleControl(),
+                    new TrafficControl(),
+                    new TrafficLegendControl(),
+                };
+        }
+
+        private readonly ILogger logger;
+        private readonly INotificationService toastService;
+        private DotNetObjectReference<ComponentBase> dotNetRef;
+        private readonly MapConfiguration config;
+        private readonly List<ControlBase> controls;
+        private AtlasInterop atlasInterop { get; set; }
+        private Map? map;
+
+        public bool CreateMapDisabled => !hasInterop || map != null;
+        public bool RemoveMapDisabled => !hasInterop || map == null;
+        private bool hasInterop => atlasInterop != null;
+
+        public string MapId { get; }
+        public MapOptions? MapOptions { get; set; } = MapExtensions.GetDefaultMapOptions();
+
+        public async Task CreateMap()
+        {
+            try
+            {
+                if (map != null)
+                    return;
+
+                config.MapOptions = MapOptions;
+                map = await atlasInterop.Factory.CreateMap(dotNetRef, MapId, config);
+                await AddControls();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, null);
+                await toastService.ShowError(ex.Message);
+            }
+        }
+
+        public async Task RemoveMap()
+        {
+            try
+            {
+                if (map == null)
+                    return;
+
+                await atlasInterop.Factory.RemoveMap(map);
+                map = null;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, null);
+                await toastService.ShowError(ex.Message);
+            }
+        }
+
+        private async Task AddControls()
+        {
+            try
+            {
+                if (map == null) return;
+
+                var items = new List<ControlBase>
+                {
+                    new FullscreenControl(),
+                    new ZoomControl(),
+                    new CompassControl(),
+                    new PitchControl(),
+                    new ScaleControl(),
+                    new StyleControl(),
+                    new TrafficControl(),
+                    new TrafficLegendControl(),
+                };
+
+                await atlasInterop.Controls.Add(map, items);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, null);
+                await toastService.ShowError(ex.Message);
+            }
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            if (map != null)
+                await map.DisposeAsync();
+        }
+    }
+
+    #endregion
+}
