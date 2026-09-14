@@ -1,7 +1,7 @@
 import * as atlas from "azure-maps-control"
 
 export class Controls {
-    public static add(map: atlas.Map, mapControls: MapControl[]) {
+    public static add(map: atlas.Map, mapControls?: MapControl[]) {
         if (!mapControls || mapControls.length == 0) {
             return;
         }
@@ -208,7 +208,7 @@ enum MapControlType {
     Zoom = "Zoom",
 }
 
-interface MapControl {
+export interface MapControl {
     type: MapControlType;
     controlOptions?: atlas.ControlOptions;
     options?: atlas.CompassControlOptions

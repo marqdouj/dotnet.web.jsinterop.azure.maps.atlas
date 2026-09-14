@@ -188,8 +188,7 @@
                     return;
 
                 config.MapOptions = MapOptions;
-                map = await atlasInterop.Factory.CreateMap(dotNetRef, MapId, config);
-                await AddControls();
+                map = await atlasInterop.Factory.CreateMap(dotNetRef, MapId, config, controls);
             }
             catch (Exception ex)
             {
@@ -207,33 +206,6 @@
 
                 await atlasInterop.Factory.RemoveMap(map);
                 map = null;
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, null);
-                await toastService.ShowError(ex.Message);
-            }
-        }
-
-        private async Task AddControls()
-        {
-            try
-            {
-                if (map == null) return;
-
-                var items = new List<ControlBase>
-                {
-                    new FullscreenControl(),
-                    new ZoomControl(),
-                    new CompassControl(),
-                    new PitchControl(),
-                    new ScaleControl(),
-                    new StyleControl(),
-                    new TrafficControl(),
-                    new TrafficLegendControl(),
-                };
-
-                await atlasInterop.Controls.Add(map, items);
             }
             catch (Exception ex)
             {

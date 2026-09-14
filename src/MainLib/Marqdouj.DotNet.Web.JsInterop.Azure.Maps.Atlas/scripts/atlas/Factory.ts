@@ -1,8 +1,9 @@
 import * as atlas from "azure-maps-control"
-import { Helpers } from "../common/Helpers";
+import { Helpers } from "../common/Helpers"
+import { Controls, MapControl } from "./Controls"
 
 export class Factory {
-    public static createMap(dotNetRef: any, mapId: string, config: MapConfiguration) {
+    public static createMap(dotNetRef: any, mapId: string, config: MapConfiguration, mapControls?: MapControl[]) {
         const eventNames: CreateMapEventNames = (config as any).eventNames as CreateMapEventNames ?? {};
 
         if (Helpers.isEmptyOrNull(eventNames.error)) {
@@ -22,6 +23,8 @@ export class Factory {
                 const errorArgs: MapEventArgs = { mapId: mapId, target: MapEventTarget.Map, type: event.type, payload: payload };
                 dotNetRef.invokeMethodAsync(eventNames.error, errorArgs);
             });
+
+            Controls.add(azmap, mapControls);
 
             const readyArgs: MapEventArgs = { mapId: mapId, target: MapEventTarget.Map, type: event.type };
             dotNetRef.invokeMethodAsync(eventNames.ready, readyArgs);
