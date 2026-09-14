@@ -1,8 +1,8 @@
-﻿@page "/map-basic"
+﻿@page "/maps-basic"
 @rendermode InteractiveServer
 @inject IOptions<MapConfiguration> Configuration
 @inject IJSRuntime JSRuntime
-@inject ILogger<BasicMap> Logger
+@inject ILogger<Basic> Logger
 @inject INotificationService ToastService
 
 <MapPage Title="@title">
@@ -32,7 +32,7 @@
 
 @code {
     private const string mapId = "mapBasic";
-    private const string title = "Basic Map";
+    private const string title = "Map - Basic";
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
     private MapConfiguration? config;
@@ -51,7 +51,6 @@
             try
             {
                 config = Configuration?.Value ?? throw new Exception($"Injection of {nameof(MapConfiguration)} returned null.");
-                Debug.Assert(dotNetRef == null);
 
                 atlasInterop = new(JSRuntime);
                 dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);

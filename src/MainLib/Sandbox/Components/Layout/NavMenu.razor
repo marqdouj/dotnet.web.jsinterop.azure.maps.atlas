@@ -1,7 +1,7 @@
 ﻿@rendermode InteractiveServer
 @inject AppConfiguration AppConfig
 
-<FluentNav Id="main-menu" Width="260px">
+<FluentNav @ref="@nav" Id="main-menu" Width="260px">
     @if (AppConfig.IsDevelopment && showDev)
     {
         <FluentNavItem Href="design" IconRest="@((new Icons.Regular.Size20.DesignIdeas()))">Design</FluentNavItem>
@@ -9,8 +9,8 @@
 
     <FluentNavItem Href="/" Match="NavLinkMatch.All" IconRest="@(new Icons.Regular.Size20.Home())" IconActive="@(new Icons.Filled.Size20.Home())">Home</FluentNavItem>
 
-    <FluentNavCategory Title="Maps" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
-        <FluentNavItem Href="map-basic" IconRest="@((new Icons.Regular.Size20.Map()))">Basic Map</FluentNavItem>
+    <FluentNavCategory Id="maps" Title="Maps" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
+        <FluentNavItem Href="maps-basic" IconRest="@((new Icons.Regular.Size20.Map()))">Basic</FluentNavItem>
     </FluentNavCategory>
 
     <FluentNavCategory Title="Modules" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
@@ -25,5 +25,14 @@
 </FluentNav>
 
 @code {
+    FluentNav nav = default!;
     private bool showDev = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await nav.ExpandCategoryAsync("maps");
+        }
+    }
 }

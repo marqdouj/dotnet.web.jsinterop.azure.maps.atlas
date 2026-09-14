@@ -9,7 +9,6 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
     /// </summary>
     public interface IAtlasInterop : IAsyncDisposable
     {
-
         /// <summary>
         /// <inheritdoc cref="IAtlasControls"/>
         /// </summary>
