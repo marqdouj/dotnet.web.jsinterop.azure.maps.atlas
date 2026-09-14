@@ -23,8 +23,10 @@
 
 ## Release Notes (Current)
 - `11.0.0-Preview-3.1`
-   - `Map Controls`. You can now create/remove instances of basic atlas map controls via `AtlasInterop.Controls`.
+   - `Map Controls`. You can now interact with basic map controls via `AtlasInterop.Controls`.
    - `IOptions<MapConfiguration>`. Added extension method `GetValue()`.
    - `MapConfiguration`. Now implements `ICloneable`.
+   - `Map Sources`. You can now interact with basic map sources via `AtlasInterop.Sources`.
+   - `Map Layers`. You can now interact with basic map layers via `AtlasInterop.Layers`.
 
 ## [Release Notes (All)](Documents/ReleaseNotes.md)
