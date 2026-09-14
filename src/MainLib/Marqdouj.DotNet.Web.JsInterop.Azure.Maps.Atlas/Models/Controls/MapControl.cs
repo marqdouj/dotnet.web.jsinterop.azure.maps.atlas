@@ -108,7 +108,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Controls
     /// <summary>
     /// Base class for a map control.
     /// </summary>
-    public abstract class ControlBase : ICloneable
+    public abstract class MapControl : ICloneable
     {
         /// <summary>
         /// <see cref="ControlType"/>

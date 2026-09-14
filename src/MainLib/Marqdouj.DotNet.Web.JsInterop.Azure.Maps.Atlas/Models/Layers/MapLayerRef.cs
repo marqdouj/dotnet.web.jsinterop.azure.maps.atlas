@@ -1,12 +1,13 @@
-﻿using Microsoft.JSInterop;
+﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common;
+using Microsoft.JSInterop;
 
-namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Controls
+namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
 {
     /// <summary>
-    /// <see cref="IJSObjectReference"/> Wrapper to an atlas map control.
+    /// <see cref="IJSObjectReference"/> Wrapper to an atlas map layer.
     /// Ensure this object is disposed when done using the reference.
     /// </summary>
-    public interface IMapControlRef : IAsyncDisposable
+    public interface IMapLayerRef : IAsyncDisposable
     {
         /// <summary>
         /// <see cref="Map.MapId"/>
@@ -14,9 +15,14 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Controls
         string MapId { get; }
 
         /// <summary>
-        /// <see cref="ControlType"/>. 
+        /// <see cref="JsInteropIdBase.Id"/>
         /// </summary>
-        ControlType Type { get; }
+        string LayerId { get; }
+
+        /// <summary>
+        /// <see cref="LayerType"/>. 
+        /// </summary>
+        LayerType Type { get; }
 
         /// <summary>
         /// <see cref="IJSObjectReference"/> to the atlas map control.
@@ -24,11 +30,13 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Controls
         IJSObjectReference JsReference { get; }
     }
 
-    internal class MapControlRef : IMapControlRef
+    internal class MapLayerRef : IMapLayerRef
     {
         public string MapId { get; set; } = default!;
 
-        public ControlType Type { get; set; }
+        public string LayerId { get; } = default!;
+
+        public LayerType Type { get; set; }
 
         public IJSObjectReference JsReference { get; set; } = default!;
 

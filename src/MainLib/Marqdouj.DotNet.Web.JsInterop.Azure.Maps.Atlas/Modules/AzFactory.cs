@@ -31,7 +31,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// <param name="config"><see cref="MapConfiguration"/></param>
         /// <param name="controls">Controls to add to the map (optional).</param>
         /// <returns></returns>
-        ValueTask<Map> CreateMap<T>(DotNetObjectReference<T> dotNetRef, string mapId, MapConfiguration config, IEnumerable<ControlBase>? controls = null) where T : class;
+        ValueTask<Map> CreateMap<T>(DotNetObjectReference<T> dotNetRef, string mapId, MapConfiguration config, IEnumerable<MapControl>? controls = null) where T : class;
         
         /// <summary>
         /// Removes and disposes the atlas.Map and the Map instance.
@@ -45,7 +45,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = moduleTask;
 
-        public async ValueTask<Map> CreateMap<T>(DotNetObjectReference<T> dotNetRef, string mapId, MapConfiguration configuration, IEnumerable<ControlBase>? controls = null) where T : class
+        public async ValueTask<Map> CreateMap<T>(DotNetObjectReference<T> dotNetRef, string mapId, MapConfiguration configuration, IEnumerable<MapControl>? controls = null) where T : class
         {
             var module = await moduleTask.Value;
             var mapRef = await module.InvokeAsync<IJSObjectReference>(GetJsInteropMethod(), dotNetRef, mapId, configuration, controls?.Cast<object>())

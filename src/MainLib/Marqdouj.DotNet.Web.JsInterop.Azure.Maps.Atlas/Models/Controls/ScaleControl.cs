@@ -6,7 +6,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Controls
     /// <summary>
     /// <see cref="ControlType.Scale"/>
     /// </summary>
-    public class ScaleControl : ControlBase
+    public class ScaleControl : MapControl
     {
         /// <summary>
         /// 

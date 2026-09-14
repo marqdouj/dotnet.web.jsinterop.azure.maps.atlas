@@ -3,7 +3,7 @@
     /// <summary>
     /// <see cref="ControlType.Fullscreen"/>
     /// </summary>
-    public class FullscreenControl : ControlBase
+    public class FullscreenControl : MapControl
     {
         /// <summary>
         /// 

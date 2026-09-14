@@ -1,8 +1,5 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
 {

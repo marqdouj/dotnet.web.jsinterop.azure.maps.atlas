@@ -3,7 +3,7 @@
     /// <summary>
     /// <see cref="ControlType.Compass"/>
     /// </summary>
-    public class CompassControl : ControlBase
+    public class CompassControl : MapControl
     {
         /// <summary>
         /// 

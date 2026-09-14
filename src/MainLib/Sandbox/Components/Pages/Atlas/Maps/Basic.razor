@@ -38,7 +38,7 @@
     private bool hasInterop => atlasInterop != null;
     private bool createMapDisabled => !hasInterop || map != null;
     private bool removeMapDisabled => !hasInterop || map == null;
-    private List<ControlBase>? addedControls;
+    private List<MapControl>? addedControls;
     private bool addControlsDisabled => !hasInterop || addedControls != null || map == null;
     private bool removeControlsDisabled => !hasInterop || addedControls == null || map == null;
 
@@ -92,7 +92,7 @@
         {
             //This is all the supported basic controls
             //You could remove any controls that you don't want from the list.
-            var items = new List<ControlBase>
+            var items = new List<MapControl>
             {
                 new FullscreenControl(),
                 new ZoomControl(),

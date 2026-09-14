@@ -3,7 +3,7 @@
     /// <summary>
     /// <see cref="ControlType.Zoom"/>
     /// </summary>
-    public class ZoomControl : ControlBase
+    public class ZoomControl : MapControl
     {
         /// <summary>
         /// 

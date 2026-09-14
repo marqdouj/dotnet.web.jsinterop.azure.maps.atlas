@@ -143,7 +143,7 @@
             string mapId,
             DotNetObjectReference<ComponentBase> dotNetRef,
             MapConfiguration config,
-            List<ControlBase>? controls = null)
+            List<MapControl>? controls = null)
         {
             this.logger = logger;
             this.toastService = notificationService;
@@ -152,7 +152,7 @@
             this.dotNetRef = dotNetRef;
             this.config = config = (MapConfiguration)config.Clone();
             this.controls = controls ??
-                new List<ControlBase>
+                new List<MapControl>
                 {
                     new FullscreenControl(),
                     new ZoomControl(),
@@ -169,7 +169,7 @@
         private readonly INotificationService toastService;
         private DotNetObjectReference<ComponentBase> dotNetRef;
         private readonly MapConfiguration config;
-        private readonly List<ControlBase> controls;
+        private readonly List<MapControl> controls;
         private AtlasInterop atlasInterop { get; set; }
         private Map? map;
 

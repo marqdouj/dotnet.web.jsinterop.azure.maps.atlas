@@ -7,6 +7,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         BoundingBox,
         Controls,
         Factory,
+        Layers,
         Math,
         MercatorPoint,
         Position,

@@ -3,7 +3,7 @@
     /// <summary>
     /// <see cref="ControlType.Traffic"/>
     /// </summary>
-    public class TrafficControl : ControlBase
+    public class TrafficControl : MapControl
     {
         /// <summary>
         /// 

@@ -3,7 +3,7 @@
     /// <summary>
     /// <see cref="ControlType.Pitch"/>
     /// </summary>
-    public class PitchControl : ControlBase
+    public class PitchControl : MapControl
     {
         /// <summary>
         /// 

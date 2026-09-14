@@ -7,7 +7,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Controls
     /// <summary>
     /// <see cref="ControlType.Style"/>
     /// </summary>
-    public class StyleControl : ControlBase
+    public class StyleControl : MapControl
     {
         /// <summary>
         /// 

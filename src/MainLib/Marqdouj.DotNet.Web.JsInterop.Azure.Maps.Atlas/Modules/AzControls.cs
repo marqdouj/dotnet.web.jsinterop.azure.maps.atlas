@@ -16,7 +16,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// <param name="map"><see cref="Map"/></param>
         /// <param name="controls">List of controls to add.</param>
         /// <returns></returns>
-        ValueTask Add(Map map, IEnumerable<ControlBase> controls);
+        ValueTask Add(Map map, IEnumerable<MapControl> controls);
 
         /// <summary>
         /// Gets control references from the map based on <see cref="ControlType"/>.
@@ -47,7 +47,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = moduleTask;
 
-        public async ValueTask Add(Map map, IEnumerable<ControlBase> controls)
+        public async ValueTask Add(Map map, IEnumerable<MapControl> controls)
         {
             var module = await moduleTask.Value;
             await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, controls.Cast<object>());

@@ -3,7 +3,7 @@
     /// <summary>
     /// <see cref="ControlType.TrafficLegend"/>
     /// </summary>
-    public class TrafficLegendControl : ControlBase
+    public class TrafficLegendControl : MapControl
     {
         /// <summary>
         /// 
