@@ -22,7 +22,7 @@
 - `MapContainer`. Helper component to display the map. Use is not required, but recommended for simple control of the map display.
 
 ## Release Notes (Current)
-- `11.0.0-Preview-3.0`
-   - `Map Instances`. You can now create/remove instances of the atlas.Map via `AtlasInterop.Factory`.
+- `11.0.0-Preview-3.1`
+   - `Map Controls`. You can now create/remove instances of basic atlas map controls via `AtlasInterop.Controls`.
 
 ## [Release Notes (All)](Documents/ReleaseNotes.md)
