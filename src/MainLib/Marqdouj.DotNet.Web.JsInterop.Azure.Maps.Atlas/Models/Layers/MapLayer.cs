@@ -1,4 +1,5 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common;
+using Microsoft.JSInterop;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -65,5 +66,17 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
         /// <inheritdoc cref="LayerType"/>
         /// </summary>
         public abstract LayerType Type { get; }
+
+        /// <summary>
+        ///  Optionally specify a layer id to insert the new layer(s) before it.
+        ///  Specify "labels" to place the new layer(s) just below the default label layer,
+        ///  which will allow the labels to be visible on top of the custom layer.
+        /// </summary>
+        public string? Before { get; set; }
+
+        /// <summary>
+        /// The id or <see cref="IJSObjectReference"/> of a source which the layer will render.
+        /// </summary>
+        public object? Source { get; set; }
     }
 }

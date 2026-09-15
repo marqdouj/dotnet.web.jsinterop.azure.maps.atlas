@@ -3,6 +3,7 @@ using Microsoft.Identity.Client;
 
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration;
 using Microsoft.JSInterop;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Sandbox
 {
@@ -40,6 +41,9 @@ namespace Sandbox
         {
             config.AuthOptions.AuthType = AuthenticationType.subscriptionKey;
             config.AuthOptions.SubscriptionKey = configuration["AzureMaps:SubscriptionKey"];
+
+            if (isDevelopment)
+                config.JsLogLevel = LogLevel.Trace; //(Optional)Set log level to Trace for development.
         }
 
         private static void ConfigureForSasToken(IConfiguration configuration, MapConfiguration config)

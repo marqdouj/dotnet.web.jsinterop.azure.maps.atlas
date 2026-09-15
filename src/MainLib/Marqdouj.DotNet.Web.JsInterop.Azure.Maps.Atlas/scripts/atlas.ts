@@ -5,3 +5,4 @@ export { Layers } from "./atlas/Layers"
 export { Math } from "./atlas/Math";
 export { MercatorPoint } from "./atlas/data/MercatorPoint"
 export { Position } from "./atlas/data/Position"
+export { Sources } from "./atlas/Sources"

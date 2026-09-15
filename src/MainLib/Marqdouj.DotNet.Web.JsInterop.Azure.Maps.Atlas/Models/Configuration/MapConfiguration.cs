@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration
 {
@@ -58,6 +60,15 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration
         /// controls, display settings, and interaction modes. If set to <see langword="null"/>, default map options
         /// will be used.</remarks>
         public MapOptions? MapOptions { get; set; }
+
+        /// <summary>
+        /// The minimum log level for messages to be written to the browser console in the js scripts.
+        /// This value can always be adjusted later using <see cref="IAtlasInterop.Factory"/>.<see cref="IAtlasFactory.SetLogLevel(LogLevel)"/>.
+        /// Default is <see cref="LogLevel.Information"/>.
+        /// </summary>
+        /// <remarks>Messages with a severity lower than the specified log level will be ignored. Adjust
+        /// this property to control the verbosity of logging output to the browser console.</remarks>
+        public LogLevel? JsLogLevel { get; set; }
 
         /// <summary>
         /// <inheritdoc/>

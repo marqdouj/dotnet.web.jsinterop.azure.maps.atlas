@@ -11,6 +11,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         Math,
         MercatorPoint,
         Position,
+        Sources,
     }
 
     internal static class ModuleExtensions

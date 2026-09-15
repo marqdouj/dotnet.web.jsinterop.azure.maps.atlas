@@ -1,5 +1,7 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Controls;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Sources;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
 
@@ -24,7 +26,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// <param name="map"><see cref="Map"/></param>
         /// <param name="controls">List of control types to get. If null then all <see cref="ControlType"/> controls will be returned.</param>
         /// <returns></returns>
-        ValueTask<List<IMapControlRef>> GetControls(Map map, IEnumerable<ControlType>? controls = null);
+        ValueTask<List<IMapObjectReference>> GetControls(Map map, IEnumerable<ControlType>? controls = null);
 
         /// <summary>
         /// Remove controls from the map.
@@ -40,7 +42,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// <param name="map"></param>
         /// <param name="controls"></param>
         /// <returns></returns>
-        ValueTask RemoveControls(Map map, IEnumerable<IMapControlRef> controls);
+        ValueTask RemoveControls(Map map, IEnumerable<IMapObjectReference> controls);
     }
 
     internal class AzControls(Lazy<Task<IJSObjectReference>> moduleTask) : IAtlasControls
@@ -59,17 +61,19 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
             await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, controls);
         }
 
-        public async ValueTask RemoveControls(Map map, IEnumerable<IMapControlRef> controls)
+        public async ValueTask RemoveControls(Map map, IEnumerable<IMapObjectReference> controls)
         {
+            controls.ValidateReferenceType<ControlType>();
+
             var module = await moduleTask.Value;
             await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, controls.Select(c => c.JsReference));
         }
 
-        public async ValueTask<List<IMapControlRef>> GetControls(Map map, IEnumerable<ControlType>? controls = null)
+        public async ValueTask<List<IMapObjectReference>> GetControls(Map map, IEnumerable<ControlType>? controls = null)
         {
             var module = await moduleTask.Value;
-            var items = await module.InvokeAsync<List<MapControlRef>>(GetJsInteropMethod(), map.MapReference, map.MapId, controls);
-            return [.. items.Cast<IMapControlRef>()];
+            var items = await module.InvokeAsync<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, controls);
+            return [.. items.Cast<IMapObjectReference>()];
         }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")

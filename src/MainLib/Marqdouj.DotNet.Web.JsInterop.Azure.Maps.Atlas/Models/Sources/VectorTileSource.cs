@@ -3,7 +3,7 @@
     /// <summary>
     /// <see cref="SourceType.VectorTile"/>
     /// </summary>
-    public class VectorTileSource : SourceBase
+    public class VectorTileSource : MapSource
     {
         /// <summary>
         /// <inheritdoc cref="SourceType"/>

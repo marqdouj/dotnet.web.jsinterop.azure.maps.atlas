@@ -28,6 +28,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         /// <inheritdoc cref="IAtlasMath"/>
         /// </summary>
         IAtlasMath Math { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasSources"/>
+        /// </summary>
+        IAtlasSources Sources { get; }
     }
 
     /// <summary>
@@ -50,6 +55,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
             Data = new AzData(moduleTask);
             Factory = new AzFactory(moduleTask);
             Math = new AzMath(moduleTask);
+            Sources = new AzSources(moduleTask);
         }
 
         /// <summary>
@@ -71,6 +77,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         /// <inheritdoc cref="IAtlasMath"/>
         /// </summary>
         public IAtlasMath Math { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasSources"/>
+        /// </summary>
+        public IAtlasSources Sources { get; }
 
         /// <summary>
         /// <inheritdoc/>

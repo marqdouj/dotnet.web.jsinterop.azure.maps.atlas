@@ -1,5 +1,166 @@
 import * as atlas from "azure-maps-control"
+import { MapObjectReference } from "../common"
+import { Helpers } from "../common/Helpers";
 
 export class Layers {
+    public static add(map: atlas.Map, mapLayers: MapLayer[], getReferences: boolean = false) {
+        const results: MapObjectReference[] = [];
+        const mapId = map.getMapContainer().id;
 
+        mapLayers ?? [];
+
+        mapLayers.forEach((ml) => {
+            let lyr: atlas.layer.Layer | undefined = undefined;
+
+            switch (ml.type) {
+                case LayerType.Bubble:
+                    lyr = new atlas.layer.BubbleLayer(ml.source, ml.id, ml.options);
+                    break;
+                case LayerType.HeatMap:
+                    lyr = new atlas.layer.HeatMapLayer(ml.source, ml.id, ml.options);
+                    break;
+                case LayerType.Image:
+                    lyr = new atlas.layer.ImageLayer(ml.options, ml.id);
+                    break;
+                case LayerType.Line:
+                    lyr = new atlas.layer.LineLayer(ml.source, ml.id, ml.options);
+                    break;
+                case LayerType.Polygon:
+                    lyr = new atlas.layer.PolygonLayer(ml.source, ml.id, ml.options);
+                    break;
+                case LayerType.PolygonExtrusion:
+                    lyr = new atlas.layer.PolygonExtrusionLayer(ml.source, ml.id, ml.options);
+                    break;
+                case LayerType.Symbol:
+                    lyr = new atlas.layer.SymbolLayer(ml.source, ml.id, this.#resolveSymbolLayerOptions(ml.options));
+                    break;
+                case LayerType.Tile:
+                    lyr = new atlas.layer.TileLayer(ml.options, ml.id);
+                    break;
+                default:
+            }
+
+            if (lyr) {
+                map.layers.add(lyr, ml.before);
+                if (getReferences)
+                    results.push(this.#getReference(mapId, lyr, ml.id));
+            }
+        });
+
+        return results;
+    }
+
+    public static getLayers(map: atlas.Map) {
+        const results: MapObjectReference[] = [];
+        const mapId = map.getMapContainer().id;
+        const layers = map.layers.getLayers();
+
+        layers.forEach((lyr) => {
+            results.push(this.#getReference(mapId, lyr));
+        });
+
+        return results;
+    }
+
+    public static getLayersById(map: atlas.Map, ids: string[]) {
+        const results: MapObjectReference[] = [];
+        const mapId = map.getMapContainer().id;
+
+        ids.forEach((id) => {
+            results.push(this.#getReference(mapId, map.layers.getLayerById(id), id));
+        });
+
+        return results;
+    }
+
+    public static remove(map: atlas.Map, layers: atlas.layer.Layer[]) {
+        map.layers.remove(layers);
+    }
+
+    public static removeById(map: atlas.Map, ids: string[]) {
+        map.layers.remove(ids);
+    }
+
+    static #resolveSymbolLayerOptions(layerOptions: atlas.SymbolLayerOptions): atlas.SymbolLayerOptions | undefined {
+        if (!layerOptions)
+            return;
+
+        const result = { ...layerOptions };
+        const iconOptions = result.iconOptions;
+
+        if (!iconOptions) return result;
+
+        const imageId = iconOptions.imageId;
+        if (Helpers.isNotEmptyOrNull(imageId)) {
+            iconOptions.image = imageId;
+        }
+
+        const rotationSpec = iconOptions.rotationSpecification
+        if (rotationSpec) {
+            iconOptions.rotation = rotationSpec;
+        }
+
+        return result;
+    }
+
+    static #getReference(mapId: string, layer?: atlas.layer.Layer, layerId: string = "") {
+        const type = this.#getLayerType(layer);
+        const dnr = !layer ? null : DotNet.createJSObjectReference(layer);
+        let id = layer?.getId();
+        if (Helpers.isEmptyOrNull(id)) {
+            id = layerId;
+        }
+        const msf: MapObjectReference = { mapId: mapId, id: id, type: type, jsReference: dnr };
+
+        return msf;
+    }
+
+    static #getLayerType(layer: atlas.layer.Layer | undefined): string | undefined {
+        if (!layer)
+            return;
+
+        if (layer instanceof atlas.layer.BubbleLayer)
+            return LayerType.Bubble;
+
+        if (layer instanceof atlas.layer.HeatMapLayer)
+            return LayerType.HeatMap;
+
+        if (layer instanceof atlas.layer.ImageLayer)
+            return LayerType.Image;
+
+        if (layer instanceof atlas.layer.LineLayer)
+            return LayerType.Line;
+
+        if (layer instanceof atlas.layer.PolygonLayer)
+            return LayerType.Polygon;
+
+        if (layer instanceof atlas.layer.PolygonExtrusionLayer)
+            return LayerType.PolygonExtrusion;
+
+        if (layer instanceof atlas.layer.SymbolLayer)
+            return LayerType.Symbol;
+
+        if (layer instanceof atlas.layer.TileLayer)
+            return LayerType.Tile;
+    }
+}
+
+enum LayerType {
+    Bubble = 'Bubble',
+    HeatMap = 'HeatMap',
+    Image = 'Image',
+    Line = 'Line',
+    Polygon = 'Polygon',
+    PolygonExtrusion = 'PolygonExtrusion',
+    Symbol = 'Symbol',
+    Tile = 'Tile',
+}
+
+interface MapLayer {
+    mapId: string;
+    id: string;
+    source?: any;
+    type: LayerType;
+    before?: string;
+    options?: any;
 }

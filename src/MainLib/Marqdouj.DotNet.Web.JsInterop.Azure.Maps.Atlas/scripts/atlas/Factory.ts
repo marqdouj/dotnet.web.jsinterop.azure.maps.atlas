@@ -1,8 +1,17 @@
 import * as atlas from "azure-maps-control"
 import { Helpers } from "../common/Helpers"
 import { Controls, MapControl } from "./Controls"
+import { Logger, LogLevel } from "../common/Logger"
 
 export class Factory {
+    public static setLogLevel(logLevel: LogLevel) {
+        if (Logger.currentLevel === logLevel) return;
+
+        const previousLevel = Logger.currentLevel;
+        Logger.currentLevel = logLevel;
+        Logger.logMessage("Setting LogLevel", LogLevel.Information, `LogLevel was [${LogLevel[previousLevel]}]. LogLevel set to [${LogLevel[Logger.currentLevel]}].`);
+    }
+
     public static createMap(dotNetRef: any, mapId: string, config: MapConfiguration, mapControls?: MapControl[]) {
         const eventNames: CreateMapEventNames = (config as any).eventNames as CreateMapEventNames ?? {};
 

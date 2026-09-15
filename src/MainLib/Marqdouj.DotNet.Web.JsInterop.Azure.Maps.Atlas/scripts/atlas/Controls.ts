@@ -1,4 +1,5 @@
 import * as atlas from "azure-maps-control"
+import { MapObjectReference } from "../common"
 
 export class Controls {
     public static add(map: atlas.Map, mapControls?: MapControl[]) {
@@ -109,8 +110,9 @@ export class Controls {
         });
     }
 
-    public static getControls(map: atlas.Map, mapId: string, mapControls: MapControlType[]) {
-        const results: MapControlRef[] = [];
+    public static getControls(map: atlas.Map, mapControls: MapControlType[]) {
+        const results: MapObjectReference[] = [];
+        const mapId = map.getMapContainer().id;
         const items = map.controls.getControls();
 
         items.forEach((c) => {
@@ -152,7 +154,7 @@ export class Controls {
             }
 
             if (addControl) {
-                const mc: MapControlRef = { mapId: mapId, type: type, jsReference: DotNet.createJSObjectReference(c) };
+                const mc: MapObjectReference = { mapId: mapId, type: type, jsReference: DotNet.createJSObjectReference(c) };
                 results.push(mc);
             }
         });
@@ -218,10 +220,4 @@ export interface MapControl {
     | atlas.StyleControlOptions
     | atlas.TrafficControlOptions
     | atlas.ZoomControlOptions;
-}
-
-interface MapControlRef {
-    mapId: string;
-    type: string;
-    jsReference: any;
 }

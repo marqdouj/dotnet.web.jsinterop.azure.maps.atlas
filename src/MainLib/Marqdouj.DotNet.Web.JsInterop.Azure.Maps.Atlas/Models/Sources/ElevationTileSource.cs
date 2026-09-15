@@ -3,7 +3,7 @@
     /// <summary>
     /// <see cref="SourceType.ElevationTile"/>
     /// </summary>
-    public class ElevationTileSource : SourceBase
+    public class ElevationTileSource : MapSource
     {
         /// <summary>
         /// <inheritdoc cref="SourceType"/>

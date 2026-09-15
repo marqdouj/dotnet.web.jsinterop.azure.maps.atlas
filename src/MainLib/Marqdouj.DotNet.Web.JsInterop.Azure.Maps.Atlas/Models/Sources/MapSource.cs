@@ -29,7 +29,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Sources
     /// <summary>
     /// Base class for a map layer source.
     /// </summary>
-    public abstract class SourceBase : JsInteropIdBase
+    public abstract class MapSource : JsInteropIdBase
     {
         /// <summary>
         /// <inheritdoc cref="SourceType"/>

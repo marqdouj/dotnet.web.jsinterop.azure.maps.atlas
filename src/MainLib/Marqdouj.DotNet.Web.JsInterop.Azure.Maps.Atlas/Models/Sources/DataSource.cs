@@ -3,7 +3,7 @@
     /// <summary>
     /// <see cref="SourceType.Data"/>
     /// </summary>
-    public class DataSource : SourceBase
+    public class DataSource : MapSource
     {
         /// <summary>
         /// <inheritdoc cref="SourceType"/>
