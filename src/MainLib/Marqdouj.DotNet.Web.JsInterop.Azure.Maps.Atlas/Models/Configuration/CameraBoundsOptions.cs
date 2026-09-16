@@ -43,6 +43,22 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration
         /// </summary>
         public Padding? Padding { get; set; }
 
+        #region Setting Only
+
+        /// <summary>
+        /// <inheritdoc cref="CameraOptions.Bearing"/>.
+        /// </summary>
+        /// <remarks>This value is used only when setting/updating the map bounds after the map has been created.</remarks>
+        public double? Bearing { get; set; }
+
+        /// <summary>
+        /// <inheritdoc cref="CameraOptions.Pitch"/>
+        /// </summary>
+        /// <remarks>This value is used only when setting/updating the map bounds after the map has been created.</remarks>
+        public double? Pitch { get; set; }
+
+        #endregion
+
         /// <summary>
         /// <inheritdoc/>
         /// </summary>

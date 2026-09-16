@@ -1,23 +1,27 @@
-﻿@page "/map-basic"
+﻿@page "/maps-basic"
 @rendermode InteractiveServer
 @inject IOptions<MapConfiguration> Configuration
 @inject IJSRuntime JSRuntime
-@inject ILogger<BasicMap> Logger
+@inject ILogger<Basic> Logger
 @inject INotificationService ToastService
 
 <MapPage Title="@title">
     <SummaryContent>
         <FluentText As="TextTag.Paragraph">
-            This page demonstrates how to create a basic map.
-            <br />
-            The map is intialized to a specific camera setting (location, zoom, style etc.).
+            This page demonstrates how to create/remove a map instance, and its controls.
         </FluentText>
     </SummaryContent>
 
     <ChildContent>
         <Toolbar>
+            <FluentLabel>Map:</FluentLabel>
             <FluentButton Disabled="@createMapDisabled" IconStart="@(new Icons.Regular.Size20.Add())" Title="Create Map" OnClick="@CreateMap" />
             <FluentButton Disabled="@removeMapDisabled" IconStart="@(new Icons.Regular.Size20.Delete())" Title="Remove Map" OnClick="@RemoveMap" />
+            <FluentSpacer Width="10px"/>
+            <FluentLabel>Controls:</FluentLabel>
+            <FluentButton Disabled="@addControlsDisabled" IconStart="@(new Icons.Regular.Size20.Add())" Title="Add Controls" OnClick="@AddControls" />
+            <FluentButton Disabled="@removeControlsDisabled" IconStart="@(new Icons.Regular.Size20.Delete())" Title="Remove Controls" OnClick="@RemoveControls" />
+            <FluentButton Disabled="@removeControlsDisabled" IconStart="@(new Icons.Regular.Size20.DeleteArrowBack())" Title="Remove Controls By Reference" OnClick="@RemoveControls" />
         </Toolbar>
 
         <MapContainer MapId="@mapId" />
@@ -26,7 +30,7 @@
 
 @code {
     private const string mapId = "mapBasic";
-    private const string title = "Basic Map";
+    private const string title = "Maps - Basic";
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
     private MapConfiguration? config;
@@ -34,6 +38,9 @@
     private bool hasInterop => atlasInterop != null;
     private bool createMapDisabled => !hasInterop || map != null;
     private bool removeMapDisabled => !hasInterop || map == null;
+    private List<MapControl>? addedControls;
+    private bool addControlsDisabled => !hasInterop || addedControls != null || map == null;
+    private bool removeControlsDisabled => !hasInterop || addedControls == null || map == null;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -41,8 +48,7 @@
         {
             try
             {
-                config = Configuration?.Value ?? throw new Exception($"Injection of {nameof(MapConfiguration)} returned null.");
-                Debug.Assert(dotNetRef == null);
+                config = Configuration?.GetValue(LogLevel.Trace);
 
                 atlasInterop = new(JSRuntime);
                 dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
@@ -80,6 +86,58 @@
 
     #region Map
 
+    private async Task AddControls()
+    {
+        try
+        {
+            //This is all the supported basic controls
+            //You could remove any controls that you don't want from the list.
+            var items = MapExtensions.GetDefaultControls();
+
+            await atlasInterop.Controls.Add(map!, items);
+            addedControls = items;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task RemoveControls()
+    {
+        try
+        {
+            var items = addedControls?.Select(c => c.Type).ToList();
+            await atlasInterop.Controls.Remove(map!, items);
+            addedControls = null;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task RemoveControlsByRef()
+    {
+        try
+        {
+            var refs = await atlasInterop.Controls.GetControls(map!);
+            await atlasInterop.Controls.RemoveControls(map!, refs);
+
+            foreach (var item in refs)
+                await item.DisposeAsync();
+
+            addedControls = null;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
     private async Task CreateMap()
     {
         try
@@ -107,6 +165,7 @@
 
             await atlasInterop.Factory.RemoveMap(map);
             map = null;
+            addedControls = null;
         }
         catch (Exception ex)
         {
@@ -119,10 +178,7 @@
     public async Task NotifyMapEvent(MapEventArgs e)
     {
         await Task.CompletedTask;
-        await ToastService.ShowInfo($"MapEvent: {e.Type}");
-
-        var test = e.GetPayloadItem<ErrorPayload>("test");
-        Console.WriteLine(test?.BuildMessage());
+        await ToastService.ShowInfo($"MapEvent: {e.MapId} : {e.Type}");
     }
 
     #endregion

@@ -1,5 +1,6 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Data;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources;
 using Microsoft.JSInterop;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
@@ -9,6 +10,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
     /// </summary>
     public interface IAtlasInterop : IAsyncDisposable
     {
+        /// <summary>
+        /// <inheritdoc cref="IAtlasControls"/>
+        /// </summary>
+        IAtlasControls Controls { get; }
+
         /// <summary>
         /// <inheritdoc cref="IAtlasData"/>
         /// </summary>
@@ -20,9 +26,29 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         IAtlasFactory Factory { get; }
 
         /// <summary>
+        /// <inheritdoc cref="IAtlasFeatures"/>
+        /// </summary>
+        IAtlasFeatures Features { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasLayers"/>
+        /// </summary>
+        IAtlasLayers Layers { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasMap"/>
+        /// </summary>
+        IAtlasMap Map { get; }
+
+        /// <summary>
         /// <inheritdoc cref="IAtlasMath"/>
         /// </summary>
         IAtlasMath Math { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasSources"/>
+        /// </summary>
+        IAtlasSources Sources { get; }
     }
 
     /// <summary>
@@ -41,10 +67,20 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
             moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
                "import", "./_content/Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas/atlas.js").AsTask());
 
+            Controls = new AzControls(moduleTask);
             Data = new AzData(moduleTask);
             Factory = new AzFactory(moduleTask);
+            Features = new AzFeatures(moduleTask);
+            Layers = new AzLayers(moduleTask);
+            Map = new AzMap(moduleTask);
             Math = new AzMath(moduleTask);
+            Sources = new AzSources(moduleTask);
         }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasControls"/>
+        /// </summary>
+        public IAtlasControls Controls { get; }
 
         /// <summary>
         /// <inheritdoc cref="IAtlasData"/>
@@ -57,9 +93,29 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         public IAtlasFactory Factory { get; }
 
         /// <summary>
+        /// <inheritdoc cref="IAtlasFeatures"/>
+        /// </summary>
+        public IAtlasFeatures Features { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasLayers"/>
+        /// </summary>
+        public IAtlasLayers Layers { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasMap"/>
+        /// </summary>
+        public IAtlasMap Map { get; }
+
+        /// <summary>
         /// <inheritdoc cref="IAtlasMath"/>
         /// </summary>
         public IAtlasMath Math { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasSources"/>
+        /// </summary>
+        public IAtlasSources Sources { get; }
 
         /// <summary>
         /// <inheritdoc/>

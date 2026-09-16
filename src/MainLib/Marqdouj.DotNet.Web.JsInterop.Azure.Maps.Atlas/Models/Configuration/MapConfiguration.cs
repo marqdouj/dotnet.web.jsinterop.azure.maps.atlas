@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration
 {
@@ -7,7 +9,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration
     /// will automatically be subscibed to using the default method name of 'NotifyMapEvent'.
     /// This class allows you to override the default event name.
     /// </summary>
-    public class CreateMapEventNames
+    public class CreateMapEventNames : ICloneable
     {
         /// <summary>
         /// The event name used for the atlas.Map 'ready' event. Default is 'NotifyMapEvent'.
@@ -18,6 +20,15 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration
         /// The event name used for the atlas.Map 'error' event. Default is 'NotifyMapEvent'.
         /// </summary>
         public string? Error { get; set; }
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns></returns>
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 
     /// <summary>
@@ -26,7 +37,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration
     /// <remarks>Use this class to specify authentication credentials and additional options required for
     /// connecting to and displaying maps within an application. The settings provided by this class are typically
     /// required for initializing map services or components.</remarks>
-    public class MapConfiguration
+    public class MapConfiguration : ICloneable
     {
         /// <summary>
         /// <inheritdoc cref="CreateMapEventNames"/>
@@ -39,7 +50,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration
         /// <remarks>Use this property to configure credentials or tokens required for map service
         /// requests. The settings specified here determine how authentication is handled when connecting to external
         /// map providers.</remarks>
-        public AuthenticationOptions AuthOptions { get; set; } = new();
+        public AuthenticationOptions AuthOptions { get => field; set => field = value ?? throw new ArgumentNullException(nameof(AuthOptions)); } = new();
 
         /// <summary>
         /// The default global options used to configure the map's behavior and appearance.
@@ -49,6 +60,29 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration
         /// controls, display settings, and interaction modes. If set to <see langword="null"/>, default map options
         /// will be used.</remarks>
         public MapOptions? MapOptions { get; set; }
+
+        /// <summary>
+        /// The minimum log level for messages to be written to the browser console in the js scripts.
+        /// This value can always be adjusted later using <see cref="IAtlasInterop.Factory"/>.<see cref="IAtlasFactory.SetLogLevel(LogLevel)"/>.
+        /// Default is <see cref="LogLevel.Information"/>.
+        /// </summary>
+        /// <remarks>Messages with a severity lower than the specified log level will be ignored. Adjust
+        /// this property to control the verbosity of logging output to the browser console.</remarks>
+        public LogLevel? JsLogLevel { get; set; }
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns></returns>
+        public object Clone()
+        {
+            var clone = (MapConfiguration)MemberwiseClone();
+            clone.EventNames = (CreateMapEventNames?)EventNames?.Clone();
+            clone.AuthOptions = (AuthenticationOptions)AuthOptions.Clone();
+            clone.MapOptions = (MapOptions?)MapOptions?.Clone();
+
+            return clone;
+        }
     }
 
     /// <summary>

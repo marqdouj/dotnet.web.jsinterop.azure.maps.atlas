@@ -5,10 +5,16 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
     internal enum JsModule
     {
         BoundingBox,
+        Controls,
+        DataSource,
         Factory,
+        Features,
+        Layers,
         Math,
+        Map,
         MercatorPoint,
         Position,
+        Sources,
     }
 
     internal static class ModuleExtensions

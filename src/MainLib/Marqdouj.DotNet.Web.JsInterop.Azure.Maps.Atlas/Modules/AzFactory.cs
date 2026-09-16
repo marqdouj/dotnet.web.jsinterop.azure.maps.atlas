@@ -1,6 +1,8 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Controls;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
 
@@ -28,9 +30,17 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// </param>
         /// <param name="mapId">/>The id of the html element where the map should be displayed.</param>
         /// <param name="config"><see cref="MapConfiguration"/></param>
+        /// <param name="controls">Controls to add to the map (optional).</param>
         /// <returns></returns>
-        ValueTask<Map> CreateMap<T>(DotNetObjectReference<T> dotNetRef, string mapId, MapConfiguration config) where T : class;
-        
+        ValueTask<Map> CreateMap<T>(DotNetObjectReference<T> dotNetRef, string mapId, MapConfiguration config, IEnumerable<MapControl>? controls = null) where T : class;
+
+        /// <summary>
+        /// Set the <see cref="LogLevel"/> for this library when logging to the browser console. Default is <see cref="LogLevel.Information"/>.
+        /// </summary>
+        /// <param name="logLevel"></param>
+        /// <returns></returns>
+        ValueTask SetLogLevel(LogLevel logLevel);
+
         /// <summary>
         /// Removes and disposes the atlas.Map and the Map instance.
         /// </summary>
@@ -43,13 +53,23 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = moduleTask;
 
-        public async ValueTask<Map> CreateMap<T>(DotNetObjectReference<T> dotNetRef, string mapId, MapConfiguration configuration) where T : class
+        public async ValueTask<Map> CreateMap<T>(DotNetObjectReference<T> dotNetRef, string mapId, MapConfiguration configuration, IEnumerable<MapControl>? controls = null) where T : class
         {
             var module = await moduleTask.Value;
-            var mapRef = await module.InvokeAsync<IJSObjectReference>(GetJsInteropMethod(), dotNetRef, mapId, configuration)
+
+            if (configuration.JsLogLevel != null)
+                await SetLogLevel((LogLevel)configuration.JsLogLevel);
+
+            var mapRef = await module.InvokeAsync<IJSObjectReference>(GetJsInteropMethod(), dotNetRef, mapId, configuration, controls?.Cast<object>().ToList())
                 ?? throw new Exception($"Failed to create an atlas.Map instance where mapId = '{mapId}'.");
 
             return new Map(mapRef, mapId);
+        }
+
+        public async ValueTask SetLogLevel(LogLevel logLevel)
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync(GetJsInteropMethod(), logLevel);
         }
 
         public async ValueTask RemoveMap(Map map)

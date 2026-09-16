@@ -1,9 +1,36 @@
-﻿using Marqdouj.DotNet.Web.JsInterop.GeoJson;
+﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common;
+using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models
 {
     internal static class ModelExtensions
     {
+        internal static void ValidateReferenceType<T>(this IMapObjectReference reference, Enum value) where T : Enum
+        {
+            ValidateReferenceType<T>([reference]);
+
+            var actualValue = Enum.Parse(typeof(T), reference.Type!);
+
+            if (actualValue.ToString() != value.ToString())
+                throw new Exception($"{nameof(IMapObjectReference)}.Type [{reference.Type}] does not match required value [{value}].");
+        }
+
+        internal static void ValidateReferenceType<T>(this IMapObjectReference reference) where T : Enum
+        {
+            ValidateReferenceType<T>([reference]);
+        }
+
+        internal static void ValidateReferenceType<T>(this IEnumerable<IMapObjectReference>? references) where T : Enum
+        {
+            if (references == null)
+                return;
+
+            var type = typeof(T);
+            var bad = references.FirstOrDefault(e => !Enum.IsDefined(type, e.Type ?? ""));
+            if (bad != null)
+                throw new Exception($"One or more {nameof(IMapObjectReference)} items in the list is not a valid '{type.Name}'.");
+        }
+
         internal static void EnsureCount(this List<double> items, int min, int? max = null, double addDefault = 0)
         {
             while (items.Count < min)

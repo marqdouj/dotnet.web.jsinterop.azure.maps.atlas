@@ -1,8 +1,14 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-3.1`
+   - `Map Controls`. You can now interact with basic map controls via `AtlasInterop.Controls`.
+   - `IOptions<MapConfiguration>`. Added extension method `GetValue()`.
+   - `MapConfiguration`. Now implements `ICloneable`.
+   - `Map Sources`. You can now interact with basic map sources via `AtlasInterop.Sources`.
+   - `Map Layers`. You can now interact with basic map layers via `AtlasInterop.Layers`.
 - `11.0.0-Preview-3.0`
-   - `Map Instances`. You can now create/remove instances of the atlas.Map via `AtlasInterop.Factory`.
+   - `Map Instances`. You can now create/remove instances of the atlas Map via `AtlasInterop.Factory`.
 - `11.0.0-Preview-2.0`
    - `Namespaces`. Changed all namespaces to match folder structure (copy and paste issue).
    - `DistanceProperties`. Renamed `distance` to `Distance`.

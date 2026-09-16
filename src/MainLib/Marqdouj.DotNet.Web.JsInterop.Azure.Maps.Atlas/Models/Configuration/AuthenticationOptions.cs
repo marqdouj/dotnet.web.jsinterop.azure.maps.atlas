@@ -36,7 +36,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration
     /// <summary>
     /// Contains information used to invoke the 'getToken' method for authentication.
     /// </summary>
-    public class AuthenticationTokenInfo
+    public class AuthenticationTokenInfo : ICloneable
     {
         /// <param name="id"><see cref="Id"/></param>
         /// <param name="identifier"><see cref="Identifier"/></param>
@@ -71,12 +71,21 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration
         /// Must be <see cref="AuthenticationType.anonymous"/> or <see cref="AuthenticationType.sas"/>.
         /// </summary>
         public AuthenticationType AuthType { get; }
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns></returns>
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 
     /// <summary>
     /// Options for specifying how the map control should authenticate with the Azure 
     /// </summary>
-    public class AuthenticationOptions
+    public class AuthenticationOptions : ICloneable
     {
         /// <summary>
         /// The authentication mechanism to be used.
@@ -130,5 +139,17 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration
         /// When a TokenInfo is assigned, a callback will be created based on <inheritdoc cref="AuthenticationTokenInfo"/>.
         /// </summary>
         public AuthenticationTokenInfo? TokenInfo { get; set; }
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns></returns>
+        public object Clone()
+        {
+            var clone = (AuthenticationOptions)MemberwiseClone();
+            clone.TokenInfo = (AuthenticationTokenInfo?)TokenInfo?.Clone();
+
+            return clone;
+        }
     }
 }
