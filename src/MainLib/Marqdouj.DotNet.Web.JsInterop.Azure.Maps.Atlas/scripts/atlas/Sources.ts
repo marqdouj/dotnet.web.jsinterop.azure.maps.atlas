@@ -5,7 +5,7 @@ import { Helpers } from "../common/Helpers";
 export class Sources {
     public static add(map: atlas.Map, mapSources: MapSource[], getReferences: boolean = false) {
         const results: MapObjectReference[] = [];
-        const mapId = map.getMapContainer().id;
+        const mapId = Helpers.getMapId(map);
 
         mapSources ?? [];
 
@@ -55,7 +55,7 @@ export class Sources {
 
     public static getSources(map: atlas.Map) {
         const results: MapObjectReference[] = [];
-        const mapId = map.getMapContainer().id;
+        const mapId = Helpers.getMapId(map);
         const sources = map.sources.getSources();
 
         sources.forEach((ds) => {
@@ -67,7 +67,7 @@ export class Sources {
 
     public static getSourcesById(map: atlas.Map, ids: string[]) {
         const results: MapObjectReference[] = [];
-        const mapId = map.getMapContainer().id;
+        const mapId = Helpers.getMapId(map);
 
         ids.forEach((srcId) => {
             results.push(this.#getReference(mapId, map.sources.getById(srcId), srcId));

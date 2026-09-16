@@ -25,6 +25,21 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         IAtlasFactory Factory { get; }
 
         /// <summary>
+        /// <inheritdoc cref="IAtlasFeatures"/>
+        /// </summary>
+        IAtlasFeatures Features { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasLayers"/>
+        /// </summary>
+        IAtlasLayers Layers { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasMap"/>
+        /// </summary>
+        IAtlasMap Map { get; }
+
+        /// <summary>
         /// <inheritdoc cref="IAtlasMath"/>
         /// </summary>
         IAtlasMath Math { get; }
@@ -54,6 +69,9 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
             Controls = new AzControls(moduleTask);
             Data = new AzData(moduleTask);
             Factory = new AzFactory(moduleTask);
+            Features = new AzFeatures(moduleTask);
+            Layers = new AzLayers(moduleTask);
+            Map = new AzMap(moduleTask);
             Math = new AzMath(moduleTask);
             Sources = new AzSources(moduleTask);
         }
@@ -72,6 +90,21 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         /// <inheritdoc cref="IAtlasFactory"/>
         /// </summary>
         public IAtlasFactory Factory { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasFeatures"/>
+        /// </summary>
+        public IAtlasFeatures Features { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasLayers"/>
+        /// </summary>
+        public IAtlasLayers Layers { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasMap"/>
+        /// </summary>
+        public IAtlasMap Map { get; }
 
         /// <summary>
         /// <inheritdoc cref="IAtlasMath"/>

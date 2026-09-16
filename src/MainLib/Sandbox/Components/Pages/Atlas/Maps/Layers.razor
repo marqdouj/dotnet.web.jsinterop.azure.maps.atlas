@@ -1,0 +1,183 @@
+﻿@page "/maps-layers"
+@rendermode InteractiveServer
+@inject IOptions<MapConfiguration> Configuration
+@inject IJSRuntime JSRuntime
+@inject ILogger<Layers> Logger
+@inject INotificationService ToastService
+@inject IMapDataService DataService
+
+<MapPage Title="@title">
+    <SummaryContent>
+        <FluentText As="TextTag.Paragraph">
+            This page demonstrates how to create/remove map layers.
+        </FluentText>
+    </SummaryContent>
+
+    <ChildContent>
+        <Toolbar>
+            <FluentLabel>Layer:</FluentLabel>
+            <FluentSelect Items="@layerTypes" TValue="LayerType" TOption="LayerType" @bind-Value:get="@selectedLayer" @bind-Value:set="@SelectedLayerChanged" />
+            <FluentButton Disabled="@createLayerDisabled" IconStart="@(new Icons.Regular.Size20.Add())" Title="Create Layer" OnClick="@CreateLayer" />
+            <FluentButton Disabled="@removeLayerDisabled" IconStart="@(new Icons.Regular.Size20.Delete())" Title="Remove Layer" OnClick="@RemoveLayer" />
+
+        </Toolbar>
+
+        <MapContainer MapId="@mapId" />
+    </ChildContent>
+</MapPage>
+
+@code {
+    private const string mapId = "mapLayers";
+    private const string title = "Maps - Layers";
+    private DotNetObjectReference<ComponentBase>? dotNetRef;
+    private AtlasInterop atlasInterop = default!;
+    private MapConfiguration? config;
+    private Map? map;
+    private MapLayer? layer;
+    private MapSource? source;
+    private readonly List<LayerType> layerTypes = Enum.GetValues<LayerType>().ToList();
+    private LayerType selectedLayer;
+    private bool hasInterop => atlasInterop != null;
+    private bool createLayerDisabled => !hasInterop || layer != null;
+    private bool removeLayerDisabled => !hasInterop || layer == null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            config = Configuration.GetValue(LogLevel.Trace);
+            atlasInterop = new(JSRuntime);
+            dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await CreateMap();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "");
+                await ToastService.ShowError(ex.Message);
+            }
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            dotNetRef?.Dispose();
+
+            if (map != null)
+                await map.DisposeAsync();
+
+            if (atlasInterop != null)
+                await atlasInterop.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+
+    #region Map
+
+    private async Task SelectedLayerChanged(LayerType value)
+    {
+        if (value == selectedLayer)
+            return;
+
+        selectedLayer = value;
+        await CreateLayer();
+    }
+
+    private async Task CreateLayer()
+    {
+        try
+        {
+            if (map == null) return;
+
+            await RemoveLayer();
+
+            var newSource = selectedLayer.GetDefaultSource();
+            if (newSource != null)
+            {
+                _ = await atlasInterop.Sources.Add(map, [newSource]);
+                _ = await selectedLayer.AddDefaultFeatures(atlasInterop, DataService, map, newSource);
+            }
+
+            var newLayer = await selectedLayer.GetDefaultLayer(DataService);
+            newLayer.Source = newSource?.Id;
+
+            _ = await atlasInterop.Layers.Add(map, [newLayer]);
+
+            source = newSource;
+            layer = newLayer;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task RemoveLayer()
+    {
+        try
+        {
+            if (map == null)
+                return;
+
+            if (layer != null)
+                await atlasInterop.Layers.RemoveById(map, [layer.Id]);
+
+            if (source != null)
+                await atlasInterop.Sources.RemoveById(map, [source.Id]);
+
+            source = null;
+            layer = null;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task CreateMap()
+    {
+        try
+        {
+            if (map != null)
+                return;
+
+            config?.MapOptions = MapExtensions.GetDefaultMapOptions();
+            map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config!);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+
+    [JSInvokable]
+    public async Task NotifyMapEvent(MapEventArgs e)
+    {
+        await Task.CompletedTask;
+        await ToastService.ShowInfo($"MapEvent: {e.MapId} : {e.Type}");
+        await CreateLayer();
+    }
+
+    #endregion
+}

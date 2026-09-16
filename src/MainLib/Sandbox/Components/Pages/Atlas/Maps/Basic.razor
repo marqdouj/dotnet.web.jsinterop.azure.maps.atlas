@@ -48,7 +48,7 @@
         {
             try
             {
-                config = Configuration?.GetValue();
+                config = Configuration?.GetValue(LogLevel.Trace);
 
                 atlasInterop = new(JSRuntime);
                 dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);

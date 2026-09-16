@@ -5,7 +5,7 @@ import { Helpers } from "../common/Helpers";
 export class Layers {
     public static add(map: atlas.Map, mapLayers: MapLayer[], getReferences: boolean = false) {
         const results: MapObjectReference[] = [];
-        const mapId = map.getMapContainer().id;
+        const mapId = Helpers.getMapId(map);
 
         mapLayers ?? [];
 
@@ -52,7 +52,7 @@ export class Layers {
 
     public static getLayers(map: atlas.Map) {
         const results: MapObjectReference[] = [];
-        const mapId = map.getMapContainer().id;
+        const mapId = Helpers.getMapId(map);
         const layers = map.layers.getLayers();
 
         layers.forEach((lyr) => {
@@ -64,7 +64,7 @@ export class Layers {
 
     public static getLayersById(map: atlas.Map, ids: string[]) {
         const results: MapObjectReference[] = [];
-        const mapId = map.getMapContainer().id;
+        const mapId = Helpers.getMapId(map);
 
         ids.forEach((id) => {
             results.push(this.#getReference(mapId, map.layers.getLayerById(id), id));

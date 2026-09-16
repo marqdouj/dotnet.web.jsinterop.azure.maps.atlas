@@ -1,7 +1,6 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers;
-using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Sources;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
 
@@ -60,7 +59,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// <param name="map"></param>
         /// <param name="layers"></param>
         /// <returns></returns>
-        ValueTask RemoveById(Map map, IEnumerable<MapSource> layers);
+        ValueTask RemoveById(Map map, IEnumerable<MapLayer> layers);
 
         /// <summary>
         /// Remove the layers from the map based on id.
@@ -118,7 +117,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
             await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, sourceIds);
         }
 
-        public async ValueTask RemoveById(Map map, IEnumerable<MapSource> layers)
+        public async ValueTask RemoveById(Map map, IEnumerable<MapLayer> layers)
         {
             var module = await moduleTask.Value;
             await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, layers.Select(e => e.Id));

@@ -1,5 +1,6 @@
 import * as atlas from "azure-maps-control"
 import { MapObjectReference } from "../common"
+import { Helpers } from "../common/Helpers";
 
 export class Controls {
     public static add(map: atlas.Map, mapControls?: MapControl[]) {
@@ -112,7 +113,7 @@ export class Controls {
 
     public static getControls(map: atlas.Map, mapControls: MapControlType[]) {
         const results: MapObjectReference[] = [];
-        const mapId = map.getMapContainer().id;
+        const mapId = Helpers.getMapId(map);
         const items = map.controls.getControls();
 
         items.forEach((c) => {

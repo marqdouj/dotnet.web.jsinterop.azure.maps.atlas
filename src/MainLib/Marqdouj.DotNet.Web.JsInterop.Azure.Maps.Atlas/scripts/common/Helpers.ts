@@ -1,4 +1,16 @@
+import * as atlas from "azure-maps-control"
+import { Logger, LogLevel } from "./Logger";
+
 export class Helpers {
+    static getMapId(map: atlas.Map) {
+        const div = map.getMapContainer();
+        if (!div) {
+            Logger.logMapMessage("mapId:?", LogLevel.Error, "Helpers.getMapId: map.getMapContainer() returned null.");
+            return "mapId:#ERROR#";
+        }
+        return div.id;
+    }
+
     //Extract a specific number of elements from an array.
     static getFirstNItems<T>(arr: T[], n: number): T[] {
         if (!Array.isArray(arr)) {
@@ -13,6 +25,16 @@ export class Helpers {
     // Type-safe property access helper
     static getValue<T, K extends keyof T>(obj: T, key: K): T[K] {
         return obj[key]
+    }
+
+    static isObjectEmptyOrNull(obj?: object): boolean {
+        if (!obj) return true;
+
+        return Object.keys(obj).length === 0;
+    }
+
+    static isObjectNotEmptyOrNull(obj?: object): boolean {
+        return !this.isObjectEmptyOrNull(obj);
     }
 
     /**
