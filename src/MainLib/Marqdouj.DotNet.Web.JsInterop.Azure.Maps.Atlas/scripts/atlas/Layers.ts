@@ -157,7 +157,6 @@ enum LayerType {
 }
 
 interface MapLayer {
-    mapId: string;
     id: string;
     source?: any;
     type: LayerType;

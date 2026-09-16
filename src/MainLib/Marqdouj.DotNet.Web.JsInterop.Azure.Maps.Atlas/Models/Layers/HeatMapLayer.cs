@@ -3,7 +3,7 @@
     /// <summary>
     /// <see cref="LayerType.HeatMap"/>
     /// </summary>
-    public class HeatMapLayer : MapLayer
+    public class HeatMapLayer : MapLayer<HeatMapLayerOptions>
     {
         /// <summary>
         /// <inheritdoc cref="LayerType"/>
@@ -13,7 +13,7 @@
         /// <summary>
         /// <inheritdoc cref="HeatMapLayerOptions"/>
         /// </summary>
-        public HeatMapLayerOptions? Options { get; set; }
+        public override HeatMapLayerOptions? Options { get; set; }
 
         /// <summary>
         /// <inheritdoc/>

@@ -6,7 +6,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
     /// <summary>
     /// <see cref="LayerType.Image"/>
     /// </summary>
-    public class ImageLayer : MapLayer
+    public class ImageLayer : MapLayer<ImageLayerOptions>
     {
         /// <summary>
         /// <inheritdoc cref="LayerType"/>
@@ -16,7 +16,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
         /// <summary>
         /// <inheritdoc cref="ImageLayerOptions"/>
         /// </summary>
-        public ImageLayerOptions? Options { get; set; }
+        public override ImageLayerOptions? Options { get; set; }
 
         /// <summary>
         /// <inheritdoc/>

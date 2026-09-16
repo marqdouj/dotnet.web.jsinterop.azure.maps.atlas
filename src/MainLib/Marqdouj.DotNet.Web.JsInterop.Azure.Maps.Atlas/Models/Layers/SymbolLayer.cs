@@ -7,7 +7,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
     /// <summary>
     /// <see cref="LayerType.Symbol"/>
     /// </summary>
-    public class SymbolLayer : MapLayer
+    public class SymbolLayer : MapLayer<SymbolLayerOptions>
     {
         /// <summary>
         /// <inheritdoc cref="LayerType"/>
@@ -17,7 +17,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
         /// <summary>
         /// <inheritdoc cref="SymbolLayerOptions"/>
         /// </summary>
-        public SymbolLayerOptions? Options { get; set; }
+        public override SymbolLayerOptions? Options { get; set; }
 
         /// <summary>
         /// <inheritdoc/>

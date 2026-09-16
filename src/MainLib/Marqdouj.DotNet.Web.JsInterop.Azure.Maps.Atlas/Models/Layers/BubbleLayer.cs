@@ -6,7 +6,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
     /// <summary>
     /// <see cref="LayerType.Bubble"/>
     /// </summary>
-    public class BubbleLayer : MapLayer
+    public class BubbleLayer : MapLayer<BubbleLayerOptions>
     {
         /// <summary>
         /// <inheritdoc cref="LayerType"/>
@@ -16,7 +16,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
         /// <summary>
         /// <inheritdoc cref="BubbleLayerOptions"/>
         /// </summary>
-        public BubbleLayerOptions? Options { get; set; }
+        public override BubbleLayerOptions? Options { get; set; }
 
         /// <summary>
         /// <inheritdoc/>

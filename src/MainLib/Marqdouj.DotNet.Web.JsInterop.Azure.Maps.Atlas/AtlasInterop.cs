@@ -1,5 +1,6 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Data;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources;
 using Microsoft.JSInterop;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas

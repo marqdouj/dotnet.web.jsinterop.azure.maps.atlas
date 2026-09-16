@@ -7,7 +7,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
     /// <summary>
     /// <see cref="LayerType.Line"/>
     /// </summary>
-    public class LineLayer : MapLayer
+    public class LineLayer : MapLayer<LineLayerOptions>
     {
         /// <summary>
         /// <inheritdoc cref="LayerType"/>
@@ -17,7 +17,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
         /// <summary>
         /// <inheritdoc cref="LineLayerOptions"/>
         /// </summary>
-        public LineLayerOptions? Options { get; set; }
+        public override LineLayerOptions? Options { get; set; }
 
         /// <summary>
         /// <inheritdoc/>

@@ -60,7 +60,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
             if (configuration.JsLogLevel != null)
                 await SetLogLevel((LogLevel)configuration.JsLogLevel);
 
-            var mapRef = await module.InvokeAsync<IJSObjectReference>(GetJsInteropMethod(), dotNetRef, mapId, configuration, controls?.Cast<object>())
+            var mapRef = await module.InvokeAsync<IJSObjectReference>(GetJsInteropMethod(), dotNetRef, mapId, configuration, controls?.Cast<object>().ToList())
                 ?? throw new Exception($"Failed to create an atlas.Map instance where mapId = '{mapId}'.");
 
             return new Map(mapRef, mapId);

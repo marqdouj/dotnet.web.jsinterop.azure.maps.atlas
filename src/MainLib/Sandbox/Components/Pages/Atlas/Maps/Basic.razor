@@ -92,17 +92,7 @@
         {
             //This is all the supported basic controls
             //You could remove any controls that you don't want from the list.
-            var items = new List<MapControl>
-            {
-                new FullscreenControl(),
-                new ZoomControl(),
-                new CompassControl(),
-                new PitchControl(),
-                new ScaleControl(),
-                new StyleControl(),
-                new TrafficControl(),
-                new TrafficLegendControl(),
-            };
+            var items = MapExtensions.GetDefaultControls();
 
             await atlasInterop.Controls.Add(map!, items);
             addedControls = items;

@@ -4,13 +4,18 @@ using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Sources;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
 
-namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
+namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
 {
     /// <summary>
     /// Interface for map source interactions.
     /// </summary>
     public interface IAtlasSources
     {
+        /// <summary>
+        /// <inheritdoc cref="IAtlasDataSource"/>
+        /// </summary>
+        IAtlasDataSource DataSource { get; }
+
         /// <summary>
         /// Add map sources.
         /// </summary>
@@ -97,6 +102,8 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
     internal class AzSources(Lazy<Task<IJSObjectReference>> moduleTask) : IAtlasSources
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = moduleTask;
+
+        public IAtlasDataSource DataSource { get; } = new AzDataSource(moduleTask);
 
         public async ValueTask<List<IMapObjectReference>> Add(Map map, IEnumerable<MapSource> sources, bool getReferences = false)
         {

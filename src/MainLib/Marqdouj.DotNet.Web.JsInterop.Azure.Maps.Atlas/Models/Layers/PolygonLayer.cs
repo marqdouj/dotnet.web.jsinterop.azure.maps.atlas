@@ -3,7 +3,7 @@
     /// <summary>
     /// <see cref="LayerType.Polygon"/>
     /// </summary>
-    public class PolygonLayer : MapLayer
+    public class PolygonLayer : MapLayer<PolygonLayerOptions>
     {
         /// <summary>
         /// <inheritdoc cref="LayerType"/>
@@ -13,7 +13,7 @@
         /// <summary>
         /// <inheritdoc cref="PolygonLayerOptions"/>
         /// </summary>
-        public PolygonLayerOptions? Options { get; set; }
+        public override PolygonLayerOptions? Options { get; set; }
 
         /// <summary>
         /// <inheritdoc/>

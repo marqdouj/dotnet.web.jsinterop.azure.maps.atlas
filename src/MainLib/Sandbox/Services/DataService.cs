@@ -217,7 +217,7 @@ namespace Sandbox.Services
 
     public class ImageLayerData()
     {
-        public string Url { get; } = "newark_nj_1922.jpg";
+        public string Url { get; } = "img/newark_nj_1922.jpg";
 
         public ImageCoordinates Coordinates { get; set; } = new ImageCoordinates(
             new Position(-74.22655, 40.773941),

@@ -5,7 +5,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
     /// <summary>
     /// <see cref="LayerType.PolygonExtrusion"/>
     /// </summary>
-    public class PolygonExtrusionLayer : MapLayer
+    public class PolygonExtrusionLayer : MapLayer<PolygonExtrusionLayerOptions>
     {
         /// <summary>
         /// <inheritdoc cref="LayerType"/>
@@ -15,7 +15,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
         /// <summary>
         /// <inheritdoc cref="PolygonExtrusionLayerOptions"/>
         /// </summary>
-        public PolygonExtrusionLayerOptions? Options { get; set; }
+        public override PolygonExtrusionLayerOptions? Options { get; set; }
 
         /// <summary>
         /// <inheritdoc/>

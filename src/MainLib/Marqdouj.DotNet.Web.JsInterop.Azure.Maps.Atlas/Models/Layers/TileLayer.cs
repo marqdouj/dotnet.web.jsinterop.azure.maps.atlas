@@ -5,7 +5,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
     /// <summary>
     /// <see cref="LayerType.Tile"/>
     /// </summary>
-    public class TileLayer : MapLayer
+    public class TileLayer : MapLayer<TileLayerOptions>
     {
         /// <summary>
         /// <inheritdoc cref="LayerType"/>
@@ -15,7 +15,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
         /// <summary>
         /// <inheritdoc cref="TileLayerOptions"/>
         /// </summary>
-        public TileLayerOptions? Options { get; set; }
+        public override TileLayerOptions? Options { get; set; }
 
         /// <summary>
         /// <inheritdoc/>

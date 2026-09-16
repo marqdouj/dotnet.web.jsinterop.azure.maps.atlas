@@ -3,6 +3,7 @@ using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
 {
@@ -18,7 +19,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// <param name="layers"></param>
         /// <param name="getReferences">If true, then return the <see cref="IMapObjectReference"/> for the layers. Default is false.</param>
         /// <returns></returns>
-        ValueTask<List<IMapObjectReference>> Add(Map map, IEnumerable<MapLayer> layers, bool getReferences = false);
+        ValueTask<List<IMapObjectReference>> Add(Map map, IEnumerable<ILayer> layers, bool getReferences = false);
 
         /// <summary>
         /// Get the <see cref="IMapObjectReference"/> for all the layers.
@@ -33,7 +34,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// <param name="map"></param>
         /// <param name="layers"></param>
         /// <returns></returns>
-        ValueTask<List<IMapObjectReference>> GetLayersById(Map map, IEnumerable<MapLayer> layers);
+        ValueTask<List<IMapObjectReference>> GetLayersById(Map map, IEnumerable<ILayer> layers);
 
         /// <summary>
         /// Get the <see cref="IMapObjectReference"/> for the layers based on the id.
@@ -59,7 +60,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// <param name="map"></param>
         /// <param name="layers"></param>
         /// <returns></returns>
-        ValueTask RemoveById(Map map, IEnumerable<MapLayer> layers);
+        ValueTask RemoveById(Map map, IEnumerable<ILayer> layers);
 
         /// <summary>
         /// Remove the layers from the map based on id.
@@ -75,10 +76,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = moduleTask;
 
-        public async ValueTask<List<IMapObjectReference>> Add(Map map, IEnumerable<MapLayer> layers, bool getReferences = false)
+        public async ValueTask<List<IMapObjectReference>> Add(Map map, IEnumerable<ILayer> layers, bool getReferences = false)
         {
             var module = await moduleTask.Value;
-            var items = await module.InvokeAsync<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, layers, getReferences);
+            var items = await module.InvokeAsync<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, layers.Cast<object>().ToList(), getReferences);
             return [.. items.Cast<IMapObjectReference>()];
         }
 
@@ -96,7 +97,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
             return [.. items.Cast<IMapObjectReference>()];
         }
 
-        public async ValueTask<List<IMapObjectReference>> GetLayersById(Map map, IEnumerable<MapLayer> layers)
+        public async ValueTask<List<IMapObjectReference>> GetLayersById(Map map, IEnumerable<ILayer> layers)
         {
             var module = await moduleTask.Value;
             var items = await module.InvokeAsync<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, layers.Select(e => e.Id));
@@ -117,7 +118,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
             await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, sourceIds);
         }
 
-        public async ValueTask RemoveById(Map map, IEnumerable<MapLayer> layers)
+        public async ValueTask RemoveById(Map map, IEnumerable<ILayer> layers)
         {
             var module = await moduleTask.Value;
             await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, layers.Select(e => e.Id));

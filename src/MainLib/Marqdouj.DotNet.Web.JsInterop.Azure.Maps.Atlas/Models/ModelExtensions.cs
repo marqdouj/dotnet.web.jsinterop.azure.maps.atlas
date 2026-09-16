@@ -5,6 +5,21 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models
 {
     internal static class ModelExtensions
     {
+        internal static void ValidateReferenceType<T>(this IMapObjectReference reference, Enum value) where T : Enum
+        {
+            ValidateReferenceType<T>([reference]);
+
+            var actualValue = Enum.Parse(typeof(T), reference.Type!);
+
+            if (actualValue.ToString() != value.ToString())
+                throw new Exception($"{nameof(IMapObjectReference)}.Type [{reference.Type}] does not match required value [{value}].");
+        }
+
+        internal static void ValidateReferenceType<T>(this IMapObjectReference reference) where T : Enum
+        {
+            ValidateReferenceType<T>([reference]);
+        }
+
         internal static void ValidateReferenceType<T>(this IEnumerable<IMapObjectReference>? references) where T : Enum
         {
             if (references == null)

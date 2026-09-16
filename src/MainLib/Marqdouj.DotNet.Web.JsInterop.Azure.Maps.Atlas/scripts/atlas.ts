@@ -1,5 +1,6 @@
 export { BoundingBox } from "./atlas/data/BoundingBox"
 export { Controls } from "./atlas/Controls"
+export { DataSource } from "./atlas/DataSource"
 export { Factory } from "./atlas/Factory"
 export { Features } from "./atlas/Features"
 export { Layers } from "./atlas/Layers"

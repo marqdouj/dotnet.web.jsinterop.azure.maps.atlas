@@ -6,6 +6,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
     {
         BoundingBox,
         Controls,
+        DataSource,
         Factory,
         Features,
         Layers,

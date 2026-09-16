@@ -51,7 +51,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         public async ValueTask Add(Map map, IEnumerable<MapControl> controls)
         {
             var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, controls.Cast<object>());
+            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, controls.Cast<object>().ToList());
         }
 
         public async ValueTask Remove(Map map, IEnumerable<ControlType>? controls)

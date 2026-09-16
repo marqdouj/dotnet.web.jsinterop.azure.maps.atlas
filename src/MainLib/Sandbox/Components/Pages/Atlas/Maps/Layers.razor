@@ -14,12 +14,11 @@
     </SummaryContent>
 
     <ChildContent>
-        <Toolbar>
+        <Toolbar HorizontalGap="3px">
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
+            <FluentSpacer Width="10px" />
             <FluentLabel>Layer:</FluentLabel>
-            <FluentSelect Items="@layerTypes" TValue="LayerType" TOption="LayerType" @bind-Value:get="@selectedLayer" @bind-Value:set="@SelectedLayerChanged" />
-            <FluentButton Disabled="@createLayerDisabled" IconStart="@(new Icons.Regular.Size20.Add())" Title="Create Layer" OnClick="@CreateLayer" />
-            <FluentButton Disabled="@removeLayerDisabled" IconStart="@(new Icons.Regular.Size20.Delete())" Title="Remove Layer" OnClick="@RemoveLayer" />
-
+            <FluentSelect Items="@layerTypes" TValue="LayerType?" TOption="LayerType?" @bind-Value:get="@selectedLayer" @bind-Value:set="@SelectedLayerChanged" Placeholder="Select a layer..." />
         </Toolbar>
 
         <MapContainer MapId="@mapId" />
@@ -33,11 +32,13 @@
     private AtlasInterop atlasInterop = default!;
     private MapConfiguration? config;
     private Map? map;
-    private MapLayer? layer;
+    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
+    private ILayer? layer;
     private MapSource? source;
-    private readonly List<LayerType> layerTypes = Enum.GetValues<LayerType>().ToList();
-    private LayerType selectedLayer;
+    private readonly List<LayerType?> layerTypes = Enum.GetValues<LayerType>().Cast<LayerType?>().ToList();
+    private LayerType? selectedLayer;
     private bool hasInterop => atlasInterop != null;
+    private bool mapNotReady => map == null;
     private bool createLayerDisabled => !hasInterop || layer != null;
     private bool removeLayerDisabled => !hasInterop || layer == null;
 
@@ -91,7 +92,7 @@
 
     #region Map
 
-    private async Task SelectedLayerChanged(LayerType value)
+    private async Task SelectedLayerChanged(LayerType? value)
     {
         if (value == selectedLayer)
             return;
@@ -108,20 +109,12 @@
 
             await RemoveLayer();
 
-            var newSource = selectedLayer.GetDefaultSource();
-            if (newSource != null)
-            {
-                _ = await atlasInterop.Sources.Add(map, [newSource]);
-                _ = await selectedLayer.AddDefaultFeatures(atlasInterop, DataService, map, newSource);
-            }
+            if (selectedLayer == null)
+                return;
 
-            var newLayer = await selectedLayer.GetDefaultLayer(DataService);
-            newLayer.Source = newSource?.Id;
-
-            _ = await atlasInterop.Layers.Add(map, [newLayer]);
-
-            source = newSource;
-            layer = newLayer;
+            var results = await selectedLayer.AddDefaultLayer(atlasInterop, map, DataService);
+            source = results.Source;
+            layer = results.Layer;
         }
         catch (Exception ex)
         {
@@ -161,7 +154,7 @@
                 return;
 
             config?.MapOptions = MapExtensions.GetDefaultMapOptions();
-            map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config!);
+            map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config!, MapExtensions.GetDefaultControls());
         }
         catch (Exception ex)
         {
@@ -170,13 +163,39 @@
         }
     }
 
+    private async Task ResetMap()
+    {
+        try
+        {
+            if (map == null)
+                return;
+
+            await SelectedLayerChanged(null);
+            await atlasInterop.Map.SetCamera(map, mapOptions.Camera);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
 
     [JSInvokable]
     public async Task NotifyMapEvent(MapEventArgs e)
     {
         await Task.CompletedTask;
-        await ToastService.ShowInfo($"MapEvent: {e.MapId} : {e.Type}");
-        await CreateLayer();
+
+        switch (e.Type)
+        {
+            case MapEventType.error:
+                var error = e.GetPayloadItem<ErrorPayload>(nameof(MapEventType.error));
+                Logger.LogError(error!.BuildMessage());
+                await ToastService.ShowInfo($"MapEvent: {e.MapId} : {e.Type} : {error?.BuildMessage()}");
+                break;
+            default:
+                await ToastService.ShowInfo($"MapEvent: {e.MapId} : {e.Type}");
+                break;
+        }
     }
 
     #endregion
