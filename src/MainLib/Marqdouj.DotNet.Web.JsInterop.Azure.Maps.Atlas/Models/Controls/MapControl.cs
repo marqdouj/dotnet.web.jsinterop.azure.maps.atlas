@@ -1,4 +1,4 @@
-﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Converters;
+﻿using Marqdouj.DotNet.EnumConverters;
 using System.Text.Json.Serialization;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Controls
@@ -76,7 +76,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Controls
     /// <summary>
     /// Position where the control is to be placed on the map.
     /// </summary>
-    [JsonConverter(typeof(LowerCaseWithHypenEnumConverter<ControlPosition>))]
+    [JsonConverter(typeof(HyphenUnderscoreLCEnumConverter<ControlPosition>))]
     public enum ControlPosition
     {
         /// <summary>

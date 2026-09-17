@@ -1,4 +1,4 @@
-﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Converters;
+﻿using Marqdouj.DotNet.EnumConverters;
 using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using System.Text.Json.Serialization;
 
