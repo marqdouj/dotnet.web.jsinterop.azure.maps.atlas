@@ -22,11 +22,9 @@
 - `MapContainer`. Helper component to display the map. Use is not required, but recommended for simple control of the map display.
 
 ## Release Notes (Current)
-- `11.0.0-Preview-3.1`
-   - `Map Controls`. You can now interact with basic map controls via `AtlasInterop.Controls`.
-   - `IOptions<MapConfiguration>`. Added extension method `GetValue()`.
-   - `MapConfiguration`. Now implements `ICloneable`.
-   - `Map Sources`. You can now interact with basic map sources via `AtlasInterop.Sources`.
-   - `Map Layers`. You can now interact with basic map layers via `AtlasInterop.Layers`.
+- `11.0.0-Preview-3.2`
+   - `IAtlasSource`. 
+	  - `Clear` methods has been updated and moved to `IAtlasDataSource`.
+	  - `Remove/GetSources`. Method signatures have been updated.
 
 ## [Release Notes (All)](Documents/ReleaseNotes.md)

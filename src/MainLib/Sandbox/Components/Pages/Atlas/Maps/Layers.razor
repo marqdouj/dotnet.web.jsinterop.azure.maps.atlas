@@ -131,10 +131,10 @@
                 return;
 
             if (layer != null)
-                await atlasInterop.Layers.RemoveById(map, [layer.Id]);
+                await atlasInterop.Layers.Remove(map, layer.Id);
 
             if (source != null)
-                await atlasInterop.Sources.RemoveById(map, [source.Id]);
+                await atlasInterop.Sources.Remove(map, source.Id);
 
             source = null;
             layer = null;

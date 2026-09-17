@@ -3,7 +3,6 @@ using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
 {
@@ -34,7 +33,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// <param name="map"></param>
         /// <param name="layers"></param>
         /// <returns></returns>
-        ValueTask<List<IMapObjectReference>> GetLayersById(Map map, IEnumerable<ILayer> layers);
+        ValueTask<List<IMapObjectReference>> GetLayers(Map map, IEnumerable<ILayer> layers);
 
         /// <summary>
         /// Get the <see cref="IMapObjectReference"/> for the layers based on the id.
@@ -42,34 +41,61 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// <param name="map"></param>
         /// <param name="layerIds"></param>
         /// <returns></returns>
-        ValueTask<List<IMapObjectReference>> GetLayersById(Map map, IEnumerable<string> layerIds);
+        ValueTask<List<IMapObjectReference>> GetLayers(Map map, IEnumerable<string> layerIds);
 
         /// <summary>
         /// Remove the layers from the map.
         /// IMPORTANT! All <see cref="IMapObjectReference"/> items in the list will also be disposed.
         /// </summary>
         /// <param name="map"></param>
-        /// <param name="layers"></param>
+        /// <param name="layers">List of <see cref="IMapObjectReference"/> to a layer</param>
         /// <returns></returns>
         ValueTask Remove(Map map, IEnumerable<IMapObjectReference> layers);
 
         /// <summary>
-        /// Remove the layers from the map based on id.
-        /// IMPORTANT! If you have an <see cref="IMapObjectReference"/> to the layer it must be disposed.
+        /// Remove the layer from the map.
+        /// IMPORTANT! The <see cref="IMapObjectReference"/> will also be disposed.
         /// </summary>
         /// <param name="map"></param>
-        /// <param name="layers"></param>
+        /// <param name="layer"><see cref="IMapObjectReference"/> to a layer</param>
         /// <returns></returns>
-        ValueTask RemoveById(Map map, IEnumerable<ILayer> layers);
+        ValueTask Remove(Map map, IMapObjectReference layer);
 
         /// <summary>
-        /// Remove the layers from the map based on id.
+        /// Remove the layers from the map.
         /// IMPORTANT! If you have an <see cref="IMapObjectReference"/> to the layer it must be disposed.
         /// </summary>
         /// <param name="map"></param>
-        /// <param name="sourceIds"></param>
+        /// <param name="layers">List of layer ids.</param>
         /// <returns></returns>
-        ValueTask RemoveById(Map map, IEnumerable<string> sourceIds);
+        ValueTask Remove(Map map, IEnumerable<ILayer> layers);
+
+        /// <summary>
+        /// Remove the layer from the map.
+        /// IMPORTANT! If you have an <see cref="IMapObjectReference"/> to the layer it must be disposed.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="layer">Layer to remove</param>
+        /// <returns></returns>
+        ValueTask Remove(Map map, ILayer layer);
+
+        /// <summary>
+        /// Remove the layers from the map.
+        /// IMPORTANT! If you have an <see cref="IMapObjectReference"/> to the layer it must be disposed.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        ValueTask Remove(Map map, IEnumerable<string> ids);
+
+        /// <summary>
+        /// Remove the layer from the map.
+        /// IMPORTANT! If you have an <see cref="IMapObjectReference"/> to the layer it must be disposed.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="id">layer id</param>
+        /// <returns></returns>
+        ValueTask Remove(Map map, string id);
     }
 
     internal class AzLayers(Lazy<Task<IJSObjectReference>> moduleTask) : IAtlasLayers
@@ -90,18 +116,23 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
             return [.. items.Cast<IMapObjectReference>()];
         }
 
-        public async ValueTask<List<IMapObjectReference>> GetLayersById(Map map, IEnumerable<string> layerIds)
+        public async ValueTask<List<IMapObjectReference>> GetLayers(Map map, IEnumerable<string> layerIds)
         {
             var module = await moduleTask.Value;
             var items = await module.InvokeAsync<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, layerIds);
             return [.. items.Cast<IMapObjectReference>()];
         }
 
-        public async ValueTask<List<IMapObjectReference>> GetLayersById(Map map, IEnumerable<ILayer> layers)
+        public async ValueTask<List<IMapObjectReference>> GetLayers(Map map, IEnumerable<ILayer> layers)
         {
             var module = await moduleTask.Value;
             var items = await module.InvokeAsync<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, layers.Select(e => e.Id));
             return [.. items.Cast<IMapObjectReference>()];
+        }
+
+        public async ValueTask Remove(Map map, ILayer layer)
+        {
+            await Remove(map, [layer]);
         }
 
         public async ValueTask Remove(Map map, IEnumerable<IMapObjectReference> layers)
@@ -112,13 +143,23 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
                 await item.DisposeAsync();
         }
 
-        public async ValueTask RemoveById(Map map, IEnumerable<string> sourceIds)
+        public async ValueTask Remove(Map map, IMapObjectReference layer)
+        {
+            await Remove(map, [layer]);
+        }
+
+        public async ValueTask Remove(Map map, IEnumerable<string> sourceIds)
         {
             var module = await moduleTask.Value;
             await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, sourceIds);
         }
 
-        public async ValueTask RemoveById(Map map, IEnumerable<ILayer> layers)
+        public async ValueTask Remove(Map map, string id)
+        {
+            await Remove(map, [id]);
+        }
+
+        public async ValueTask Remove(Map map, IEnumerable<ILayer> layers)
         {
             var module = await moduleTask.Value;
             await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, layers.Select(e => e.Id));

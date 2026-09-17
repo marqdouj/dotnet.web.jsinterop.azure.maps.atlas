@@ -36,24 +36,16 @@ export class Sources {
         return results;
     }
 
-    public static clear(sources: atlas.source.Source[]) {
-        sources.forEach((src) => {
-            if (src instanceof atlas.source.DataSource) {
-                src.clear();
-            }
-        });
+    public static getSources(map: atlas.Map, ids?: string[]) {
+        if (ids) {
+            return this.#getSourcesById(map, ids);
+        }
+        else {
+            return this.#getSourcesAll(map);
+        } 
     }
 
-    public static clearById(map: atlas.Map, ids: string[]) {
-        ids.forEach((id) => {
-            const src = map.sources.getById(id);
-            if (src instanceof atlas.source.DataSource) {
-                src.clear();
-            }
-        });
-    }
-
-    public static getSources(map: atlas.Map) {
+    static #getSourcesAll(map: atlas.Map) {
         const results: MapObjectReference[] = [];
         const mapId = Helpers.getMapId(map);
         const sources = map.sources.getSources();
@@ -65,7 +57,7 @@ export class Sources {
         return results;
     }
 
-    public static getSourcesById(map: atlas.Map, ids: string[]) {
+    static #getSourcesById(map: atlas.Map, ids: string[]) {
         const results: MapObjectReference[] = [];
         const mapId = Helpers.getMapId(map);
 
@@ -76,12 +68,8 @@ export class Sources {
         return results;
     }
 
-    public static remove(map: atlas.Map, sources: atlas.source.Source[]) {
+    public static remove(map: atlas.Map, sources: string | atlas.source.Source | Array<string | atlas.source.Source>) {
         map.sources.remove(sources);
-    }
-
-    public static removeById(map: atlas.Map, ids: string[]) {
-        map.sources.remove(ids);
     }
 
     static #getReference(mapId: string, ds: atlas.source.Source, id: string = "") {

@@ -1,7 +1,6 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Sources;
-using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
 
@@ -13,33 +12,99 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
     public interface IAtlasDataSource
     {
         /// <summary>
+        /// Clear the DataSources.
+        /// </summary>
+        /// <param name="sources"><see cref="IMapObjectReference"/> to a <see cref="DataSource"/></param>
+        /// <returns></returns>
+        ValueTask Clear(IEnumerable<IMapObjectReference> sources);
+
+        /// <summary>
+        /// Clear the DataSource.
+        /// </summary>
+        /// <param name="source"><see cref="IMapObjectReference"/> to a <see cref="DataSource"/></param>
+        /// <returns></returns>
+        ValueTask Clear(IMapObjectReference source);
+
+        /// <summary>
+        /// Clear the DataSources.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="sources"><see cref="MapSource"/> for a <see cref="DataSource"/></param>
+        /// <returns></returns>
+        ValueTask Clear(Map map, IEnumerable<MapSource> sources);
+
+        /// <summary>
+        /// Clear the DataSources based on the id.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="ids">DataSource ids</param>
+        /// <returns></returns>
+        ValueTask Clear(Map map, IEnumerable<string> ids);
+
+        /// <summary>
+        /// Clear the DataSource based on the id.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="id">DataSource id</param>
+        /// <returns></returns>
+        ValueTask Clear(Map map, string id);
+
+        /// <summary>
         /// Downloads a GeoJSON document and imports its data into the data source.
         /// The GeoJSON document must be on the same domain or accessible using CORS.
         /// </summary>
         /// <param name="map"></param>
-        /// <param name="source">Id or <see cref="IMapObjectReference"/> for a <see cref="DataSource"/></param>
+        /// <param name="source"><see cref="IMapObjectReference"/> for a <see cref="DataSource"/></param>
         /// <param name="url"></param>
         /// <returns></returns>
-        ValueTask ImportDataFromUrl(Map map, object source, string url);
+        ValueTask ImportDataFromUrl(Map map, IMapObjectReference source, string url);
+
+        /// <summary>
+        /// Downloads a GeoJSON document and imports its data into the data source.
+        /// The GeoJSON document must be on the same domain or accessible using CORS.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="source">Id</param>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        ValueTask ImportDataFromUrl(Map map, string source, string url);
     }
 
     internal class AzDataSource(Lazy<Task<IJSObjectReference>> moduleTask) : IAtlasDataSource
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = moduleTask;
 
-        public async ValueTask ImportDataFromUrl(Map map, object source, string url)
+        public async ValueTask Clear(IEnumerable<IMapObjectReference> sources)
         {
-            if (source is IMapObjectReference item)
-            {
-                await ImportDataFromUrl(map, item, url);
-            }
-            else
-            {
-                await ImportDataFromUrl(map, (string)source, url);
-            }
+            sources.ValidateReferenceType<SourceType>();
+
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync(GetJsInteropMethod(), null, sources.Select(e => e.JsReference));
         }
 
-        private async ValueTask ImportDataFromUrl(Map map, IMapObjectReference source, string url)
+        public async ValueTask Clear(IMapObjectReference source)
+        {
+            await Clear([source]);
+        }
+
+        public async ValueTask Clear(Map map, IEnumerable<string> sourceIds)
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, sourceIds);
+        }
+
+        public async ValueTask Clear(Map map, IEnumerable<MapSource> sources)
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.Id));
+        }
+
+        public async ValueTask Clear(Map map, string id)
+        {
+            await Clear(map, [id]);
+        }
+
+        public async ValueTask ImportDataFromUrl(Map map, IMapObjectReference source, string url)
         {
             source.ValidateReferenceType<SourceType>(SourceType.Data);
 
@@ -47,10 +112,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
             await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, source.JsReference, url);
         }
 
-        private async ValueTask ImportDataFromUrl(Map map, string sourceId, string url)
+        public async ValueTask ImportDataFromUrl(Map map, string source, string url)
         {
             var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, sourceId, url);
+            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, source, url);
         }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")

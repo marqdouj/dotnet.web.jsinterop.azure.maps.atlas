@@ -41,8 +41,9 @@ namespace Sandbox.Components.Pages.Atlas
 
                 //Testing both id and reference - all passed.
                 //layer.Source = source?.Id;
+                await atlasInterop!.Sources.DataSource.ImportDataFromUrl(map, (string)layer.Source!, url);
                 //layer.Source = references[0];
-                await atlasInterop!.Sources.DataSource.ImportDataFromUrl(map, layer.Source!, url);
+                //await atlasInterop!.Sources.DataSource.ImportDataFromUrl(map, (IMapObjectReference)layer.Source!, url);
             }
 
             await references.DisposeReferences();

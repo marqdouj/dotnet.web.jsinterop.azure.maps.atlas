@@ -50,7 +50,14 @@ export class Layers {
         return results;
     }
 
-    public static getLayers(map: atlas.Map) {
+    public static getLayers(map: atlas.Map, ids?: string[]) {
+        if (ids) 
+            return this.#getLayersById(map, ids);
+        else
+            return this.#getLayersAll(map);
+    }
+
+    static #getLayersAll(map: atlas.Map) {
         const results: MapObjectReference[] = [];
         const mapId = Helpers.getMapId(map);
         const layers = map.layers.getLayers();
@@ -62,7 +69,7 @@ export class Layers {
         return results;
     }
 
-    public static getLayersById(map: atlas.Map, ids: string[]) {
+    static #getLayersById(map: atlas.Map, ids: string[]) {
         const results: MapObjectReference[] = [];
         const mapId = Helpers.getMapId(map);
 

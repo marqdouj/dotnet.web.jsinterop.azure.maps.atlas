@@ -1,6 +1,10 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-3.2`
+   - `IAtlasSource`. 
+	  - `Clear` methods has been updated and moved to `IAtlasDataSource`.
+	  - `Remove/GetSources`. Method signatures have been updated.
 - `11.0.0-Preview-3.1`
    - `Map Controls`. You can now interact with basic map controls via `AtlasInterop.Controls`.
    - `IOptions<MapConfiguration>`. Added extension method `GetValue()`.

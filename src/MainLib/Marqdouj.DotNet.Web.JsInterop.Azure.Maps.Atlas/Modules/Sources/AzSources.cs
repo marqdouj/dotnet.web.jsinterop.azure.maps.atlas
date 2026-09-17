@@ -26,29 +26,6 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         ValueTask<List<IMapObjectReference>> Add(Map map, IEnumerable<MapSource> sources, bool getReferences = false);
 
         /// <summary>
-        /// Clear the sources.
-        /// </summary>
-        /// <param name="sources"></param>
-        /// <returns></returns>
-        ValueTask Clear(IEnumerable<IMapObjectReference> sources);
-
-        /// <summary>
-        /// Clear the sources based on the id.
-        /// </summary>
-        /// <param name="map"></param>
-        /// <param name="sources"></param>
-        /// <returns></returns>
-        ValueTask ClearById(Map map, IEnumerable<MapSource> sources);
-
-        /// <summary>
-        /// Clear the sources based on the id.
-        /// </summary>
-        /// <param name="map"></param>
-        /// <param name="sourceIds"></param>
-        /// <returns></returns>
-        ValueTask ClearById(Map map, IEnumerable<string> sourceIds);
-
-        /// <summary>
         /// Get the <see cref="IMapObjectReference"/> for all the sources.
         /// </summary>
         /// <param name="map"></param>
@@ -61,7 +38,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         /// <param name="map"></param>
         /// <param name="sources"></param>
         /// <returns></returns>
-        ValueTask<List<IMapObjectReference>> GetSourcesById(Map map, IEnumerable<MapSource> sources);
+        ValueTask<List<IMapObjectReference>> GetSources(Map map, IEnumerable<MapSource> sources);
 
         /// <summary>
         /// Get the <see cref="IMapObjectReference"/> for the sources based on the id.
@@ -69,16 +46,25 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         /// <param name="map"></param>
         /// <param name="sourceIds"></param>
         /// <returns></returns>
-        ValueTask<List<IMapObjectReference>> GetSourcesById(Map map, IEnumerable<string> sourceIds);
+        ValueTask<List<IMapObjectReference>> GetSources(Map map, IEnumerable<string> sourceIds);
 
         /// <summary>
         /// Remove the sources from the map.
         /// IMPORTANT! All <see cref="IMapObjectReference"/> items in the list will also be disposed.
         /// </summary>
         /// <param name="map"></param>
-        /// <param name="sources"></param>
+        /// <param name="sources">List of <see cref="IMapObjectReference"/> to a <see cref="MapSource"/></param>
         /// <returns></returns>
         ValueTask Remove(Map map, IEnumerable<IMapObjectReference> sources);
+
+        /// <summary>
+        /// Remove the sources from the map.
+        /// IMPORTANT! The <see cref="IMapObjectReference"/> will also be disposed.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="source"><see cref="IMapObjectReference"/> to a <see cref="MapSource"/></param>
+        /// <returns></returns>
+        ValueTask Remove(Map map, IMapObjectReference source);
 
         /// <summary>
         /// Remove the sources from the map based on Id.
@@ -87,7 +73,16 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         /// <param name="map"></param>
         /// <param name="sources"></param>
         /// <returns></returns>
-        ValueTask RemoveById(Map map, IEnumerable<MapSource> sources);
+        ValueTask Remove(Map map, IEnumerable<MapSource> sources);
+
+        /// <summary>
+        /// Remove the sources from the map based on Id.
+        /// IMPORTANT! If you have an <see cref="IMapObjectReference"/> to the source it must be disposed.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        ValueTask Remove(Map map, MapSource source);
 
         /// <summary>
         /// Remove the sources from the map based on Id.
@@ -96,7 +91,16 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         /// <param name="map"></param>
         /// <param name="sourceIds"></param>
         /// <returns></returns>
-        ValueTask RemoveById(Map map, IEnumerable<string> sourceIds);
+        ValueTask Remove(Map map, IEnumerable<string> sourceIds);
+
+        /// <summary>
+        /// Remove the sources from the map based on Id.
+        /// IMPORTANT! If you have an <see cref="IMapObjectReference"/> to the source it must be disposed.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="sourceId">Id to the <see cref="MapSource"/></param>
+        /// <returns></returns>
+        ValueTask Remove(Map map, string sourceId);
     }
 
     internal class AzSources(Lazy<Task<IJSObjectReference>> moduleTask) : IAtlasSources
@@ -112,26 +116,6 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
             return [.. items.Cast<IMapObjectReference>()];
         }
 
-        public async ValueTask Clear(IEnumerable<IMapObjectReference> sources)
-        {
-            sources.ValidateReferenceType<SourceType>();
-
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), sources.Select(e => e.JsReference));
-        }
-
-        public async ValueTask ClearById(Map map, IEnumerable<string> sourceIds)
-        {
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, sourceIds);
-        }
-
-        public async ValueTask ClearById(Map map, IEnumerable<MapSource> sources)
-        {
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.Id));
-        }
-
         public async ValueTask<List<IMapObjectReference>> GetSources(Map map)
         {
             var module = await moduleTask.Value;
@@ -139,14 +123,14 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
             return [.. items.Cast<IMapObjectReference>()];
         }
 
-        public async ValueTask<List<IMapObjectReference>> GetSourcesById(Map map, IEnumerable<string> sourceIds)
+        public async ValueTask<List<IMapObjectReference>> GetSources(Map map, IEnumerable<string> sourceIds)
         {
             var module = await moduleTask.Value;
             var items = await module.InvokeAsync<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, sourceIds);
             return [.. items.Cast<IMapObjectReference>()];
         }
 
-        public async ValueTask<List<IMapObjectReference>> GetSourcesById(Map map, IEnumerable<MapSource> sources)
+        public async ValueTask<List<IMapObjectReference>> GetSources(Map map, IEnumerable<MapSource> sources)
         {
             var module = await moduleTask.Value;
             var items = await module.InvokeAsync<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.Id));
@@ -161,16 +145,31 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
                 await item.DisposeAsync();
         }
 
-        public async ValueTask RemoveById(Map map, IEnumerable<string> sourceIds)
+        public async ValueTask Remove(Map map, IMapObjectReference source)
+        {
+            await Remove(map, [source]);
+        }
+
+        public async ValueTask Remove(Map map, IEnumerable<string> sourceIds)
         {
             var module = await moduleTask.Value;
             await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, sourceIds);
         }
 
-        public async ValueTask RemoveById(Map map, IEnumerable<MapSource> sources)
+        public async ValueTask Remove(Map map, string sourceId)
+        {
+            await Remove(map, [sourceId]);
+        }
+
+        public async ValueTask Remove(Map map, IEnumerable<MapSource> sources)
         {
             var module = await moduleTask.Value;
             await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.Id));
+        }
+
+        public async ValueTask Remove(Map map, MapSource source)
+        {
+            await Remove(map, [source]);
         }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")
