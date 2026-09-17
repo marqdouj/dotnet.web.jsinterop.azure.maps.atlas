@@ -1,11 +1,34 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Controls;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Payloads;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Types;
 using Marqdouj.DotNet.Web.JsInterop.GeoJson;
+using Microsoft.FluentUI.AspNetCore.Components;
 
 namespace Sandbox.Components.Pages.Atlas
 {
     internal static class MapExtensions
     {
+        public static async Task<bool> ErrorEventProcessed(this MapEventArgs e, ILogger logger, INotificationService toastService)
+        {
+            if (e.Target == MapEventTarget.Map && e.TypeToEnum<MapEventType>() == MapEventType.Error)
+            {
+                var error = e.GetPayloadItem<ErrorPayload>(nameof(MapEventType.Error));
+                string msg = $"Map Error. Id: {e.MapId}, Message: {error?.BuildMessage()}";
+                logger.LogError(msg);
+                await toastService.ShowInfo(msg);
+                return true;
+            }
+
+            return false;
+        }
+
+        public static async Task<bool> ErrorEventNotProcessed(this MapEventArgs e, ILogger logger, INotificationService toastService)
+        {
+            return (await e.ErrorEventProcessed(logger, toastService)) == false;
+        }
+
         public static List<MapControl> GetDefaultControls() =>
             [
                 new FullscreenControl(),

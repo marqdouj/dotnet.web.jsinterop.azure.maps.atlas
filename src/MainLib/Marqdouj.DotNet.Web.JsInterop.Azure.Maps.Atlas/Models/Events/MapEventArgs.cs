@@ -4,61 +4,56 @@ using System.Text.Json.Serialization;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events
 {
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-
     /// <summary>
-    /// Specifies the target element for map-related events.
-    /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter<MapEventTarget>))]
-    public enum MapEventTarget
-    {
-        map,
-    }
-
-    /// <summary>
-    /// Specifies the type of map-related events.
-    /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter<MapEventType>))]
-    public enum MapEventType
-    {
-        error,
-        ready,
-    }
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-
-    /// <summary>
-    /// Arguments returned from a map-related event.
+    /// Event notification args.
     /// </summary>
     public class MapEventArgs
     {
-        private static readonly JsonSerializerOptions serializerOptions = new(JsonSerializerDefaults.Web);
+        private protected static readonly JsonSerializerOptions serializerOptions = new(JsonSerializerDefaults.Web);
 
         /// <summary>
         /// The id of the html element where the map is displayed.
         /// </summary>
-        public string MapId { get; set; } = default!;
+        [JsonInclude]
+        public string MapId { get; internal set; } = default!;
 
         /// <summary>
         /// <see cref="MapEventTarget"/>
         /// </summary>
-        public MapEventTarget Target { get; set; } = default!;
+        [JsonInclude]
+        public MapEventTarget Target { get; internal set; } = default!;
 
         /// <summary>
-        /// <see cref="MapEventType"/>
+        /// They type of event.
         /// </summary>
-        public MapEventType Type { get; set; } = default!;
+        [JsonInclude]
+        public string Type { get; internal set; } = default!;
+
+        /// <summary>
+        /// Tries to parse the <see cref="Type"/> into the specified Enum.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T? TypeToEnum<T>() where T: struct, Enum
+        {
+            if (Enum.TryParse<T>(Type, out var value))
+                return value;
+
+            return default!;
+        }
 
         /// <summary>
         /// <see cref="GeoJsonProperties"/>
         /// </summary>
-        public GeoJsonProperties? Payload { get; set; }
+        [JsonInclude]
+        public GeoJsonProperties? Payload { get; internal set; }
 
         /// <summary>
         /// Tries to get a value from the Payload.
         /// </summary>
         /// <param name="key"></param>
         /// <returns>The item or null if not found.</returns>
-        public T? GetPayloadItem<T>(string key) where T: class
+        public T? GetPayloadItem<T>(string key) where T : class
         {
             if (Payload?.TryGetValue(key, out var payloadItem) ?? false)
             {

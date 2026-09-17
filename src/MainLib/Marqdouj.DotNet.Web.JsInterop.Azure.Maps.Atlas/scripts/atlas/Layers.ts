@@ -1,6 +1,6 @@
 import * as atlas from "azure-maps-control"
-import { MapObjectReference } from "../common"
-import { Helpers } from "../common/Helpers";
+import { MapObjectReference } from "./common"
+import { Helpers } from "./common/Helpers";
 
 export class Layers {
     public static add(map: atlas.Map, mapLayers: MapLayer[], getReferences: boolean = false) {

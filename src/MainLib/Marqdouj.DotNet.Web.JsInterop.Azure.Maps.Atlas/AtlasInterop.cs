@@ -1,5 +1,6 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Data;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Events;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources;
 using Microsoft.JSInterop;
 
@@ -19,6 +20,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         /// <inheritdoc cref="IAtlasData"/>
         /// </summary>
         IAtlasData Data { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasEvents"/>
+        /// </summary>
+        IAtlasEvents Events { get; }
 
         /// <summary>
         /// <inheritdoc cref="IAtlasFactory"/>
@@ -69,6 +75,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
 
             Controls = new AzControls(moduleTask);
             Data = new AzData(moduleTask);
+            Events = new AzEvents(moduleTask);
             Factory = new AzFactory(moduleTask);
             Features = new AzFeatures(moduleTask);
             Layers = new AzLayers(moduleTask);
@@ -86,6 +93,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         /// <inheritdoc cref="IAtlasData"/>
         /// </summary>
         public IAtlasData Data { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasEvents"/>
+        /// </summary>
+        public IAtlasEvents Events { get; }
 
         /// <summary>
         /// <inheritdoc cref="IAtlasFactory"/>

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events
+namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Payloads
 {
     /// <summary>
     /// Payload when the map encounters an error.

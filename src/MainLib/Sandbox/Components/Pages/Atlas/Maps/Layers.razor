@@ -183,18 +183,21 @@
     [JSInvokable]
     public async Task NotifyMapEvent(MapEventArgs e)
     {
-        await Task.CompletedTask;
-
-        switch (e.Type)
+        switch (e.Target)
         {
-            case MapEventType.error:
-                var error = e.GetPayloadItem<ErrorPayload>(nameof(MapEventType.error));
-                Logger.LogError(error!.BuildMessage());
-                await ToastService.ShowInfo($"MapEvent: {e.MapId} : {e.Type} : {error?.BuildMessage()}");
+            case MapEventTarget.Map:
+                await NotifyEventMap(e);
                 break;
             default:
-                await ToastService.ShowInfo($"MapEvent: {e.MapId} : {e.Type}");
                 break;
+        }
+    }
+
+    private async Task NotifyEventMap(MapEventArgs e)
+    {
+        if (await e.ErrorEventNotProcessed(Logger, ToastService))
+        {
+            await ToastService.ShowInfo($"Notify Event: {e.MapId} : {e.Type}");
         }
     }
 

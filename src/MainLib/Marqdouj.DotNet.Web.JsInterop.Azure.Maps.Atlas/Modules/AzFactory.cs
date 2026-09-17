@@ -1,6 +1,7 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Controls;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Definitions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
@@ -21,18 +22,19 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// <see cref="DotNetObjectReference{TValue}"/> that has the JSInvokable method for the map NotifyMapEvent'.
         /// <code>
         /// //In JS:
-        /// const args: MapEventArgs = { mapId: mapId, target: 'map', name: 'ready', payload: { [key: string]: any } }
+        /// const args: NotifyMapEventArgs = { mapId: mapId, target: 'map', name: 'ready', payload: { [key: string]: any } }
         /// dotNetRef.invokeMethodAsync('NotifyMapEvent', args);
         /// //In c#
         /// [JSInvokable]
-        /// public async Task NotifyMapEventReady(MapEventArgs e) => etc...
+        /// public async Task NotifyMapEvent(NotifyMapEventArgs e) => etc...
         /// </code>
         /// </param>
         /// <param name="mapId">/>The id of the html element where the map should be displayed.</param>
         /// <param name="config"><see cref="MapConfiguration"/></param>
         /// <param name="controls">Controls to add to the map (optional).</param>
+        /// <param name="events">Events to add to the map. <see cref="MapEvent"/></param>
         /// <returns></returns>
-        ValueTask<Map> CreateMap<T>(DotNetObjectReference<T> dotNetRef, string mapId, MapConfiguration config, IEnumerable<MapControl>? controls = null) where T : class;
+        ValueTask<Map> CreateMap<T>(DotNetObjectReference<T> dotNetRef, string mapId, MapConfiguration config, IEnumerable<MapControl>? controls = null, IEnumerable<MapEvent>? events = null) where T : class;
 
         /// <summary>
         /// Set the <see cref="LogLevel"/> for this library when logging to the browser console. Default is <see cref="LogLevel.Information"/>.
@@ -53,14 +55,14 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = moduleTask;
 
-        public async ValueTask<Map> CreateMap<T>(DotNetObjectReference<T> dotNetRef, string mapId, MapConfiguration configuration, IEnumerable<MapControl>? controls = null) where T : class
+        public async ValueTask<Map> CreateMap<T>(DotNetObjectReference<T> dotNetRef, string mapId, MapConfiguration configuration, IEnumerable<MapControl>? controls = null, IEnumerable<MapEvent>? events = null) where T : class
         {
             var module = await moduleTask.Value;
 
             if (configuration.JsLogLevel != null)
                 await SetLogLevel((LogLevel)configuration.JsLogLevel);
 
-            var mapRef = await module.InvokeAsync<IJSObjectReference>(GetJsInteropMethod(), dotNetRef, mapId, configuration, controls?.Cast<object>().ToList())
+            var mapRef = await module.InvokeAsync<IJSObjectReference>(GetJsInteropMethod(), dotNetRef, mapId, configuration, controls?.Cast<object>().ToList(), events?.Cast<object>().ToList())
                 ?? throw new Exception($"Failed to create an atlas.Map instance where mapId = '{mapId}'.");
 
             return new Map(mapRef, mapId);

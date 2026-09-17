@@ -1,6 +1,6 @@
 import * as atlas from "azure-maps-control"
-import { Logger, LogLevel } from "../common/Logger"
-import { Helpers } from "../common/Helpers";
+import { Logger, LogLevel } from "./common/Logger"
+import { Helpers } from "./common/Helpers";
 
 export class Features {
     public static add(map: atlas.Map, sourceId: string, features: any[]) {
