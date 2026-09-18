@@ -19,6 +19,14 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Events
         /// <param name="events">Events to add to the map. <see cref="MapEvent"/></param>
         /// <returns></returns>
         ValueTask Add<T>(DotNetObjectReference<T> dotNetRef, Map map, IEnumerable<MapEvent> events) where T : class;
+
+        /// <summary>
+        /// Remove events from the map.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="events">Events to remove from the map. <see cref="MapEvent"/></param>
+        /// <returns></returns>
+        ValueTask Remove(Map map, IEnumerable<MapEvent> events);
     }
 
     internal class AzMapEvents(Lazy<Task<IJSObjectReference>> moduleTask) : IAtlasMapEvents
@@ -26,6 +34,12 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Events
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = moduleTask;
 
         public async ValueTask Add<T>(DotNetObjectReference<T> dotNetRef, Map map, IEnumerable<MapEvent> events) where T : class
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync(GetJsInteropMethod(), dotNetRef, map.MapReference, events.Cast<object>().ToList());
+        }
+
+        public async ValueTask Remove(Map map, IEnumerable<MapEvent> events)
         {
             var module = await moduleTask.Value;
             await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, events.Cast<object>().ToList());

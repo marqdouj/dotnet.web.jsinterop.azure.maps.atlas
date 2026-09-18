@@ -15,6 +15,14 @@ export enum MapEventNotify {
     NotifyMapEvent = 'NotifyMapEvent',
 }
 
+export interface EventInfo {
+    target: MapEventTarget;
+    type: string;
+    once: boolean;
+    preventDefault: boolean;
+    eventName?: string;
+}
+
 export class Helpers {
     static #isFeature(obj: any): obj is atlas.data.Feature<atlas.data.Geometry, any> {
         return obj && obj.type === 'Feature';

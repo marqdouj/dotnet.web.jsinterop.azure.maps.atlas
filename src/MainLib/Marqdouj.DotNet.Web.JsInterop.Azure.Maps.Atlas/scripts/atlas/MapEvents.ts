@@ -1,39 +1,62 @@
 import * as atlas from "azure-maps-control"
 import { Helpers } from "./common/Helpers";
 import * as events from "./events"
+import { Logger, LogLevel } from "./common/Logger";
+import { EventsMap } from "./events/EventsMap";
 
 export class MapEvents {
-    public static add(dotNetRef: any, map: atlas.Map, mapEvents?: MapEvent[]) {
+    static readonly #eventsMap: EventsMap = new EventsMap ();
+
+    public static add(dotNetRef: any, map: atlas.Map, mapEvents?: events.EventInfo[]) {
         const mapId = Helpers.getMapId(map);
         mapEvents ??= [];
 
         mapEvents.forEach((me) => {
             me.eventName ??= events.MapEventNotify.NotifyMapEvent;
+            let callback = this.#getNotifyMapEventMouseCallback(dotNetRef, mapId, me);
 
-            if (Helpers.isValueInEnum(MapEventMouse, me.type as any)) {
+            if (Helpers.isValueInEnum(MapEventMouse, me.type)) {
                 if (me.once) {
-                    map.events.addOnce(me.type as unknown as MapEventMouse, (e) => this.#notifyMapEventMouse(e, dotNetRef, mapId, me));
+                    map.events.addOnce(me.type as MapEventMouse, callback);
                 }
                 else {
-                    map.events.add(me.type as unknown as MapEventMouse, (e) => this.#notifyMapEventMouse(e, dotNetRef, mapId, me));
+                    map.events.add(me.type as MapEventMouse, callback);
                 }
             }
         });
     }
 
-    public static remove(map: atlas.Map, mapEvents: MapEvent[]) {
+    public static remove(map: atlas.Map, mapEvents: events.EventInfo[]) {
+        const mapId = Helpers.getMapId(map);
         mapEvents ?? [];
 
         mapEvents.forEach((me) => {
-            if (Helpers.isValueInEnum(MapEventMouse, me.type as any)) {
-                map.events.remove(me.type as any, () => this.#notifyMapEventMouse);
+            const callback: any = this.#eventsMap.getCallback(mapId, me);
+
+            if (callback) {
+                map.events.remove(me.type as any, callback);
+                this.#eventsMap.removeCallback(mapId, me);
             }
         });    
     }
 
     // #region Callbacks
 
-    static #notifyMapEventMouse = (callback: atlas.MapMouseEvent, dotNetRef: any, mapId: string, mapEvent: MapEvent) => {
+    static #getNotifyMapEventMouseCallback(dotNetRef: any, mapId: string, event: events.EventInfo) {
+        let callback: any = this.#eventsMap.getCallback(mapId, event);
+
+        if (callback) {
+            return callback;
+        }
+
+        callback = (e: atlas.MapMouseEvent) => this.#notifyMapEventMouse(e, dotNetRef, mapId, event);
+
+        this.#eventsMap.addCallback(mapId, event, callback);
+
+        return callback;
+    }
+
+    static #notifyMapEventMouse = (callback: atlas.MapMouseEvent, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
         if (mapEvent.preventDefault)
             callback.preventDefault();
 
@@ -134,9 +157,3 @@ export const MapEventType = {
 
 export type MapEventType = typeof MapEventType;
 
-export interface MapEvent {
-    type: MapEventType;
-    once: boolean;
-    preventDefault: boolean;
-    eventName?: string;
-}

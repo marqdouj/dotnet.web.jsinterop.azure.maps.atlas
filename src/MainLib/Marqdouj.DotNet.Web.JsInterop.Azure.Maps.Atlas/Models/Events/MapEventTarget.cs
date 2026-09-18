@@ -1,14 +1,13 @@
-﻿using Marqdouj.DotNet.EnumConverters;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events
 {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
     /// <summary>
-    /// Specifies the target element for map-related events.
+    /// Specifies the target for map-related events.
     /// </summary>
-    [JsonConverter(typeof(LowerCaseEnumConverter<MapEventTarget>))]
+    [JsonConverter(typeof(JsonStringEnumConverter<MapEventTarget>))]
     public enum MapEventTarget
     {
         Map,

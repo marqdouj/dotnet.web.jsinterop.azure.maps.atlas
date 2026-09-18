@@ -1,0 +1,200 @@
+﻿@page "/events-map"
+@rendermode InteractiveServer
+@inject IOptions<MapConfiguration> Configuration
+@inject IJSRuntime JSRuntime
+@inject ILogger<MapEvents> Logger
+@inject INotificationService ToastService
+
+<MapPage Title="@title">
+    <SummaryContent>
+        <FluentText As="TextTag.Paragraph">
+            This page demonstrates how to create/remove map events.
+        </FluentText>
+    </SummaryContent>
+
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
+        </Toolbar>
+
+        <FluentStack>
+            <FluentCard Height="@height" Width="200px" Style="overflow:auto">
+                <FluentStack Orientation="Orientation.Vertical">
+                    @foreach (var item in mapEvents)
+                    {
+                        <FluentCheckbox Disabled="@mapNotReady" Label="@item.Name" @bind-Value:get="@item.IsLoaded" @bind-Value:set="@((e) => OnMapEventsCheckedChanged(e, item))" />
+                    }
+                </FluentStack>
+            </FluentCard>
+
+            <MapContainer MapId="@mapId" />
+        </FluentStack>
+    </ChildContent>
+</MapPage>
+
+@code {
+    private const string mapId = "mapEvents";
+    private const string title = "Map Events";
+    private readonly string height = "400px";
+    private DotNetObjectReference<ComponentBase>? dotNetRef;
+    private AtlasInterop atlasInterop = default!;
+    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
+    private MapConfiguration? config;
+    private Map? map;
+    private bool mapNotReady => map == null;
+    private List<MapEventViewModel> mapEvents = [];
+
+    protected override void OnInitialized()
+    {
+        var values = Enum.GetValues<MapEventType>().OrderBy(e => e.ToString()).ToList();
+
+        values.Remove(MapEventType.Error);
+        values.Remove(MapEventType.Ready);
+        values.Remove(MapEventType.LayerAdded);
+        values.Remove(MapEventType.LayerRemoved);
+        values.Remove(MapEventType.MapConfigurationChanged);
+        values.Remove(MapEventType.SourceAdded);
+        values.Remove(MapEventType.SourceData);
+        values.Remove(MapEventType.SourceRemoved);
+        values.Remove(MapEventType.StyleData);
+        values.Remove(MapEventType.StyleImageMissing);
+        values.Remove(MapEventType.TokenAcquired);
+
+        mapEvents = values.Select(e => new MapEventViewModel(new MapEvent(e))).ToList();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                config = Configuration?.GetValue(LogLevel.Trace);
+
+                atlasInterop = new(JSRuntime);
+                dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
+
+                await CreateMap();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Initialization caused an exception.");
+                await ToastService.ShowError("Initialization caused an exception.");
+            }
+            finally
+            {
+                StateHasChanged();
+            }
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            dotNetRef?.Dispose();
+
+            if (map != null)
+                await map.DisposeAsync();
+
+            if (atlasInterop != null)
+                await atlasInterop.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+
+    private async Task OnMapEventsCheckedChanged(bool isChecked, MapEventViewModel item)
+    {
+        try
+        {
+            if (isChecked)
+            {
+                await atlasInterop.Events.Map.Add(dotNetRef!, map!, [item.MapEvent]);
+            }
+            else
+            {
+                await atlasInterop.Events.Map.Remove(map!, [item.MapEvent]);
+            }
+
+            item.IsLoaded = isChecked;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    #region Map
+
+    private async Task CreateMap()
+    {
+        try
+        {
+            if (map != null)
+                return;
+
+            config!.MapOptions = mapOptions;
+            map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task ResetMap()
+    {
+        try
+        {
+            if (map == null)
+                return;
+
+            await atlasInterop.Map.SetCamera(map, mapOptions.Camera);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    [JSInvokable]
+    public async Task NotifyMapEvent(MapEventArgs e)
+    {
+        switch (e.Target)
+        {
+            case MapEventTarget.Map:
+                await NotifyEventMap(e);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private async Task NotifyEventMap(MapEventArgs e)
+    {
+        if (await e.ErrorEventNotProcessed(Logger, ToastService))
+        {
+            await ToastService.ShowInfo($"Notify Event: {e.MapId} : {e.Type}");
+        }
+    }
+
+    #endregion
+
+    private class MapEventViewModel
+    {
+        public MapEventViewModel(MapEvent eventDef)
+        {
+            MapEvent = eventDef;
+        }
+
+        public MapEvent MapEvent { get; }
+        public MapEventType Type => MapEvent.Type;
+        public string Name => Type.ToString();
+        public bool IsLoaded { get; set; }
+    }
+}

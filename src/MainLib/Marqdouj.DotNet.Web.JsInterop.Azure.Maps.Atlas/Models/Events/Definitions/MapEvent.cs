@@ -11,5 +11,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Definitio
         /// <see cref="MapEventType"/>
         /// </summary>
         public MapEventType Type { get; } = type;
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        public override MapEventTarget Target => MapEventTarget.Map;
     }
 }

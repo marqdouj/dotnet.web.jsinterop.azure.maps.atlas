@@ -4,7 +4,7 @@ import { Controls, MapControl } from "./Controls"
 import { Logger, LogLevel } from "./common/Logger"
 import * as common from "./common";
 import * as events from "./events";
-import { MapEvent, MapEvents, MapEventType } from "./MapEvents";
+import { MapEvents, MapEventType } from "./MapEvents";
 
 export class Factory {
     public static setLogLevel(logLevel: LogLevel) {
@@ -15,7 +15,7 @@ export class Factory {
         Logger.logMessage("Setting LogLevel", LogLevel.Information, `LogLevel was [${LogLevel[previousLevel]}]. LogLevel set to [${LogLevel[Logger.currentLevel]}].`);
     }
 
-    public static createMap(dotNetRef: any, mapId: string, config: MapConfiguration, mapControls?: MapControl[], mapEvents?: MapEvent[]) {
+    public static createMap(dotNetRef: any, mapId: string, config: MapConfiguration, mapControls?: MapControl[], mapEvents?: events.EventInfo[]) {
         const eventNames: CreateMapEventNames = (config as any).eventNames as CreateMapEventNames ?? {};
 
         if (Helpers.isEmptyOrNull(eventNames.error)) {
