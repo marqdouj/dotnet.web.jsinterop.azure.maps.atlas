@@ -1,4 +1,4 @@
-import { EventInfo } from ".";
+import { EventInfo, Helpers } from ".";
 
 export class EventsMap {
     #eventsMap: Map<string, object> = new Map<string, object>();
@@ -25,7 +25,7 @@ export class EventsMap {
     }
 
     #getCallbackId(mapId: string, event: EventInfo) {
-        return `${mapId}.${event.target}.${event.type}`;
+        return `${mapId}.${event.target}.${Helpers.getEventInfoSourceId(event)}.${event.type}`;
     }
 
     clear() {

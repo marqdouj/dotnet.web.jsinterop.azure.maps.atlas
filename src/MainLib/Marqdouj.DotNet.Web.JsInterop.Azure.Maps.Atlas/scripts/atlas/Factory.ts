@@ -4,7 +4,7 @@ import { Controls, MapControl } from "./Controls"
 import { Logger, LogLevel } from "./common/Logger"
 import * as common from "./common";
 import * as events from "./events";
-import { MapEvents, MapEventType } from "./MapEvents";
+import { MapEvents, MapEventType } from "./events/MapEvents";
 
 export class Factory {
     public static setLogLevel(logLevel: LogLevel) {

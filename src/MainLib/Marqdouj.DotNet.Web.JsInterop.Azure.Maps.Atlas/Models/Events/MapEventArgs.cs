@@ -24,6 +24,12 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events
         public MapEventTarget Target { get; internal set; } = default!;
 
         /// <summary>
+        /// The id of the target (if applicable).
+        /// </summary>
+        [JsonInclude]
+        public string? TargetId { get; internal set; }
+
+        /// <summary>
         /// They type of event.
         /// </summary>
         [JsonInclude]

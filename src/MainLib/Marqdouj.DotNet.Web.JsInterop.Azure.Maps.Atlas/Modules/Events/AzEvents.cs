@@ -8,6 +8,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Events
     public interface IAtlasEvents
     {
         /// <summary>
+        /// <inheritdoc cref="IAtlasLayerEvents"/>
+        /// </summary>
+        IAtlasLayerEvents Layer { get; }
+
+        /// <summary>
         /// <inheritdoc cref="IAtlasMapEvents"/>
         /// </summary>
         IAtlasMapEvents Map { get; }
@@ -15,7 +20,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Events
 
     internal class AzEvents(Lazy<Task<IJSObjectReference>> moduleTask) : IAtlasEvents
     {
+        public IAtlasLayerEvents Layer { get; } = new AzLayerEvents(moduleTask);
         public IAtlasMapEvents Map { get; } = new AzMapEvents(moduleTask);
-
     }
 }

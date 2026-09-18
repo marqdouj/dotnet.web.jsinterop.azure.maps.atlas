@@ -1,4 +1,7 @@
-﻿namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Definitions
+﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common;
+using Microsoft.JSInterop;
+
+namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Definitions
 {
     /// <summary>
     /// Base class for event definitions.
@@ -9,6 +12,11 @@
         /// <see cref="MapEventTarget"/>
         /// </summary>
         public abstract MapEventTarget Target { get; }
+
+        /// <summary>
+        /// Target Id or <see cref="IJSObjectReference"/> to the <see cref="Target"/>
+        /// </summary>
+        public object? Source { get; set; }
 
         /// <summary>
         /// The name used for JSInvokable callback from JS to .NET . Default is 'NotifyMapEvent'.

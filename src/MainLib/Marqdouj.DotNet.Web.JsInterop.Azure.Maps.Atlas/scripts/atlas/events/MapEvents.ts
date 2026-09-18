@@ -1,12 +1,14 @@
 import * as atlas from "azure-maps-control"
-import { Helpers } from "./common/Helpers";
-import * as events from "./events"
-import { EventsMap } from "./events/EventsMap";
+import { Helpers } from "../common/Helpers";
+import * as events from "."
+import { EventsMap } from "./EventsMap";
+import { Logger, LogLevel } from "../common/Logger";
 
 export class MapEvents {
     static readonly #eventsMap: EventsMap = new EventsMap ();
 
     public static add(dotNetRef: any, map: atlas.Map, mapEvents?: events.EventInfo[]) {
+        const eventName = "MapEvents.add";
         const mapId = Helpers.getMapId(map);
         mapEvents ??= [];
 
@@ -51,6 +53,9 @@ export class MapEvents {
                     map.events.add(me.type as unknown as any, callback);
                 }
             }
+            else {
+                Logger.logMapMessage(mapId, LogLevel.Error, `${eventName}: Callback not found.`, me);
+            }
         });
     }
 
@@ -62,7 +67,7 @@ export class MapEvents {
             const callback: any = this.#eventsMap.getCallback(mapId, me);
 
             if (callback) {
-                map.events.remove(me.type as any, callback);
+                map.events.remove(me.type, callback);
                 this.#eventsMap.removeCallback(mapId, me);
             }
         });    
@@ -86,7 +91,7 @@ export class MapEvents {
 
     static #notifyMapEventConfig = (callback: atlas.MapConfiguration, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
         const payload = { config: { ...callback } };
-        const args = events.Helpers.buildNotifyMapEventArgs(mapId, mapEvent, payload);
+        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 
@@ -110,7 +115,7 @@ export class MapEvents {
 
     static #notifyMapEventData = (callback: atlas.MapDataEvent, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
         const payload = this.#buildMapDataEventPayload(callback);
-        const args = events.Helpers.buildNotifyMapEventArgs(mapId, mapEvent, payload);
+        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 
@@ -146,7 +151,7 @@ export class MapEvents {
 
     static #notifyMapEventGeneral = (dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
         const payload: any = undefined;
-        const args = events.Helpers.buildNotifyMapEventArgs(mapId, mapEvent, payload);
+        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 
@@ -170,7 +175,7 @@ export class MapEvents {
 
     static #notifyMapEventLayer = (callback: atlas.layer.Layer, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
         const payload = { layer: { id: callback.getId() } };
-        const args = events.Helpers.buildNotifyMapEventArgs(mapId, mapEvent, payload);
+        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 
@@ -197,7 +202,7 @@ export class MapEvents {
             callback.preventDefault();
 
         const payload = events.Helpers.buildMouseEventPayload(callback);
-        const args = events.Helpers.buildNotifyMapEventArgs(mapId, mapEvent, payload);
+        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 
@@ -221,7 +226,7 @@ export class MapEvents {
 
     static #notifyMapEventSource = (callback: atlas.source.Source, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
         const payload = { source: { id: callback.getId() } };
-        const args = events.Helpers.buildNotifyMapEventArgs(mapId, mapEvent, payload);
+        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 
@@ -253,7 +258,7 @@ export class MapEvents {
 
     static #notifyMapEventStyle = (style: string, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
         const payload = { style: { style: style } };
-        const args = events.Helpers.buildNotifyMapEventArgs(mapId, mapEvent, payload);
+        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 
@@ -279,7 +284,7 @@ export class MapEvents {
         if (mapEvent.preventDefault)
             callback.preventDefault();
         const payload = events.Helpers.buildTouchEventPayload(callback);
-        const args = events.Helpers.buildNotifyMapEventArgs(mapId, mapEvent, payload);
+        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 
@@ -305,7 +310,7 @@ export class MapEvents {
         if (mapEvent.preventDefault)
             callback.preventDefault();
         const payload = events.Helpers.buildWheelEventPayload(callback);
-        const args = events.Helpers.buildNotifyMapEventArgs(mapId, mapEvent, payload);
+        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 

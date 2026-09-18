@@ -7,6 +7,7 @@ export enum MapEventTarget {
 export interface NotifyMapEventArgs {
     mapId: string;
     target: MapEventTarget;
+    targetId?: string;
     type: string;
     payload?: atlas.Properties | undefined;
 }
@@ -17,6 +18,7 @@ export enum MapEventNotify {
 
 export interface EventInfo {
     target: MapEventTarget;
+    source?: any;
     type: string;
     once: boolean;
     preventDefault: boolean;
@@ -103,8 +105,29 @@ export class Helpers {
         return { wheel: payload };
     }
 
-    static buildNotifyMapEventArgs(mapId: string, event: EventInfo, payload?: any) {
-        const args: NotifyMapEventArgs = { mapId: mapId, target: event.target, type: event.type, payload: payload };
+    static buildNotifyEventArgs(mapId: string, event: EventInfo, payload?: any) {
+        const args: NotifyMapEventArgs = { mapId: mapId, target: event.target, targetId: this.getEventInfoSourceId(event), type: event.type, payload: payload };
         return args;
+    }
+
+    static getEventInfoSourceId(eventInfo: EventInfo) {
+        const source = eventInfo.source;
+        let id: string | undefined;
+
+        if (source) {
+            if (typeof source === 'string') {
+                id = source;
+            }
+            else if (source instanceof Object) {
+                if (source.getId) {
+                    id = source.getId();
+                }
+                else if (source.id) {
+                    id = source.id;
+                }
+            }
+        }
+
+        return id;
     }
 }
