@@ -1,7 +1,6 @@
 import * as atlas from "azure-maps-control"
 import { Helpers } from "./common/Helpers";
 import * as events from "./events"
-import { Logger, LogLevel } from "./common/Logger";
 import { EventsMap } from "./events/EventsMap";
 
 export class MapEvents {
@@ -13,14 +12,43 @@ export class MapEvents {
 
         mapEvents.forEach((me) => {
             me.eventName ??= events.MapEventNotify.NotifyMapEvent;
-            let callback = this.#getNotifyMapEventMouseCallback(dotNetRef, mapId, me);
+            let callback: any;
 
-            if (Helpers.isValueInEnum(MapEventMouse, me.type)) {
+            //General/Mouse are most common so check for them first.
+            if (Helpers.isValueInEnum(MapEventGeneral, me.type)) {
+                callback = this.#getNotifyMapEventGeneralCallback(dotNetRef, mapId, me);
+            }
+            else if (Helpers.isValueInEnum(MapEventMouse, me.type)) {
+                callback = this.#getNotifyMapEventMouseCallback(dotNetRef, mapId, me);
+            }
+            else if (Helpers.isValueInEnum(MapEventConfig, me.type)) {
+                callback = this.#getNotifyMapEventConfigCallback(dotNetRef, mapId, me);
+            }
+            else if (Helpers.isValueInEnum(MapEventData, me.type)) {
+                callback = this.#getNotifyMapEventDataCallback(dotNetRef, mapId, me);
+            }
+            else if (Helpers.isValueInEnum(MapEventLayer, me.type)) {
+                callback = this.#getNotifyMapEventLayerCallback(dotNetRef, mapId, me);
+            }
+            else if (Helpers.isValueInEnum(MapEventSource, me.type)) {
+                callback = this.#getNotifyMapEventSourceCallback(dotNetRef, mapId, me);
+            }
+            else if (Helpers.isValueInEnum(MapEventStyle, me.type)) {
+                callback = this.#getNotifyMapEventStyleCallback(dotNetRef, mapId, me);
+            }
+            else if (Helpers.isValueInEnum(MapEventTouch, me.type)) {
+                callback = this.#getNotifyMapEventTouchCallback(dotNetRef, mapId, me);
+            }
+            else if (Helpers.isValueInEnum(MapEventWheel, me.type)) {
+                callback = this.#getNotifyMapEventWheelCallback(dotNetRef, mapId, me);
+            }
+
+            if (callback) {
                 if (me.once) {
-                    map.events.addOnce(me.type as MapEventMouse, callback);
+                    map.events.addOnce(me.type as unknown as any, callback);
                 }
                 else {
-                    map.events.add(me.type as MapEventMouse, callback);
+                    map.events.add(me.type as unknown as any, callback);
                 }
             }
         });
@@ -40,7 +68,115 @@ export class MapEvents {
         });    
     }
 
-    // #region Callbacks
+    // #region MapEventConfig
+
+    static #getNotifyMapEventConfigCallback(dotNetRef: any, mapId: string, event: events.EventInfo) {
+        let callback: any = this.#eventsMap.getCallback(mapId, event);
+
+        if (callback) {
+            return callback;
+        }
+
+        callback = (e: atlas.MapConfiguration) => this.#notifyMapEventConfig(e, dotNetRef, mapId, event);
+
+        this.#eventsMap.addCallback(mapId, event, callback);
+
+        return callback;
+    }
+
+    static #notifyMapEventConfig = (callback: atlas.MapConfiguration, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
+        const payload = { config: { ...callback } };
+        const args = events.Helpers.buildNotifyMapEventArgs(mapId, mapEvent, payload);
+        dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
+    };
+
+    // #endRegion
+
+    // #region MapEventData
+
+    static #getNotifyMapEventDataCallback(dotNetRef: any, mapId: string, event: events.EventInfo) {
+        let callback: any = this.#eventsMap.getCallback(mapId, event);
+
+        if (callback) {
+            return callback;
+        }
+
+        callback = (e: atlas.MapDataEvent) => this.#notifyMapEventData(e, dotNetRef, mapId, event);
+
+        this.#eventsMap.addCallback(mapId, event, callback);
+
+        return callback;
+    }
+
+    static #notifyMapEventData = (callback: atlas.MapDataEvent, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
+        const payload = this.#buildMapDataEventPayload(callback);
+        const args = events.Helpers.buildNotifyMapEventArgs(mapId, mapEvent, payload);
+        dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
+    };
+
+    static #buildMapDataEventPayload(dataEvent: atlas.MapDataEvent) {
+        const payload = {
+            dataType: dataEvent.dataType,
+            isSourceLoaded: dataEvent.isSourceLoaded,
+            source: dataEvent.source?.getId(),
+            sourceDataType: dataEvent.sourceDataType,
+            tile: dataEvent.tile
+        };
+
+        return { data: payload };
+    }
+
+    // #endRegion
+
+    // #region MapEventGeneral
+
+    static #getNotifyMapEventGeneralCallback(dotNetRef: any, mapId: string, event: events.EventInfo) {
+        let callback: any = this.#eventsMap.getCallback(mapId, event);
+
+        if (callback) {
+            return callback;
+        }
+
+        callback = (e: atlas.MapEvent) => this.#notifyMapEventGeneral(dotNetRef, mapId, event);
+
+        this.#eventsMap.addCallback(mapId, event, callback);
+
+        return callback;
+    }
+
+    static #notifyMapEventGeneral = (dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
+        const payload: any = undefined;
+        const args = events.Helpers.buildNotifyMapEventArgs(mapId, mapEvent, payload);
+        dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
+    };
+
+    // #endRegion
+
+    // #region MapEventLayer
+
+    static #getNotifyMapEventLayerCallback(dotNetRef: any, mapId: string, event: events.EventInfo) {
+        let callback: any = this.#eventsMap.getCallback(mapId, event);
+
+        if (callback) {
+            return callback;
+        }
+
+        callback = (e: atlas.layer.Layer) => this.#notifyMapEventLayer(e, dotNetRef, mapId, event);
+
+        this.#eventsMap.addCallback(mapId, event, callback);
+
+        return callback;
+    }
+
+    static #notifyMapEventLayer = (callback: atlas.layer.Layer, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
+        const payload = { layer: { id: callback.getId() } };
+        const args = events.Helpers.buildNotifyMapEventArgs(mapId, mapEvent, payload);
+        dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
+    };
+
+    // #endRegion
+
+    // #region MapEventMouse
 
     static #getNotifyMapEventMouseCallback(dotNetRef: any, mapId: string, event: events.EventInfo) {
         let callback: any = this.#eventsMap.getCallback(mapId, event);
@@ -61,12 +197,119 @@ export class MapEvents {
             callback.preventDefault();
 
         const payload = events.Helpers.buildMouseEventPayload(callback);
-        const args: events.NotifyMapEventArgs = { mapId: mapId, target: events.MapEventTarget.Map, type: mapEvent.type as any, payload: payload };
+        const args = events.Helpers.buildNotifyMapEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 
     // #endRegion
 
+    // #region MapEventSource
+
+    static #getNotifyMapEventSourceCallback(dotNetRef: any, mapId: string, event: events.EventInfo) {
+        let callback: any = this.#eventsMap.getCallback(mapId, event);
+
+        if (callback) {
+            return callback;
+        }
+
+        callback = (e: atlas.source.Source) => this.#notifyMapEventSource(e, dotNetRef, mapId, event);
+
+        this.#eventsMap.addCallback(mapId, event, callback);
+
+        return callback;
+    }
+
+    static #notifyMapEventSource = (callback: atlas.source.Source, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
+        const payload = { source: { id: callback.getId() } };
+        const args = events.Helpers.buildNotifyMapEventArgs(mapId, mapEvent, payload);
+        dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
+    };
+
+    // #endRegion
+
+    // #region MapEventStyle
+
+    static #getNotifyMapEventStyleCallback(dotNetRef: any, mapId: string, event: events.EventInfo) {
+        let callback: any = this.#eventsMap.getCallback(mapId, event);
+
+        if (callback) {
+            return callback;
+        }
+
+        switch (event.type.toLowerCase()) {
+            case MapEventStyle.StyleChanged:
+                callback = (source: atlas.StyleChangedEvent) => this.#notifyMapEventStyle(source.style, dotNetRef, mapId, event);
+                break;
+            case MapEventStyle.StyleImageMissing:
+                callback = (style: string) => this.#notifyMapEventStyle(style, dotNetRef, mapId, event);
+                break;
+            default:
+        }
+
+        this.#eventsMap.addCallback(mapId, event, callback);
+
+        return callback;
+    }
+
+    static #notifyMapEventStyle = (style: string, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
+        const payload = { style: { style: style } };
+        const args = events.Helpers.buildNotifyMapEventArgs(mapId, mapEvent, payload);
+        dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
+    };
+
+    // #endRegion
+
+    // #region MapEventTouch
+
+    static #getNotifyMapEventTouchCallback(dotNetRef: any, mapId: string, event: events.EventInfo) {
+        let callback: any = this.#eventsMap.getCallback(mapId, event);
+
+        if (callback) {
+            return callback;
+        }
+
+        callback = (e: atlas.MapTouchEvent) => this.#notifyMapEventTouch(e, dotNetRef, mapId, event);
+
+        this.#eventsMap.addCallback(mapId, event, callback);
+
+        return callback;
+    }
+
+    static #notifyMapEventTouch = (callback: atlas.MapTouchEvent, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
+        if (mapEvent.preventDefault)
+            callback.preventDefault();
+        const payload = events.Helpers.buildTouchEventPayload(callback);
+        const args = events.Helpers.buildNotifyMapEventArgs(mapId, mapEvent, payload);
+        dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
+    };
+
+    // #endRegion
+
+    // #region MapEventWheel
+
+    static #getNotifyMapEventWheelCallback(dotNetRef: any, mapId: string, event: events.EventInfo) {
+        let callback: any = this.#eventsMap.getCallback(mapId, event);
+
+        if (callback) {
+            return callback;
+        }
+
+        callback = (e: atlas.MapMouseWheelEvent) => this.#notifyMapEventWheel(e, dotNetRef, mapId, event);
+
+        this.#eventsMap.addCallback(mapId, event, callback);
+
+        return callback;
+    }
+
+    static #notifyMapEventWheel = (callback: atlas.MapMouseWheelEvent, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
+        if (mapEvent.preventDefault)
+            callback.preventDefault();
+        const payload = events.Helpers.buildWheelEventPayload(callback);
+        const args = events.Helpers.buildNotifyMapEventArgs(mapId, mapEvent, payload);
+        dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
+    };
+
+    // #endRegion
 }
 
 enum MapEventConfig {

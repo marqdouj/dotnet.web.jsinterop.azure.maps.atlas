@@ -81,4 +81,30 @@ export class Helpers {
 
         return { mouse: mouse };
     }
+
+    static buildTouchEventPayload(touchEvent: atlas.MapTouchEvent) {
+        const payload = {
+            pixel: touchEvent.pixel,
+            pixels: touchEvent.pixels,
+            position: touchEvent.position,
+            positions: touchEvent.positions,
+            layerId: touchEvent.layerId,
+            shapes: this.#buildShapeResults(touchEvent.shapes)
+        };
+
+        return { touch: payload };
+    }
+
+    static buildWheelEventPayload(wheelEvent: atlas.MapMouseWheelEvent) {
+        const payload = {
+            type: wheelEvent.type,
+        };
+
+        return { wheel: payload };
+    }
+
+    static buildNotifyMapEventArgs(mapId: string, event: EventInfo, payload?: any) {
+        const args: NotifyMapEventArgs = { mapId: mapId, target: event.target, type: event.type, payload: payload };
+        return args;
+    }
 }
