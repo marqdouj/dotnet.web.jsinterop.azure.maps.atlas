@@ -8,7 +8,7 @@
 <MapPage Title="@title">
     <SummaryContent>
         <FluentText As="TextTag.Paragraph">
-            This page demonstrates how to create/remove map events.
+            This page demonstrates how to map events.
         </FluentText>
     </SummaryContent>
 
@@ -18,6 +18,7 @@
             <FluentSpacer Width="8px" />
             <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.Eraser())" Title="Clear Events" OnClick="@(() => ClearEvents(true))" />
             <FluentCheckbox Label="Multiliine" @bind-Value="@multiline" />
+            <FluentCheckbox Label="Prevent Default" @bind-Value="@preventDefault" Tooltip="@preventDefaultText" />
         </Toolbar>
 
         <FluentStack>
@@ -50,6 +51,8 @@
     private List<MapEventViewModel> mapEvents = [];
     private readonly MapEventArgsViewModelManager eventArgsManager = new();
     private bool multiline;
+    private bool preventDefault = true;
+    private const string preventDefaultText = "Setting will be applied when adding the event. Normally used with Mouse, Touch, and Wheel events.";
 
     protected override void OnInitialized()
     {
@@ -121,6 +124,7 @@
 
             if (isChecked)
             {
+                item.MapEvent.PreventDefault = preventDefault;
                 await atlasInterop.Events.Map.Add(dotNetRef!, map!, [item.MapEvent]);
             }
             else
