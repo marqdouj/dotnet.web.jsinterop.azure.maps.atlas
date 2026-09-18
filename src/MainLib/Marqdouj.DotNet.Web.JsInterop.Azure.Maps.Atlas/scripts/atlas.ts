@@ -8,5 +8,6 @@ export { Map } from "./atlas/Map"
 export { MapEvents } from "./atlas/MapEvents"
 export { Math } from "./atlas/Math";
 export { MercatorPoint } from "./atlas/data/MercatorPoint"
+export { Navigator as Navigator } from "./atlas/common/Navigator"
 export { Position } from "./atlas/data/Position"
 export { Sources } from "./atlas/Sources"

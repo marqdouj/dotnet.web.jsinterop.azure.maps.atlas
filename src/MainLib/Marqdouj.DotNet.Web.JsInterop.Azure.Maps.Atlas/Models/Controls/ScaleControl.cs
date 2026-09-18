@@ -13,7 +13,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Controls
         /// </summary>
         /// <param name="position"><see cref="ControlPosition"/></param>
         /// <param name="options"><see cref="ScaleControlOptions"/></param>
-        public ScaleControl(ControlPosition? position = ControlPosition.Bottom_Right, ScaleControlOptions? options = null)
+        public ScaleControl(ControlPosition? position = ControlPosition.Bottom_Left, ScaleControlOptions? options = null)
         {
             if (position != null)
             {

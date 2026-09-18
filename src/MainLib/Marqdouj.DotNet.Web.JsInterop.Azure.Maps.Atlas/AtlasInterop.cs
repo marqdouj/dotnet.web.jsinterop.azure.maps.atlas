@@ -12,6 +12,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
     public interface IAtlasInterop : IAsyncDisposable
     {
         /// <summary>
+        /// <inheritdoc cref="IAtlasNavigator"/>
+        /// </summary>
+        IAtlasNavigator Navigator { get; }
+
+        /// <summary>
         /// <inheritdoc cref="IAtlasControls"/>
         /// </summary>
         IAtlasControls Controls { get; }
@@ -81,8 +86,14 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
             Layers = new AzLayers(moduleTask);
             Map = new AzMap(moduleTask);
             Math = new AzMath(moduleTask);
+            Navigator = new AzNavigator(moduleTask);
             Sources = new AzSources(moduleTask);
         }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasNavigator"/>
+        /// </summary>
+        public IAtlasNavigator Navigator { get; }
 
         /// <summary>
         /// <inheritdoc cref="IAtlasControls"/>

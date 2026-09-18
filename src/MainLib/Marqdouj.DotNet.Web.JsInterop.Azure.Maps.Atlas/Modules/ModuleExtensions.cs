@@ -14,6 +14,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         Map,
         MapEvents,
         MercatorPoint,
+        Navigator,
         Position,
         Sources,
     }

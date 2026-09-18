@@ -5,11 +5,28 @@ using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Payloads;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Types;
 using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using Microsoft.FluentUI.AspNetCore.Components;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Sandbox.Components.Pages.Atlas
 {
     internal static class MapExtensions
     {
+        private static readonly JsonSerializerOptions jsonMinOptions = new()
+        {
+            WriteIndented = true,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        };
+
+        extension<T>(T obj)
+        {
+            internal string ToJsonMin()
+            {
+                return JsonSerializer.Serialize(obj, jsonMinOptions);
+            }
+        }
+
+
         public static async Task<bool> ErrorEventProcessed(this MapEventArgs e, ILogger logger, INotificationService toastService)
         {
             if (e.Target == MapEventTarget.Map && e.TypeToEnum<MapEventType>() == MapEventType.Error)
