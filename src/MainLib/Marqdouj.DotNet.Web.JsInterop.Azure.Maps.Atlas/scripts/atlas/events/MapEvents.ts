@@ -47,10 +47,10 @@ export class MapEvents {
 
             if (callback) {
                 if (me.once) {
-                    map.events.addOnce(me.type as unknown as any, callback);
+                    map.events.addOnce(me.type as any, callback);
                 }
                 else {
-                    map.events.add(me.type as unknown as any, callback);
+                    map.events.add(me.type as any, callback);
                 }
             }
             else {

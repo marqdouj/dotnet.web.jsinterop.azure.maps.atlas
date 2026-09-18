@@ -35,7 +35,7 @@
     private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
     private ILayer? layer;
     private MapSource? source;
-    private readonly List<LayerType?> layerTypes = Enum.GetValues<LayerType>().Cast<LayerType?>().ToList();
+    private readonly List<LayerType?> layerTypes = Enum.GetValues<LayerType>().OrderBy(e => e.ToString()).Cast<LayerType?>().ToList();
     private LayerType? selectedLayer;
     private bool hasInterop => atlasInterop != null;
     private bool mapNotReady => map == null;

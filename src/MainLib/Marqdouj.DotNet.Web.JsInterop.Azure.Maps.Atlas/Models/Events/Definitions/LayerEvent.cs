@@ -3,7 +3,7 @@
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Definitions
 {
     /// <summary>
-    /// Layer event definition.
+    /// Layers event definition.
     /// </summary>
     public class LayerEvent(LayerEventType type) : Event
     {

@@ -75,7 +75,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// IMPORTANT! If you have an <see cref="IMapObjectReference"/> to the layer it must be disposed.
         /// </summary>
         /// <param name="map"></param>
-        /// <param name="layer">Layer to remove</param>
+        /// <param name="layer">Layers to remove</param>
         /// <returns></returns>
         ValueTask Remove(Map map, ILayer layer);
 

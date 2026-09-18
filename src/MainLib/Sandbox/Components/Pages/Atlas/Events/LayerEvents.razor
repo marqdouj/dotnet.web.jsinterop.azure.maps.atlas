@@ -1,20 +1,27 @@
-﻿@page "/events-map"
+﻿@page "/events-layers"
 @rendermode InteractiveServer
 @inject IOptions<MapConfiguration> Configuration
 @inject IJSRuntime JSRuntime
-@inject ILogger<MapEvents> Logger
+@inject ILogger<LayerEvents> Logger
 @inject INotificationService ToastService
+@inject IMapDataService DataService
 
 <MapPage Title="@title">
     <SummaryContent>
         <FluentText As="TextTag.Paragraph">
-            This page demonstrates map events.
+            This page demonstrates layer events.
+            <br />
+            NOTE: Some events are applied only to the featues of the layer, 
+            i.e. for a symbol layer the click event is fired when a symbol is clicked, not when the map itself it clicked.
         </FluentText>
     </SummaryContent>
 
     <ChildContent>
         <Toolbar>
             <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
+            <FluentSpacer Width="10px" />
+            <FluentLabel>Layer:</FluentLabel>
+            <FluentSelect Items="@layerTypes" TValue="LayerType?" TOption="LayerType?" @bind-Value:get="@selectedLayer" @bind-Value:set="@SelectedLayerChanged" Placeholder="Select a layer..." />
             <FluentSpacer Width="8px" />
             <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.Eraser())" Title="Clear Events" OnClick="@(() => ClearEvents(true))" />
             <FluentCheckbox Label="Multiliine" @bind-Value="@multiline" />
@@ -24,7 +31,7 @@
         <FluentStack>
             <FluentCard Height="@height" Width="200px" Style="overflow:auto">
                 <FluentStack Orientation="Orientation.Vertical">
-                    @foreach (var item in mapEvents)
+                    @foreach (var item in layerEvents)
                     {
                         <FluentCheckbox Disabled="@mapNotReady" Label="@item.Name" @bind-Value:get="@item.IsLoaded" @bind-Value:set="@((e) => OnMapEventsCheckedChanged(e, item))" />
                     }
@@ -48,29 +55,25 @@
     private MapConfiguration? config;
     private Map? map;
     private bool mapNotReady => map == null;
-    private List<MapEventViewModel> mapEvents = [];
+    private List<LayerEventViewModel> layerEvents = [];
     private readonly MapEventArgsViewModelManager eventArgsManager = new();
+    private readonly List<LayerType?> layerTypes = Enum.GetValues<LayerType>().OrderBy(e => e.ToString()).Cast<LayerType?>().ToList();
     private bool multiline;
     private bool preventDefault = true;
     private const string preventDefaultText = "Setting will be applied when adding the event. Normally used with Mouse, Touch, and Wheel events.";
+    private ILayer? activeLayer;
+    private LayerType? selectedLayer;
+    private MapSource? source;
 
     protected override void OnInitialized()
     {
-        var values = Enum.GetValues<MapEventType>().OrderBy(e => e.ToString()).ToList();
+        //These layers do not support the events.
+        layerTypes.Remove(LayerType.HeatMap);
+        layerTypes.Remove(LayerType.Image);
+        layerTypes.Remove(LayerType.Tile);
 
-        values.Remove(MapEventType.Error);
-        values.Remove(MapEventType.Ready);
-        values.Remove(MapEventType.LayerAdded);
-        values.Remove(MapEventType.LayerRemoved);
-        values.Remove(MapEventType.MapConfigurationChanged);
-        values.Remove(MapEventType.SourceAdded);
-        values.Remove(MapEventType.SourceData);
-        values.Remove(MapEventType.SourceRemoved);
-        values.Remove(MapEventType.StyleData);
-        values.Remove(MapEventType.StyleImageMissing);
-        values.Remove(MapEventType.TokenAcquired);
-
-        mapEvents = values.Select(e => new MapEventViewModel(new MapEvent(e))).ToList();
+        var values = Enum.GetValues<LayerEventType>().OrderBy(e => e.ToString()).ToList();
+        layerEvents = values.Select(e => new LayerEventViewModel(new LayerEvent(e))).ToList();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -115,21 +118,25 @@
         }
     }
 
-    private async Task OnMapEventsCheckedChanged(bool isChecked, MapEventViewModel item)
+    private async Task OnMapEventsCheckedChanged(bool isChecked, LayerEventViewModel item)
     {
         try
         {
+            if (activeLayer == null)
+                return;
+
             if (item.IsLoaded == isChecked)
                 return;
 
             if (isChecked)
             {
-                item.MapEvent.PreventDefault = preventDefault;
-                await atlasInterop.Events.Map.Add(dotNetRef!, map!, [item.MapEvent]);
+                item.LayerEvent.Source = activeLayer.Id;
+                item.LayerEvent.PreventDefault = preventDefault;
+                await atlasInterop.Events.Layers.Add(dotNetRef!, map!, [item.LayerEvent]);
             }
             else
             {
-                await atlasInterop.Events.Map.Remove(map!, [item.MapEvent]);
+                await atlasInterop.Events.Layers.Remove(map!, [item.LayerEvent]);
             }
 
             item.IsLoaded = isChecked;
@@ -145,11 +152,14 @@
     {
         try
         {
-            if (atlasInterop == null) return;
+            if (atlasInterop == null || activeLayer == null) return;
 
-            var items = mapEvents.Where(e => e.IsLoaded);
+            var items = layerEvents.Where(e => e.IsLoaded);
 
-            await atlasInterop.Events.Map.Remove(map!, items.Select(i => i.MapEvent));
+            foreach (var item in items)
+                item.LayerEvent.Source = activeLayer.Id;
+
+            await atlasInterop.Events.Layers.Remove(map!, items.Select(i => i.LayerEvent));
 
             foreach (var item in items)
                 item.IsLoaded = false;
@@ -163,6 +173,67 @@
             await ToastService.ShowError(ex.Message);
         }
     }
+
+    #region Layer
+
+    private async Task SelectedLayerChanged(LayerType? value)
+    {
+        if (value == selectedLayer)
+            return;
+
+        selectedLayer = value;
+        await CreateLayer();
+    }
+
+    private async Task CreateLayer()
+    {
+        try
+        {
+            if (map == null) return;
+
+            await RemoveLayer();
+
+            if (selectedLayer == null)
+                return;
+
+            var results = await selectedLayer.AddDefaultLayer(atlasInterop, map, DataService);
+            source = results.Source;
+            activeLayer = results.Layer;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task RemoveLayer()
+    {
+        try
+        {
+            if (map == null)
+                return;
+
+            if (activeLayer != null)
+            {
+                await ClearEvents(true);
+                await atlasInterop.Layers.Remove(map, activeLayer.Id);
+            }
+
+            if (source != null)
+                await atlasInterop.Sources.Remove(map, source.Id);
+
+            source = null;
+            activeLayer = null;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    #endregion
 
     #region Map
 
@@ -190,7 +261,7 @@
             if (map == null)
                 return;
 
-            await ClearEvents(true);
+            await RemoveLayer();
             await atlasInterop.Map.SetCamera(map, mapOptions.Camera);
         }
         catch (Exception ex)
@@ -210,15 +281,15 @@
 
     #endregion
 
-    private class MapEventViewModel
+    private class LayerEventViewModel
     {
-        public MapEventViewModel(MapEvent mapEvent)
+        public LayerEventViewModel(LayerEvent layerEvent)
         {
-            MapEvent = mapEvent;
+            LayerEvent = layerEvent;
         }
 
-        public MapEvent MapEvent { get; }
-        public MapEventType Type => MapEvent.Type;
+        public LayerEvent LayerEvent { get; }
+        public LayerEventType Type => LayerEvent.Type;
         public string Name => Type.ToString();
         public bool IsLoaded { get; set; }
     }

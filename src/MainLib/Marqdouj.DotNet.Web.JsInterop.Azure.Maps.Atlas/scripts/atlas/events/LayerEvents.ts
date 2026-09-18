@@ -15,18 +15,7 @@ export class LayerEvents {
         mapEvents.forEach((me) => {
             me.eventName ??= events.MapEventNotify.NotifyMapEvent;
             let callback: any;
-            let target: atlas.layer.Layer | undefined;
-
-            const source = me.source;
-
-            if (source) {
-                if (typeof source === 'string') {
-                    target = map.layers.getLayerById(source);
-                }
-                else if (source instanceof atlas.layer.Layer) {
-                    target = source;
-                }
-            }
+            const target = this.#getTarget(map, me);
 
             if (target) {
                 if (Helpers.isValueInEnum(LayerEventGeneral, me.type)) {
@@ -44,23 +33,24 @@ export class LayerEvents {
 
                 if (callback) {
                     if (me.once) {
-                        map.events.addOnce(me.type as unknown as any, target as any, callback);
+                        map.events.addOnce(me.type as any, target as atlas.layer.Layer, callback);
                     }
                     else {
-                        map.events.add(me.type as unknown as any, target as any, callback);
+                        map.events.add(me.type as any, target as atlas.layer.Layer, callback);
                     }
                 } 
                 else {
-                    Logger.logMapMessage(mapId, LogLevel.Error, `${eventName}: Callback not found.`, me);
+                    Logger.logMapMessage(mapId, LogLevel.Warn, `${eventName}: Callback not found.`, me);
                 }
             }
             else {
-                Logger.logMapMessage(mapId, LogLevel.Error, `${eventName}: Target not found.`, me);
+                Logger.logMapMessage(mapId, LogLevel.Warn, `${eventName}: Target not found.`, me);
             }
         });
     }
 
     public static remove(map: atlas.Map, mapEvents: events.EventInfo[]) {
+        const eventName = "LayerEvents.remove";
         const mapId = Helpers.getMapId(map);
         mapEvents ?? [];
 
@@ -68,10 +58,37 @@ export class LayerEvents {
             const callback: any = this.#eventsMap.getCallback(mapId, me);
 
             if (callback) {
-                map.events.remove(me.type, callback);
-                this.#eventsMap.removeCallback(mapId, me);
+                const target = this.#getTarget(map, me);
+
+                if (target) {
+                    map.events.remove(me.type, target as atlas.layer.Layer, callback);
+                    this.#eventsMap.removeCallback(mapId, me);
+                }
+                else {
+                    Logger.logMapMessage(mapId, LogLevel.Warn, `${eventName}: Target not found.`, me);
+                }
+            }
+            else {
+                Logger.logMapMessage(mapId, LogLevel.Warn, `${eventName}: Callback not found.`, me);
             }
         });
+    }
+
+    static #getTarget(map: atlas.Map, mapEvent: events.EventInfo): atlas.layer.Layer | undefined {
+        let target: atlas.layer.Layer | undefined;
+
+        const source = mapEvent.source;
+
+        if (source) {
+            if (typeof source === 'string') {
+                target = map.layers.getLayerById(source);
+            }
+            else if (source instanceof atlas.layer.Layer) {
+                target = source;
+            }
+        }
+
+        return target;
     }
 
     // #region LayerEventGeneral
@@ -206,3 +223,12 @@ enum LayerEventTouch {
 enum LayerEventWheel {
     Wheel = 'wheel',
 }
+
+export const LayerEventType = {
+    ...LayerEventGeneral,
+    ...LayerEventMouse,
+    ...LayerEventTouch,
+    ...LayerEventWheel
+};
+
+export type LayerEventType = typeof LayerEventType;
