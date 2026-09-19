@@ -81,13 +81,25 @@ export class Layers {
         return results;
     }
 
-    public static remove(map: atlas.Map, layers: atlas.layer.Layer[]) {
+    public static remove(map: atlas.Map, layers: any[]) {
+        if (layers && layers.length > 0) {
+            var first = layers[0];
+            if (typeof first === "string") {
+                this.#removeById(map, layers);
+            }
+            else if (first instanceof atlas.layer.Layer) {
+                this.#removeByRef(map, layers);
+            }
+        }
+    }
+
+    static #removeByRef(map: atlas.Map, layers: atlas.layer.Layer[]) {
         const sourceIds = layers.map(e => e.getId());
         LayerEvents.removeBySource(map, sourceIds)
         map.layers.remove(layers);
     }
 
-    public static removeById(map: atlas.Map, ids: string[]) {
+    static #removeById(map: atlas.Map, ids: string[]) {
         LayerEvents.removeBySource(map, ids)
         map.layers.remove(ids);
     }

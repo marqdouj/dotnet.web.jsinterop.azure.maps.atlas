@@ -36,6 +36,19 @@ namespace Sandbox.Components.Pages.Atlas.Common
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="args"></param>
+        public void Add<TPayload>(MapEventArgs args) where TPayload : class
+        {
+            _items.Insert(0, new MapEventArgsViewModel<TPayload>(args));
+            while (_items.Count > MaxItems)
+            {
+                _items.RemoveAt(_items.Count - 1);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public void Clear()
         {
             _items.Clear();
@@ -72,5 +85,20 @@ namespace Sandbox.Components.Pages.Atlas.Common
         /// Time the view model was created.
         /// </summary>
         public TimeSpan TimeStamp { get; set; } = new TimeSpan(DateTime.Now.Ticks);
+
+        public object? Payload { get; set; }
+    }
+
+    public class MapEventArgsViewModel<TPayload> : MapEventArgsViewModel where TPayload: class
+    {
+        public new string? JSON { get; }
+
+        public new  TPayload? Payload { get; }
+
+        public MapEventArgsViewModel(MapEventArgs args) : base(args)
+        {
+            Payload = args.GetPayloadItem<TPayload>(typeof(TPayload).Name.Replace("Payload", "", StringComparison.OrdinalIgnoreCase));
+            JSON = Payload?.ToJsonMin();
+        }
     }
 }

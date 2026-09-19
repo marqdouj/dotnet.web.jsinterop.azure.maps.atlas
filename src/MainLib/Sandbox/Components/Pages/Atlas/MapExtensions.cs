@@ -67,6 +67,7 @@ namespace Sandbox.Components.Pages.Atlas
                 {
                     Center = center ?? new Position(-122.33, 47.6), // (Seattle, WA)
                     Zoom = zoomLevel,
+                    Pitch = 0,
                 },
                 Style = new StyleOptions { Style = MapStyle.road },
                 Traffic = new TrafficOptions { Flow = TrafficFlow.none }

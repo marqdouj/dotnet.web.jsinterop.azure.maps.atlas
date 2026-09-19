@@ -51,7 +51,7 @@
     private readonly string height = "300px";
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
-    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
+    private MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
     private MapConfiguration? config;
     private Map? map;
     private bool mapNotReady => map == null;
@@ -152,7 +152,7 @@
     {
         try
         {
-            if (atlasInterop == null || activeLayer == null) return;
+            if (activeLayer == null) return;
 
             var items = layerEvents.Where(e => e.IsLoaded);
 
@@ -181,11 +181,10 @@
         if (value == selectedLayer)
             return;
 
-        selectedLayer = value;
-        await CreateLayer();
+        await CreateLayer(value);
     }
 
-    private async Task CreateLayer()
+    private async Task CreateLayer(LayerType? value)
     {
         try
         {
@@ -193,8 +192,10 @@
 
             await RemoveLayer();
 
-            if (selectedLayer == null)
+            if (value == null)
                 return;
+
+            selectedLayer = value;
 
             var results = await selectedLayer.AddDefaultLayer(atlasInterop, map, DataService);
             source = results.Source;
@@ -225,11 +226,16 @@
 
             source = null;
             activeLayer = null;
+            selectedLayer = null;
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, null);
             await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
         }
     }
 
@@ -262,6 +268,7 @@
                 return;
 
             await RemoveLayer();
+            mapOptions = MapExtensions.GetDefaultMapOptions();
             await atlasInterop.Map.SetCamera(map, mapOptions.Camera);
         }
         catch (Exception ex)
@@ -275,7 +282,7 @@
     public async Task NotifyMapEvent(MapEventArgs e)
     {
         await Task.CompletedTask;
-        eventArgsManager.Add(e);
+        eventArgsManager.Add<LayerPayload>(e);
         StateHasChanged();
     }
 

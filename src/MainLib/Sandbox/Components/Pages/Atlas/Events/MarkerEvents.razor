@@ -19,7 +19,6 @@
             <FluentSpacer Width="8px" />
             <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.Eraser())" Title="Clear Events" OnClick="@(() => ClearEvents(true))" />
             <FluentCheckbox Label="Multiliine" @bind-Value="@multiline" />
-            <FluentCheckbox Label="Prevent Default" @bind-Value="@preventDefault" Tooltip="@preventDefaultText" />
         </Toolbar>
 
         <FluentStack>
@@ -52,7 +51,6 @@
     private List<MarkerEventViewModel> markerEvents = [];
     private readonly MapEventArgsViewModelManager eventArgsManager = new();
     private bool multiline;
-    private bool preventDefault = true;
     private const string preventDefaultText = "Setting will be applied when adding the event. Normally used with Mouse, Touch, and Wheel events.";
     private readonly List<HtmlMarker> markers = [];
 
@@ -115,7 +113,6 @@
             foreach (var marker in markers)
             {
                 var m = (MarkerEvent)model.MarkerEvent.Clone();
-                m.PreventDefault = preventDefault;
                 m.Source = marker.Id;
                 events.Add(m);
             }
@@ -145,8 +142,19 @@
             if (atlasInterop == null) return;
 
             var items = markerEvents.Where(e => e.IsLoaded);
+            var events = new List<MarkerEvent>();
 
-            await atlasInterop.Events.Markers.Remove(map!, items.Select(i => i.MarkerEvent));
+            foreach (var item in items)
+            {
+                foreach (var marker in markers)
+                {
+                    var m = (MarkerEvent)item.MarkerEvent.Clone();
+                    m.Source = marker.Id;
+                    events.Add(m);
+                }
+            }
+
+            await atlasInterop.Events.Markers.Remove(map!, events);
 
             foreach (var item in items)
                 item.IsLoaded = false;
