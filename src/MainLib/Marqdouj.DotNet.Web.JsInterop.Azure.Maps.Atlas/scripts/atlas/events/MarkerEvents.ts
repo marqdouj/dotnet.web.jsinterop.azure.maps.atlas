@@ -123,8 +123,7 @@ export class MarkerEvents {
     }
 
     static #notifyMarkerEventGeneral = (callback: atlas.TargetedEvent, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
-        const payload = { marker: { type: callback.type } }
-        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
+        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 
