@@ -22,8 +22,7 @@
 - `MapContainer`. Helper component to display the map. Use is not required, but recommended for simple control of the map display.
 
 ## Release Notes (Current)
-- `11.0.0-Preview-3.3`
-   - `IAtlasInterop.Events`. New modules have been added for event support:
-	  - Layer, Map, Marker, and StyleControl.
+- `11.0.0-Preview-3.4`
+   - `IAtlasInterop.Popups`. New module has been added for popup support:
 
 ## [Release Notes (All)](Documents/ReleaseNotes.md)

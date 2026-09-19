@@ -1,7 +1,28 @@
 import * as atlas from "azure-maps-control"
 import { Logger, LogLevel } from "./Logger";
+import { MapObjectReference } from ".";
 
 export class Helpers {
+    static hasStringIndexSignature(obj: unknown): obj is Record<string, any> {
+        return typeof obj === "object" && obj !== null;
+    }
+
+    static createMapObjectReference(mapId: string, type: string, item?: object, id?: string): MapObjectReference {
+        const dnr = !item ? null : DotNet.createJSObjectReference(item);
+        id ??= Helpers.getSourceId(item);
+        const msf: MapObjectReference = { mapId: mapId, id: id, type: type, jsReference: dnr };
+
+        return msf;
+    }
+
+    static hasElements(items: any[]): boolean {
+        return (items && items.length > 0);
+    }
+
+    static hasNoElements(items: any[]): boolean {
+        return !this.hasElements(items);
+    }
+
     static getSourceId(source: any) {
         let id: string | undefined;
 
@@ -10,11 +31,11 @@ export class Helpers {
                 id = source;
             }
             else if (source instanceof Object) {
-                if (source.getId) {
-                    id = source.getId();
-                }
-                else if (source.id) {
+                if (source.id) {
                     id = source.id;
+                }
+                else if (source.getId) {
+                    id = source.getId();
                 }
             }
         }

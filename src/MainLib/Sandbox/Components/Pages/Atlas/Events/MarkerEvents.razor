@@ -229,12 +229,10 @@
     [JSInvokable]
     public async Task NotifyMapEvent(MapEventArgs e)
     {
-        await Task.CompletedTask;
+        await e.ErrorEventProcessed(Logger, ToastService);
 
-        if (e.Type.Equals(MapEventType.Ready.ToString(), StringComparison.OrdinalIgnoreCase))
-        {
+        if (e.IsReadyEvent)
             await atlasInterop!.Markers.Add(map!, markers);
-        }
 
         eventArgsManager.Add(e);
         StateHasChanged();

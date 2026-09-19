@@ -1,5 +1,6 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common;
 using Marqdouj.DotNet.Web.JsInterop.GeoJson;
+using Microsoft.JSInterop;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
 {
@@ -12,11 +13,6 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
         /// <inheritdoc cref="PopupOptions"/>
         /// </summary>
         public PopupOptions Options { get; set { ArgumentNullException.ThrowIfNull(field, nameof(Options)); field = value; } } = new();
-
-        /// <summary>
-        /// Indicates if the popup should be opened or closed. Default is closed.
-        /// </summary>
-        public bool Show { get; set; }
 
         /// <summary>
         /// <inheritdoc cref="ICloneable"/>
@@ -50,9 +46,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
 
         /// <summary>
         /// The content to display within the popup.
+        /// <see cref="String"/> or <see cref="IJSObjectReference"/> to an HTMLElement.
         /// default span
         /// </summary>
-        public string? Content { get; set; }
+        public object? Content { get; set; }
 
         /// <summary>
         /// Specifies the fill color of the popup.

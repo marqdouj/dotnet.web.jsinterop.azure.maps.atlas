@@ -16,18 +16,16 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// </summary>
         /// <param name="map"></param>
         /// <param name="item"></param>
-        /// <param name="events"></param>
         /// <returns></returns>
-        ValueTask Add(Map map, HtmlMarker item, IEnumerable<MarkerEvent>? events = null);
+        ValueTask Add(Map map, HtmlMarker item);
 
         /// <summary>
         /// Add markers to the map.
         /// </summary>
         /// <param name="map"></param>
         /// <param name="items"></param>
-        /// <param name="events"></param>
         /// <returns></returns>
-        ValueTask Add(Map map, IEnumerable<HtmlMarker> items, IEnumerable<MarkerEvent>? events = null);
+        ValueTask Add(Map map, IEnumerable<HtmlMarker> items);
 
         /// <summary>
         /// Clear the markers from the map.
@@ -57,15 +55,15 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = moduleTask;
 
-        public async ValueTask Add(Map map, HtmlMarker item, IEnumerable<MarkerEvent>? events = null)
+        public async ValueTask Add(Map map, HtmlMarker item)
         {
-            await Add(map, [item], events);
+            await Add(map, [item]);
         }
 
-        public async ValueTask Add(Map map, IEnumerable<HtmlMarker> items, IEnumerable<MarkerEvent>? events = null)
+        public async ValueTask Add(Map map, IEnumerable<HtmlMarker> items)
         {
             var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, items?.Cast<object>().ToList(), events?.Cast<object>().ToList());
+            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, items?.Cast<object>().ToList());
         }
 
         public async ValueTask Clear(Map map)

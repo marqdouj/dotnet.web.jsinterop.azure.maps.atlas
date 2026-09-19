@@ -18,6 +18,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         MapEvents,
         MercatorPoint,
         Navigator,
+        Popups,
         Position,
         Sources,
         StyleControlEvents,

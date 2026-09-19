@@ -1,15 +1,18 @@
-﻿@page "/design"
+﻿@page "/maps-popups"
 @rendermode InteractiveServer
 @inject IOptions<MapConfiguration> Configuration
 @inject IJSRuntime JSRuntime
-@inject ILogger<Design> Logger
+@inject ILogger<Popups> Logger
 @inject INotificationService ToastService
 @inject IMapDataService DataService
 
 <MapPage Title="@title">
     <SummaryContent>
         <FluentText As="TextTag.Paragraph">
-            This page demonstrates how to create/remove a map instance, and its controls.
+            This page demonstrates using a popup with symbols.
+            <br />
+            Hover the mouse over the symbols to view its popup. 
+            The default text is 'Symbol #', but there is one symbol that has a full description.
         </FluentText>
     </SummaryContent>
 
@@ -22,15 +25,32 @@
     </ChildContent>
 </MapPage>
 
+<style>
+    .customInfobox {
+        padding: 5px;
+        border-radius: 6px;
+        background-color: black;
+        color: white
+    }
+    .name {
+        font-weight: bold;
+    }
+</style>
+
 @code {
-    private const string mapId = "mapDesign";
-    private const string title = "Maps - Design";
+    private const string mapId = "mapPopups";
+    private const string title = "Maps - Popups";
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
     private MapConfiguration? config;
-    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
+    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions(new Position(-122.1333, 47.63), 12.5);
     private Map? map;
     private bool mapNotReady => map == null;
+    private const string popupTemplate = "<div class=\"customInfobox\"><div class=\"name\">{name}</div>{description}</div>";
+    private DataSource? dataSource;
+    private SymbolLayer? symbolLayer;
+    //Create a popup but leave it closed so we can update it and display it later.
+    private readonly Popup popup = new Popup { Options = new PopupOptions { PixelOffset = new Pixel(0, -18), CloseButton = false, Content = popupTemplate } };
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -112,6 +132,30 @@
     public async Task NotifyMapEvent(MapEventArgs e)
     {
         await e.ErrorEventProcessed(Logger, ToastService);
+
+        if (e.IsReadyEvent)
+        {
+            try
+            {
+                if (map == null) return;
+
+                var results = await LayerType.Symbol.AddDefaultLayer(atlasInterop, map, DataService);
+                dataSource = (DataSource?)results.Source;
+                symbolLayer = (SymbolLayer?)results.Layer;
+
+                var p = new GeoJsonProperties { { "name", "Microsoft Building 41" }, { "description", "15571 NE 31st St, Redmond, WA 98052" }, { "color", "blue" } };
+                var feature = new Feature<Point, GeoJsonProperties?>(new Point(-122.1333, 47.63), p);
+
+                await atlasInterop.Features.Add(map, dataSource!.Id, [feature]);
+                await atlasInterop.Popups.AddHoverPopup(map, symbolLayer!, popup, ["name", "description"]);
+                await ResetMap();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, null);
+                await ToastService.ShowError(ex.Message);
+            }
+        }
     }
 
     #endregion

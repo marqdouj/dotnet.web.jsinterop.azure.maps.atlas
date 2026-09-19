@@ -19,6 +19,12 @@ namespace Sandbox.Components.Pages.Atlas
             public ILayer? Layer { get; } = layer;
         }
 
+        public static async Task<AddDefaultLayerResults> AddDefaultLayer(this LayerType layerType, IAtlasInterop atlasInterop, Map map, IMapDataService dataService)
+        {
+            LayerType? type = layerType;
+            return await type.AddDefaultLayer(atlasInterop, map, dataService);
+        }
+
         public static async Task<AddDefaultLayerResults> AddDefaultLayer(this LayerType? layerType, IAtlasInterop atlasInterop, Map map, IMapDataService dataService)
         {
             var source = layerType.GetDefaultSource();
@@ -150,7 +156,7 @@ namespace Sandbox.Components.Pages.Atlas
             foreach (var position in data)
             {
                 i++;
-                var p = new GeoJsonProperties { { "title", $"my default symbol {i}" } };
+                var p = new GeoJsonProperties { { "description", $"Symbol {i}" } };
                 var feature = new Feature<Point, GeoJsonProperties>(new Point(position), p);
                 features.Add(feature);
             }

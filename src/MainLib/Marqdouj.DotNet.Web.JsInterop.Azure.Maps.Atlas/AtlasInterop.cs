@@ -65,6 +65,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         /// <inheritdoc cref="IAtlasSources"/>
         /// </summary>
         IAtlasSources Sources { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasPopups"/>
+        /// </summary>
+        IAtlasPopups Popups { get; }
     }
 
     /// <summary>
@@ -94,6 +99,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
             Math = new AzMath(moduleTask);
             Navigator = new AzNavigator(moduleTask);
             Sources = new AzSources(moduleTask);
+            Popups = new AzPopups(moduleTask);
         }
 
         /// <summary>
@@ -150,6 +156,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         /// <inheritdoc cref="IAtlasSources"/>
         /// </summary>
         public IAtlasSources Sources { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasPopups"/>
+        /// </summary>
+        public IAtlasPopups Popups { get; }
 
         /// <summary>
         /// <inheritdoc/>

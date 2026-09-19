@@ -29,7 +29,7 @@ namespace Sandbox.Components.Pages.Atlas
 
         public static async Task<bool> ErrorEventProcessed(this MapEventArgs e, ILogger logger, INotificationService toastService)
         {
-            if (e.Target == MapEventTarget.Map && e.TypeToEnum<MapEventType>() == MapEventType.Error)
+            if (e.IsErrorEvent)
             {
                 var error = e.GetPayloadItem<ErrorPayload>(nameof(MapEventType.Error));
                 string msg = $"Map Error. Id: {e.MapId}, Message: {error?.BuildMessage()}";

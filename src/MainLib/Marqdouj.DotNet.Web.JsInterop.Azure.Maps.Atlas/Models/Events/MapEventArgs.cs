@@ -1,4 +1,5 @@
-﻿using Marqdouj.DotNet.Web.JsInterop.GeoJson;
+﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Types;
+using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -42,7 +43,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events
         /// <returns></returns>
         public T? TypeToEnum<T>() where T: struct, Enum
         {
-            if (Enum.TryParse<T>(Type, out var value))
+            if (Enum.TryParse<T>(Type, true, out var value))
                 return value;
 
             return default!;
@@ -72,5 +73,15 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events
 
             return null;
         }
+
+        /// <summary>
+        /// Indicates if the event is the <see cref="MapEventType.Error"/>.
+        /// </summary>
+        public bool IsErrorEvent => Target == MapEventTarget.Map && TypeToEnum<MapEventType>() == MapEventType.Error;
+
+        /// <summary>
+        /// Indicates if the event is the <see cref="MapEventType.Ready"/>.
+        /// </summary>
+        public bool IsReadyEvent => Target == MapEventTarget.Map && TypeToEnum<MapEventType>() == MapEventType.Ready;
     }
 }

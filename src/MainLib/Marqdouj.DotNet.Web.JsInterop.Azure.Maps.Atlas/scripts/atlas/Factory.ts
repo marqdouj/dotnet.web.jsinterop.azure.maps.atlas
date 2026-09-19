@@ -26,6 +26,8 @@ export class Factory {
         }
 
         const options = this.#buildOptions(config);
+        Logger.logMapMessage(mapId, LogLevel.Trace, "creating map.", options);
+
         const azmap = new atlas.Map(mapId, options);
 
         azmap.events.addOnce(MapEventType.Ready, event => {
@@ -98,7 +100,7 @@ export class Factory {
         }
 
         options.authOptions = authOptions;
-        return options;
+        return Helpers.removeNullish(options);
     }
 }
 

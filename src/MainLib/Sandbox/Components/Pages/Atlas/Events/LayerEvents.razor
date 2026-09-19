@@ -281,7 +281,7 @@
     [JSInvokable]
     public async Task NotifyMapEvent(MapEventArgs e)
     {
-        await Task.CompletedTask;
+        await e.ErrorEventProcessed(Logger, ToastService);
         eventArgsManager.Add<LayerPayload>(e);
         StateHasChanged();
     }
