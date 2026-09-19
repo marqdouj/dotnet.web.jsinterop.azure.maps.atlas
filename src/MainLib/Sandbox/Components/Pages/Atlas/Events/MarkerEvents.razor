@@ -54,10 +54,31 @@
     private const string preventDefaultText = "Setting will be applied when adding the event. Normally used with Mouse, Touch, and Wheel events.";
     private readonly List<HtmlMarker> markers = [];
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         var values = Enum.GetValues<MarkerEventType>().OrderBy(e => e.ToString()).ToList();
         markerEvents = values.Select(e => new MarkerEventViewModel(new MarkerEvent(e))).ToList();
+
+        var data = (await DataService.GetSymbolLayerData());
+        var htmlContent = "<div style='width:24px;height:24px;background-color:#FF5733;border-radius:50%;border:2px solid white;box-shadow:0 0 5px rgba(0,0,0,0.3);'></div>";
+
+        foreach (var position in data)
+        {
+            markers.Add(new HtmlMarker
+            {
+                Options = new HtmlMarkerOptions
+                {
+                    Color = "#FF5733",
+                    Draggable = true,
+                    HtmlContent = htmlContent,
+                    Position = position,
+                    Text = "●",
+                }
+            });
+        }
+
+        mapOptions.Camera!.Center = data[8];
+        mapOptions.Camera!.Zoom = 11;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -177,27 +198,6 @@
         {
             if (map != null)
                 return;
-
-            var data = (await DataService.GetSymbolLayerData());
-            var htmlContent = "<div style='width:24px;height:24px;background-color:#FF5733;border-radius:50%;border:2px solid white;box-shadow:0 0 5px rgba(0,0,0,0.3);'></div>";
-
-            foreach (var position in data)
-            {
-                markers.Add(new HtmlMarker
-                {
-                    Options = new HtmlMarkerOptions
-                    {
-                        Color = "#FF5733",
-                        Draggable = true,
-                        HtmlContent = htmlContent,
-                        Position = position,
-                        Text = "●",
-                    }
-                });
-            }
-
-            mapOptions.Camera!.Center = data[8];
-            mapOptions.Camera!.Zoom = 11;
 
             config!.MapOptions = mapOptions;
             map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config, MapExtensions.GetDefaultControls());
