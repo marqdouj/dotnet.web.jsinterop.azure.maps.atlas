@@ -58,6 +58,7 @@ export class Controls {
             }
 
             if (newControl) {
+                (newControl as any).id = mc.id;
                 map.controls.add(newControl, mc.controlOptions);
             }
         });
@@ -212,6 +213,7 @@ enum MapControlType {
 }
 
 export interface MapControl {
+    id?: string;
     type: MapControlType;
     controlOptions?: atlas.ControlOptions;
     options?: atlas.CompassControlOptions

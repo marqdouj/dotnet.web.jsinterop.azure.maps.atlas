@@ -20,6 +20,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         Navigator,
         Position,
         Sources,
+        StyleControlEvents,
     }
 
     internal static class ModuleExtensions

@@ -6,48 +6,48 @@ using System.Runtime.CompilerServices;
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Events
 {
     /// <summary>
-    /// Interface for layer events.
+    /// Interface for StyleControl events.
     /// </summary>
-    public interface IAtlasLayerEvents
+    public interface IAtlasStyleControlEvents
     {
         /// <summary>
-        /// Add layer events.
+        /// Add StyleControl events.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="dotNetRef"></param>
         /// <param name="map"></param>
         /// <param name="events"></param>
         /// <returns></returns>
-        ValueTask Add<T>(DotNetObjectReference<T> dotNetRef, Map map, IEnumerable<LayerEvent> events) where T : class;
+        ValueTask Add<T>(DotNetObjectReference<T> dotNetRef, Map map, IEnumerable<StyleControlEvent> events) where T : class;
 
         /// <summary>
-        /// Remove layer events.
+        /// Remove StyleControl events.
         /// </summary>
         /// <param name="map"></param>
         /// <param name="events"></param>
         /// <returns></returns>
-        ValueTask Remove(Map map, IEnumerable<LayerEvent> events);
+        ValueTask Remove(Map map, IEnumerable<StyleControlEvent> events);
 
         /// <summary>
-        /// Remove layer events.
+        /// Remove StyleControl events.
         /// </summary>
         /// <param name="map"></param>
-        /// <param name="sources">List of id or <see cref="IJSObjectReference"/> to a layer.</param>
+        /// <param name="sources">List of id or <see cref="IJSObjectReference"/> to a StyleControl.</param>
         /// <returns></returns>
         ValueTask RemoveBySource(Map map, IEnumerable<object> sources);
     }
 
-    internal class AzLayerEvents(Lazy<Task<IJSObjectReference>> moduleTask) : IAtlasLayerEvents
+    internal class AzStyleControlEvents(Lazy<Task<IJSObjectReference>> moduleTask) : IAtlasStyleControlEvents
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = moduleTask;
 
-        public async ValueTask Add<T>(DotNetObjectReference<T> dotNetRef, Map map, IEnumerable<LayerEvent> events) where T : class
+        public async ValueTask Add<T>(DotNetObjectReference<T> dotNetRef, Map map, IEnumerable<StyleControlEvent> events) where T : class
         {
             var module = await moduleTask.Value;
             await module.InvokeVoidAsync(GetJsInteropMethod(), dotNetRef, map.MapReference, events.Cast<object>().ToList());
         }
 
-        public async ValueTask Remove(Map map, IEnumerable<LayerEvent> events)
+        public async ValueTask Remove(Map map, IEnumerable<StyleControlEvent> events)
         {
             var module = await moduleTask.Value;
             await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, events.Cast<object>().ToList());
@@ -60,6 +60,6 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Events
         }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")
-            => JsModule.LayerEvents.GetJsModuleMethod(name);
+            => JsModule.StyleControlEvents.GetJsModuleMethod(name);
     }
 }
