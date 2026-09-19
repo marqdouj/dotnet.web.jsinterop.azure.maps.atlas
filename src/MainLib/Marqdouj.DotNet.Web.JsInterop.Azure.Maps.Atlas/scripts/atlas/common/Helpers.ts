@@ -2,6 +2,26 @@ import * as atlas from "azure-maps-control"
 import { Logger, LogLevel } from "./Logger";
 
 export class Helpers {
+    static getSourceId(source: any) {
+        let id: string | undefined;
+
+        if (source) {
+            if (typeof source === 'string') {
+                id = source;
+            }
+            else if (source instanceof Object) {
+                if (source.getId) {
+                    id = source.getId();
+                }
+                else if (source.id) {
+                    id = source.id;
+                }
+            }
+        }
+
+        return id;
+    }
+
     static getMapId(map: atlas.Map) {
         const div = map.getMapContainer();
         if (!div) {

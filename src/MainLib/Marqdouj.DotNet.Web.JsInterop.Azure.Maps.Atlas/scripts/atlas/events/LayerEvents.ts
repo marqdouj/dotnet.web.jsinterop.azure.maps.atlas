@@ -74,10 +74,33 @@ export class LayerEvents {
         });
     }
 
-    static #getTarget(map: atlas.Map, mapEvent: events.EventInfo): atlas.layer.Layer | undefined {
-        let target: atlas.layer.Layer | undefined;
+    public static removeBySource(map: atlas.Map, sources: any[]) {
+        const eventName = "LayerEvents.removeBySource";
+        const mapId = Helpers.getMapId(map);
 
-        const source = mapEvent.source;
+        sources ??= [];
+        sources.forEach((source) => {
+            const target = this.#getTargetFromSource(map, source);
+
+            if (target) {
+                const callbacks = this.#eventsMap.getCallbacksBySource(mapId, events.MapEventTarget.Layer, source);
+                callbacks.forEach((cb) => {
+                    map.events.remove(cb.type, target as atlas.layer.Layer, cb.callback);
+                    this.#eventsMap.removeCallbackById(cb.eventId);
+                });
+            }
+            else {
+                Logger.logMapMessage(mapId, LogLevel.Warn, `${eventName}: target not found.`, source);
+            }
+        });
+    }
+
+    static #getTarget(map: atlas.Map, mapEvent: events.EventInfo): atlas.layer.Layer | undefined {
+        return this.#getTargetFromSource(map, mapEvent.source);
+    }
+
+    static #getTargetFromSource(map: atlas.Map, source: any): atlas.layer.Layer | undefined {
+        let target: atlas.layer.Layer | undefined;
 
         if (source) {
             if (typeof source === 'string') {

@@ -3,7 +3,7 @@
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Definitions
 {
     /// <summary>
-    /// Layers event definition.
+    /// Layer event definition.
     /// </summary>
     public class LayerEvent(LayerEventType type) : Event
     {
@@ -16,5 +16,14 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Definitio
         /// <inheritdoc/>
         /// </summary>
         public override MapEventTarget Target => MapEventTarget.Layer;
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns></returns>
+        public override object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 }

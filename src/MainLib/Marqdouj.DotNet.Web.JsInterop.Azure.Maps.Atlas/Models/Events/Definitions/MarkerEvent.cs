@@ -3,19 +3,19 @@
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Definitions
 {
     /// <summary>
-    /// Map event definition.
+    /// Marker event definition.
     /// </summary>
-    public class MapEvent(MapEventType type) : Event
+    public class MarkerEvent(MarkerEventType type) : Event
     {
         /// <summary>
-        /// <see cref="MapEventType"/>
+        /// <see cref="MarkerEventType"/>
         /// </summary>
-        public MapEventType Type { get; } = type;
+        public MarkerEventType Type { get; } = type;
 
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        public override MapEventTarget Target => MapEventTarget.Map;
+        public override MapEventTarget Target => MapEventTarget.Marker;
 
         /// <summary>
         /// <inheritdoc/>

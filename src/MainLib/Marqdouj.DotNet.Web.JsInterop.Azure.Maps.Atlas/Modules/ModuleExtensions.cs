@@ -11,6 +11,8 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         Features,
         LayerEvents,
         Layers,
+        MarkerEvents,
+        Markers,
         Math,
         Map,
         MapEvents,

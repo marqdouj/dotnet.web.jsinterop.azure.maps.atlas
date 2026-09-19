@@ -1,6 +1,7 @@
 import * as atlas from "azure-maps-control"
 import { MapObjectReference } from "./common"
 import { Helpers } from "./common/Helpers";
+import { LayerEvents } from "../atlas";
 
 export class Layers {
     public static add(map: atlas.Map, mapLayers: MapLayer[], getReferences: boolean = false) {
@@ -81,10 +82,13 @@ export class Layers {
     }
 
     public static remove(map: atlas.Map, layers: atlas.layer.Layer[]) {
+        const sourceIds = layers.map(e => e.getId());
+        LayerEvents.removeBySource(map, sourceIds)
         map.layers.remove(layers);
     }
 
     public static removeById(map: atlas.Map, ids: string[]) {
+        LayerEvents.removeBySource(map, ids)
         map.layers.remove(ids);
     }
 

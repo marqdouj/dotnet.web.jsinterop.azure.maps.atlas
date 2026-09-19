@@ -5,6 +5,8 @@ export { Factory } from "./atlas/Factory"
 export { Features } from "./atlas/Features"
 export { Layers } from "./atlas/Layers"
 export { LayerEvents } from "./atlas/events/LayerEvents"
+export { MarkerEvents } from "./atlas/events/MarkerEvents"
+export { Markers } from "./atlas/Markers"
 export { Map } from "./atlas/Map"
 export { MapEvents } from "./atlas/events/MapEvents"
 export { Math } from "./atlas/Math";

@@ -1,12 +1,11 @@
-﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common;
-using Microsoft.JSInterop;
+﻿using Microsoft.JSInterop;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Definitions
 {
     /// <summary>
     /// Base class for event definitions.
     /// </summary>
-    public abstract class Event
+    public abstract class Event : ICloneable
     {
         /// <summary>
         /// <see cref="MapEventTarget"/>
@@ -33,5 +32,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Definitio
         /// If true adds the event once (for events that support 'once'); otherwise continuous./>.
         /// </summary>
         public bool Once { get; set; }
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns></returns>
+        public abstract object Clone();
     }
 }

@@ -12,11 +12,6 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
     public interface IAtlasInterop : IAsyncDisposable
     {
         /// <summary>
-        /// <inheritdoc cref="IAtlasNavigator"/>
-        /// </summary>
-        IAtlasNavigator Navigator { get; }
-
-        /// <summary>
         /// <inheritdoc cref="IAtlasControls"/>
         /// </summary>
         IAtlasControls Controls { get; }
@@ -52,9 +47,19 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         IAtlasMap Map { get; }
 
         /// <summary>
+        /// <inheritdoc cref="IAtlasMarkers"/>
+        /// </summary>
+        IAtlasMarkers Markers { get; }
+
+        /// <summary>
         /// <inheritdoc cref="IAtlasMath"/>
         /// </summary>
         IAtlasMath Math { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasNavigator"/>
+        /// </summary>
+        IAtlasNavigator Navigator { get; }
 
         /// <summary>
         /// <inheritdoc cref="IAtlasSources"/>
@@ -85,15 +90,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
             Features = new AzFeatures(moduleTask);
             Layers = new AzLayers(moduleTask);
             Map = new AzMap(moduleTask);
+            Markers = new AzMarkers(moduleTask);
             Math = new AzMath(moduleTask);
             Navigator = new AzNavigator(moduleTask);
             Sources = new AzSources(moduleTask);
         }
-
-        /// <summary>
-        /// <inheritdoc cref="IAtlasNavigator"/>
-        /// </summary>
-        public IAtlasNavigator Navigator { get; }
 
         /// <summary>
         /// <inheritdoc cref="IAtlasControls"/>
@@ -134,6 +135,16 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         /// <inheritdoc cref="IAtlasMath"/>
         /// </summary>
         public IAtlasMath Math { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasMarkers"/>
+        /// </summary>
+        public IAtlasMarkers Markers { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasNavigator"/>
+        /// </summary>
+        public IAtlasNavigator Navigator { get; }
 
         /// <summary>
         /// <inheritdoc cref="IAtlasSources"/>

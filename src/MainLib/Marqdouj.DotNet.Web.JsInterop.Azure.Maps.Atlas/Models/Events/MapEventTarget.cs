@@ -13,7 +13,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events
         Map,
         Animation,
         DataSource,
-        HtmlMarker,
+        Marker,
         Layer,
         Popup,
         Shape,

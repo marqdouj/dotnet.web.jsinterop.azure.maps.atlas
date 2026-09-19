@@ -1,7 +1,15 @@
 import * as atlas from "azure-maps-control"
+import { Helpers as CHelpers} from "../common/Helpers"
 
 export enum MapEventTarget {
-    Map = "map",
+    Map = "Map",
+    Animation = 'Animation',
+    DataSource = 'DataSource',
+    Marker = 'Marker',
+    Layer = 'Layer',
+    Popup = 'Popup',
+    Shape = 'Shape',
+    StyleControl = 'StyleControl',
 }
 
 export interface NotifyMapEventArgs {
@@ -111,23 +119,6 @@ export class Helpers {
     }
 
     static getEventInfoSourceId(eventInfo: EventInfo) {
-        const source = eventInfo.source;
-        let id: string | undefined;
-
-        if (source) {
-            if (typeof source === 'string') {
-                id = source;
-            }
-            else if (source instanceof Object) {
-                if (source.getId) {
-                    id = source.getId();
-                }
-                else if (source.id) {
-                    id = source.id;
-                }
-            }
-        }
-
-        return id;
+        return CHelpers.getSourceId(eventInfo.source);
     }
 }
