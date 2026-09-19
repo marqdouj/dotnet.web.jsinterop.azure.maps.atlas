@@ -1,6 +1,9 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-3.3`
+   - `IAtlasInterop.Events`. New modules have been added for event support:
+	  - Layer, Map, Marker, and StyleControl.
 - `11.0.0-Preview-3.2`
    - `IAtlasSource`. 
 	  - `Clear` methods has been updated and moved to `IAtlasDataSource`.
