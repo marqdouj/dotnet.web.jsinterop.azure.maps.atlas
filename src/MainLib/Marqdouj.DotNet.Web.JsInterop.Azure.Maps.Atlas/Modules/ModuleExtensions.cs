@@ -9,12 +9,18 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         DataSource,
         Factory,
         Features,
+        LayerEvents,
         Layers,
+        MarkerEvents,
+        Markers,
         Math,
         Map,
+        MapEvents,
         MercatorPoint,
+        Navigator,
         Position,
         Sources,
+        StyleControlEvents,
     }
 
     internal static class ModuleExtensions

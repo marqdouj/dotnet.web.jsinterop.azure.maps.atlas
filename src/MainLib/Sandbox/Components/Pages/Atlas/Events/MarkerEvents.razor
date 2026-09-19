@@ -1,0 +1,257 @@
+﻿@page "/events-marker"
+@rendermode InteractiveServer
+@inject IOptions<MapConfiguration> Configuration
+@inject IJSRuntime JSRuntime
+@inject ILogger<MarkerEvents> Logger
+@inject INotificationService ToastService
+@inject IMapDataService DataService
+
+<MapPage Title="@title">
+    <SummaryContent>
+        <FluentText As="TextTag.Paragraph">
+            This page demonstrates marker events.
+        </FluentText>
+    </SummaryContent>
+
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
+            <FluentSpacer Width="8px" />
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.Eraser())" Title="Clear Events" OnClick="@(() => ClearEvents(true))" />
+            <FluentCheckbox Label="Multiliine" @bind-Value="@multiline" />
+        </Toolbar>
+
+        <FluentStack>
+            <FluentCard Height="@height" Width="200px" Style="overflow:auto">
+                <FluentStack Orientation="Orientation.Vertical">
+                    @foreach (var item in markerEvents)
+                    {
+                        <FluentCheckbox Disabled="@mapNotReady" Label="@item.Name" @bind-Value:get="@item.IsLoaded" @bind-Value:set="@((e) => OnMapEventsCheckedChanged(e, item))" />
+                    }
+                </FluentStack>
+            </FluentCard>
+
+            <MapContainer MapId="@mapId" />
+        </FluentStack>
+
+        <EventsViewer Events="@eventArgsManager" Maps="@atlasInterop" Mulitline="@multiline" />
+    </ChildContent>
+</MapPage>
+
+@code {
+    private const string mapId = "markerEvents";
+    private const string title = "Marker Events";
+    private readonly string height = "300px";
+    private DotNetObjectReference<ComponentBase>? dotNetRef;
+    private AtlasInterop atlasInterop = default!;
+    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
+    private MapConfiguration? config;
+    private Map? map;
+    private bool mapNotReady => map == null;
+    private List<MarkerEventViewModel> markerEvents = [];
+    private readonly MapEventArgsViewModelManager eventArgsManager = new();
+    private bool multiline;
+    private const string preventDefaultText = "Setting will be applied when adding the event. Normally used with Mouse, Touch, and Wheel events.";
+    private readonly List<HtmlMarker> markers = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var values = Enum.GetValues<MarkerEventType>().OrderBy(e => e.ToString()).ToList();
+        markerEvents = values.Select(e => new MarkerEventViewModel(new MarkerEvent(e))).ToList();
+
+        var data = (await DataService.GetSymbolLayerData());
+        var htmlContent = "<div style='width:24px;height:24px;background-color:#FF5733;border-radius:50%;border:2px solid white;box-shadow:0 0 5px rgba(0,0,0,0.3);'></div>";
+
+        foreach (var position in data)
+        {
+            markers.Add(new HtmlMarker
+            {
+                Options = new HtmlMarkerOptions
+                {
+                    Color = "#FF5733",
+                    Draggable = true,
+                    HtmlContent = htmlContent,
+                    Position = position,
+                    Text = "●",
+                }
+            });
+        }
+
+        mapOptions.Camera!.Center = data[8];
+        mapOptions.Camera!.Zoom = 11;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                config = Configuration?.GetValue(LogLevel.Trace);
+                atlasInterop = new(JSRuntime);
+                dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
+
+                await CreateMap();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Initialization caused an exception.");
+                await ToastService.ShowError("Initialization caused an exception.");
+            }
+            finally
+            {
+                StateHasChanged();
+            }
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            dotNetRef?.Dispose();
+
+            if (map != null)
+                await map.DisposeAsync();
+
+            if (atlasInterop != null)
+                await atlasInterop.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+
+    private async Task OnMapEventsCheckedChanged(bool isChecked, MarkerEventViewModel model)
+    {
+        try
+        {
+            if (model.IsLoaded == isChecked)
+                return;
+
+            var events = new List<MarkerEvent>();
+
+            foreach (var marker in markers)
+            {
+                var m = (MarkerEvent)model.MarkerEvent.Clone();
+                m.Source = marker.Id;
+                events.Add(m);
+            }
+
+            if (isChecked)
+            {
+                await atlasInterop.Events.Markers.Add(dotNetRef!, map!, events);
+            }
+            else
+            {
+                await atlasInterop.Events.Markers.Remove(map!, events);
+            }
+
+            model.IsLoaded = isChecked;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task ClearEvents(bool clearArgs)
+    {
+        try
+        {
+            if (atlasInterop == null) return;
+
+            var items = markerEvents.Where(e => e.IsLoaded);
+            var events = new List<MarkerEvent>();
+
+            foreach (var item in items)
+            {
+                foreach (var marker in markers)
+                {
+                    var m = (MarkerEvent)item.MarkerEvent.Clone();
+                    m.Source = marker.Id;
+                    events.Add(m);
+                }
+            }
+
+            await atlasInterop.Events.Markers.Remove(map!, events);
+
+            foreach (var item in items)
+                item.IsLoaded = false;
+
+            if (clearArgs)
+                eventArgsManager.Clear();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    #region Map
+
+    private async Task CreateMap()
+    {
+        try
+        {
+            if (map != null)
+                return;
+
+            config!.MapOptions = mapOptions;
+            map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config, MapExtensions.GetDefaultControls());
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task ResetMap()
+    {
+        try
+        {
+            if (map == null)
+                return;
+
+            await ClearEvents(true);
+            await atlasInterop.Map.SetCamera(map, mapOptions.Camera);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    [JSInvokable]
+    public async Task NotifyMapEvent(MapEventArgs e)
+    {
+        await Task.CompletedTask;
+
+        if (e.Type.Equals(MapEventType.Ready.ToString(), StringComparison.OrdinalIgnoreCase))
+        {
+            await atlasInterop!.Markers.Add(map!, markers);
+        }
+
+        eventArgsManager.Add(e);
+        StateHasChanged();
+    }
+
+    #endregion
+
+    private class MarkerEventViewModel
+    {
+        public MarkerEventViewModel(MarkerEvent mapEvent)
+        {
+            MarkerEvent = mapEvent;
+        }
+
+        public MarkerEvent MarkerEvent { get; }
+        public MarkerEventType Type => MarkerEvent.Type;
+        public string Name => Type.ToString();
+        public bool IsLoaded { get; set; }
+    }
+}

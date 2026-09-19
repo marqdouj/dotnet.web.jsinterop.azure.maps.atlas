@@ -130,8 +130,22 @@
     [JSInvokable]
     public async Task NotifyMapEvent(MapEventArgs e)
     {
-        await Task.CompletedTask;
-        await ToastService.ShowInfo($"MapEvent: {e.MapId} : {e.Type}");
+        switch (e.Target)
+        {
+            case MapEventTarget.Map:
+                await NotifyEventMap(e);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private async Task NotifyEventMap(MapEventArgs e)
+    {
+        if (await e.ErrorEventNotProcessed(Logger, ToastService))
+        {
+            await ToastService.ShowInfo($"Notify Event: {e.MapId} : {e.Type}");
+        }
     }
 
     private class MapManager : IAsyncDisposable

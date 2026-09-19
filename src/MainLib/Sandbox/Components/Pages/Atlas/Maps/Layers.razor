@@ -14,7 +14,7 @@
     </SummaryContent>
 
     <ChildContent>
-        <Toolbar HorizontalGap="3px">
+        <Toolbar>
             <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
             <FluentSpacer Width="10px" />
             <FluentLabel>Layer:</FluentLabel>
@@ -35,7 +35,7 @@
     private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
     private ILayer? layer;
     private MapSource? source;
-    private readonly List<LayerType?> layerTypes = Enum.GetValues<LayerType>().Cast<LayerType?>().ToList();
+    private readonly List<LayerType?> layerTypes = Enum.GetValues<LayerType>().OrderBy(e => e.ToString()).Cast<LayerType?>().ToList();
     private LayerType? selectedLayer;
     private bool hasInterop => atlasInterop != null;
     private bool mapNotReady => map == null;
@@ -183,18 +183,21 @@
     [JSInvokable]
     public async Task NotifyMapEvent(MapEventArgs e)
     {
-        await Task.CompletedTask;
-
-        switch (e.Type)
+        switch (e.Target)
         {
-            case MapEventType.error:
-                var error = e.GetPayloadItem<ErrorPayload>(nameof(MapEventType.error));
-                Logger.LogError(error!.BuildMessage());
-                await ToastService.ShowInfo($"MapEvent: {e.MapId} : {e.Type} : {error?.BuildMessage()}");
+            case MapEventTarget.Map:
+                await NotifyEventMap(e);
                 break;
             default:
-                await ToastService.ShowInfo($"MapEvent: {e.MapId} : {e.Type}");
                 break;
+        }
+    }
+
+    private async Task NotifyEventMap(MapEventArgs e)
+    {
+        if (await e.ErrorEventNotProcessed(Logger, ToastService))
+        {
+            await ToastService.ShowInfo($"Notify Event: {e.MapId} : {e.Type}");
         }
     }
 

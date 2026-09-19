@@ -1,4 +1,4 @@
-﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Converters;
+﻿using Marqdouj.DotNet.EnumConverters;
 using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using System.Text.Json.Serialization;
 
@@ -116,7 +116,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
     /// "source": Sorts symbols by sortKey if set. Otherwise, symbols are rendered in the
     /// same order as the source data.
     /// </summary>
-    [JsonConverter(typeof(LowerCaseWithHypenEnumConverter<SymbolLayerZOrder>))]
+    [JsonConverter(typeof(HyphenUnderscoreLCEnumConverter<SymbolLayerZOrder>))]
     public enum SymbolLayerZOrder
     {
         Auto,
@@ -124,7 +124,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
         Source,
     }
 
-    [JsonConverter(typeof(LowerCaseWithHypenEnumConverter<SymbolItemAlignment>))]
+    [JsonConverter(typeof(HyphenUnderscoreLCEnumConverter<SymbolItemAlignment>))]
     public enum SymbolItemAlignment
     {
         Auto,
@@ -132,7 +132,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
         Viewport,
     }
 
-    [JsonConverter(typeof(LowerCaseWithHypenEnumConverter<SymbolPositionAnchor>))]
+    [JsonConverter(typeof(HyphenUnderscoreLCEnumConverter<SymbolPositionAnchor>))]
     public enum SymbolPositionAnchor
     {
         Center,
@@ -146,7 +146,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
         Bottom_Right,
     }
 
-    [JsonConverter(typeof(LowerCaseWithHypenEnumConverter<SymbolIconImage>))]
+    [JsonConverter(typeof(HyphenUnderscoreLCEnumConverter<SymbolIconImage>))]
     public enum SymbolIconImage
     {
         Marker_Black,

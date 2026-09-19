@@ -118,11 +118,22 @@
     [JSInvokable]
     public async Task NotifyMapEvent(MapEventArgs e)
     {
-        await Task.CompletedTask;
-        await ToastService.ShowInfo($"MapEvent: {e.Type}");
+        switch (e.Target)
+        {
+            case MapEventTarget.Map:
+                await NotifyEventMap(e);
+                break;
+            default:
+                break;
+        }
+    }
 
-        var test = e.GetPayloadItem<ErrorPayload>("test");
-        Console.WriteLine(test?.BuildMessage());
+    private async Task NotifyEventMap(MapEventArgs e)
+    {
+        if (await e.ErrorEventNotProcessed(Logger, ToastService))
+        {
+            await ToastService.ShowInfo($"Notify Event: {e.MapId} : {e.Type}");
+        }
     }
 
     #endregion

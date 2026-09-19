@@ -1,7 +1,7 @@
 ﻿@rendermode InteractiveServer
 @inject AppConfiguration AppConfig
 
-<FluentNav @ref="@nav" Id="main-menu" Width="260px">
+<FluentNav @ref="@nav" Id="main-menu" Width="260px" UseSingleExpanded="true">
     @if (AppConfig.IsDevelopment && showDev)
     {
         <FluentNavItem Href="design" IconRest="@((new Icons.Regular.Size20.DesignIdeas()))">Design</FluentNavItem>
@@ -13,6 +13,13 @@
         <FluentNavItem Href="maps-basic" IconRest="@((new Icons.Regular.Size20.Map()))">Basic</FluentNavItem>
         <FluentNavItem Href="maps-layers" IconRest="@((new Icons.Regular.Size20.LayerDiagonal()))">Layers</FluentNavItem>
         <FluentNavItem Href="maps-multiple" IconRest="@((new Icons.Regular.Size20.Map()))">Multiple</FluentNavItem>
+    </FluentNavCategory>
+
+    <FluentNavCategory Title="Events" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
+        <FluentNavItem Href="events-map" IconRest="@((new Icons.Regular.Size20.MapPin()))">Map</FluentNavItem>
+        <FluentNavItem Href="events-layer" IconRest="@((new Icons.Regular.Size20.MapPin()))">Layer</FluentNavItem>
+        <FluentNavItem Href="events-marker" IconRest="@((new Icons.Regular.Size20.MapPin()))">Marker</FluentNavItem>
+        <FluentNavItem Href="events-stylecontrol" IconRest="@((new Icons.Regular.Size20.MapPin()))">Style Control</FluentNavItem>
     </FluentNavCategory>
 
     <FluentNavCategory Title="Modules" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">

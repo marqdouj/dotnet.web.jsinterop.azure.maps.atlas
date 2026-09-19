@@ -1,4 +1,5 @@
-﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Converters;
+﻿using Marqdouj.DotNet.EnumConverters;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common;
 using System.Text.Json.Serialization;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Controls
@@ -76,7 +77,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Controls
     /// <summary>
     /// Position where the control is to be placed on the map.
     /// </summary>
-    [JsonConverter(typeof(LowerCaseWithHypenEnumConverter<ControlPosition>))]
+    [JsonConverter(typeof(HyphenUnderscoreLCEnumConverter<ControlPosition>))]
     public enum ControlPosition
     {
         /// <summary>
@@ -108,7 +109,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Controls
     /// <summary>
     /// Base class for a map control.
     /// </summary>
-    public abstract class MapControl : ICloneable
+    public abstract class MapControl : JsInteropIdBase
     {
         /// <summary>
         /// <see cref="ControlType"/>
@@ -119,12 +120,6 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Controls
         /// <see cref="Controls.ControlOptions"/>
         /// </summary>
         public ControlOptions? ControlOptions { get; set; }
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        /// <returns></returns>
-        public abstract object Clone();
     }
 
     /// <summary>

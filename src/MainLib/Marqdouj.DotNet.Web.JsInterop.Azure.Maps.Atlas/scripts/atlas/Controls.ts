@@ -1,6 +1,6 @@
 import * as atlas from "azure-maps-control"
-import { MapObjectReference } from "../common"
-import { Helpers } from "../common/Helpers";
+import { MapObjectReference } from "./common"
+import { Helpers } from "./common/Helpers";
 
 export class Controls {
     public static add(map: atlas.Map, mapControls?: MapControl[]) {
@@ -58,6 +58,7 @@ export class Controls {
             }
 
             if (newControl) {
+                (newControl as any).id = mc.id;
                 map.controls.add(newControl, mc.controlOptions);
             }
         });
@@ -212,6 +213,7 @@ enum MapControlType {
 }
 
 export interface MapControl {
+    id?: string;
     type: MapControlType;
     controlOptions?: atlas.ControlOptions;
     options?: atlas.CompassControlOptions

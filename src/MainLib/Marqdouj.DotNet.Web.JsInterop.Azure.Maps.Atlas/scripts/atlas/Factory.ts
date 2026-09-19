@@ -1,7 +1,10 @@
 import * as atlas from "azure-maps-control"
-import { Helpers } from "../common/Helpers"
+import { Helpers } from "./common/Helpers"
 import { Controls, MapControl } from "./Controls"
-import { Logger, LogLevel } from "../common/Logger"
+import { Logger, LogLevel } from "./common/Logger"
+import * as common from "./common";
+import * as events from "./events";
+import { MapEvents, MapEventType } from "./events/MapEvents";
 
 export class Factory {
     public static setLogLevel(logLevel: LogLevel) {
@@ -12,14 +15,14 @@ export class Factory {
         Logger.logMessage("Setting LogLevel", LogLevel.Information, `LogLevel was [${LogLevel[previousLevel]}]. LogLevel set to [${LogLevel[Logger.currentLevel]}].`);
     }
 
-    public static createMap(dotNetRef: any, mapId: string, config: MapConfiguration, mapControls?: MapControl[]) {
+    public static createMap(dotNetRef: any, mapId: string, config: MapConfiguration, mapControls?: MapControl[], mapEvents?: events.EventInfo[]) {
         const eventNames: CreateMapEventNames = (config as any).eventNames as CreateMapEventNames ?? {};
 
         if (Helpers.isEmptyOrNull(eventNames.error)) {
-            eventNames.error = MapEventNotify.NotifyMapEvent;
+            eventNames.error = events.MapEventNotify.NotifyMapEvent;
         }
         if (Helpers.isEmptyOrNull(eventNames.ready)) {
-            eventNames.ready = MapEventNotify.NotifyMapEvent;
+            eventNames.ready = events.MapEventNotify.NotifyMapEvent;
         }
 
         const options = this.#buildOptions(config);
@@ -27,15 +30,16 @@ export class Factory {
 
         azmap.events.addOnce(MapEventType.Ready, event => {
             azmap.events.add(MapEventType.Error, event => {
-                const error: JsError = { name: event.error.name, message: event.error.message, stack: event.error.stack, cause: event.error.cause?.toString() }
+                const error: common.JsError = { name: event.error.name, message: event.error.message, stack: event.error.stack, cause: event.error.cause?.toString() }
                 const payload: atlas.Properties = { error: error };
-                const errorArgs: MapEventArgs = { mapId: mapId, target: MapEventTarget.Map, type: event.type, payload: payload };
+                const errorArgs: events.NotifyMapEventArgs = { mapId: mapId, target: events.MapEventTarget.Map, type: event.type, payload: payload };
                 dotNetRef.invokeMethodAsync(eventNames.error, errorArgs);
             });
 
             Controls.add(azmap, mapControls);
+            MapEvents.add(dotNetRef, azmap, mapEvents);
 
-            const readyArgs: MapEventArgs = { mapId: mapId, target: MapEventTarget.Map, type: event.type };
+            const readyArgs: events.NotifyMapEventArgs = { mapId: mapId, target: events.MapEventTarget.Map, type: event.type };
             dotNetRef.invokeMethodAsync(eventNames.ready, readyArgs);
         });
 
@@ -123,30 +127,3 @@ interface MapConfiguration {
 }
 
 type CreateMapOptions = atlas.ServiceOptions & atlas.StyleOptions & atlas.UserInteractionOptions & (atlas.CameraOptions | atlas.CameraBoundsOptions);
-
-interface JsError {
-    name: string;
-    message?: string;
-    stack?: string;
-    cause?: string;
-}
-
-interface MapEventArgs {
-    mapId: string;
-    target: MapEventTarget;
-    type: string;
-    payload?: atlas.Properties | undefined;
-}
-
-enum MapEventNotify {
-    NotifyMapEvent = 'NotifyMapEvent',
-}
-
-enum MapEventTarget {
-    Map = "map",
-}
-
-enum MapEventType {
-    Error = 'error',
-    Ready = 'ready',
-}

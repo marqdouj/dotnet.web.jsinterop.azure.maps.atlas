@@ -1,5 +1,6 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Data;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Events;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources;
 using Microsoft.JSInterop;
 
@@ -19,6 +20,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         /// <inheritdoc cref="IAtlasData"/>
         /// </summary>
         IAtlasData Data { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasEvents"/>
+        /// </summary>
+        IAtlasEvents Events { get; }
 
         /// <summary>
         /// <inheritdoc cref="IAtlasFactory"/>
@@ -41,9 +47,19 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         IAtlasMap Map { get; }
 
         /// <summary>
+        /// <inheritdoc cref="IAtlasMarkers"/>
+        /// </summary>
+        IAtlasMarkers Markers { get; }
+
+        /// <summary>
         /// <inheritdoc cref="IAtlasMath"/>
         /// </summary>
         IAtlasMath Math { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasNavigator"/>
+        /// </summary>
+        IAtlasNavigator Navigator { get; }
 
         /// <summary>
         /// <inheritdoc cref="IAtlasSources"/>
@@ -69,11 +85,14 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
 
             Controls = new AzControls(moduleTask);
             Data = new AzData(moduleTask);
+            Events = new AzEvents(moduleTask);
             Factory = new AzFactory(moduleTask);
             Features = new AzFeatures(moduleTask);
             Layers = new AzLayers(moduleTask);
             Map = new AzMap(moduleTask);
+            Markers = new AzMarkers(moduleTask);
             Math = new AzMath(moduleTask);
+            Navigator = new AzNavigator(moduleTask);
             Sources = new AzSources(moduleTask);
         }
 
@@ -86,6 +105,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         /// <inheritdoc cref="IAtlasData"/>
         /// </summary>
         public IAtlasData Data { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasEvents"/>
+        /// </summary>
+        public IAtlasEvents Events { get; }
 
         /// <summary>
         /// <inheritdoc cref="IAtlasFactory"/>
@@ -111,6 +135,16 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         /// <inheritdoc cref="IAtlasMath"/>
         /// </summary>
         public IAtlasMath Math { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasMarkers"/>
+        /// </summary>
+        public IAtlasMarkers Markers { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasNavigator"/>
+        /// </summary>
+        public IAtlasNavigator Navigator { get; }
 
         /// <summary>
         /// <inheritdoc cref="IAtlasSources"/>

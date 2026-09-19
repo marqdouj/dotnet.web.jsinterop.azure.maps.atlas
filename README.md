@@ -22,9 +22,8 @@
 - `MapContainer`. Helper component to display the map. Use is not required, but recommended for simple control of the map display.
 
 ## Release Notes (Current)
-- `11.0.0-Preview-3.2`
-   - `IAtlasSource`. 
-	  - `Clear` methods has been updated and moved to `IAtlasDataSource`.
-	  - `Remove/GetSources`. Method signatures have been updated.
+- `11.0.0-Preview-3.3`
+   - `IAtlasInterop.Events`. New modules have been added for event support:
+	  - Layer, Map, Marker, and StyleControl.
 
 ## [Release Notes (All)](Documents/ReleaseNotes.md)

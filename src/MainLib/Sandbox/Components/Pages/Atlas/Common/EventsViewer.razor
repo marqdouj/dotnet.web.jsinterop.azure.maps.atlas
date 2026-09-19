@@ -1,0 +1,85 @@
+﻿@inject IJSRuntime JSRuntime
+@inject INotificationService ToastService
+@inject ILogger<EventsViewer> Logger
+
+<div style="@style">
+    <FluentDataGrid Items="@Events.Items.AsQueryable()"
+                    TGridItem="MapEventArgsViewModel"
+                    GenerateHeader="@DataGridGeneratedHeaderType.Sticky"
+                    GridTemplateColumns="@gridTemplateColumns"
+                    RowStyle="@rowStyle"
+                    MultiLine="@Mulitline"
+                    ResizableColumns="true">
+        <ChildContent>
+            <PropertyColumn Property="@(p => p.Args.Type)" />
+            <PropertyColumn Property="@(p => p.Args.Target)" />
+            <PropertyColumn Property="@(p => p.TimeStamp)" />
+            <PropertyColumn Property="@(p => p.JSON)" />
+            @if (Maps is not null)
+            {
+                <TemplateColumn>
+                    <FluentButton IconStart="@(new Icons.Regular.Size20.Clipboard())" Title="Copy JSON to clipboard" @onclick="@(() => CopyToClipboard(context))"/>
+                </TemplateColumn>
+            }
+        </ChildContent>
+        <EmptyContent />
+    </FluentDataGrid>
+</div>
+
+@code {
+    private string style => $"height:{Height ?? "200px"};width:{Width ?? "100%"};overflow:auto;border:groove;border-width:1";
+    private string gridTemplateColumns = "165px 100px 200px auto auto";
+
+    private Func<MapEventArgsViewModel, string?> rowStyle = x => GetRowStyle(x);
+
+    [Parameter, EditorRequired]
+    public MapEventArgsViewModelManager Events { get; set; }
+
+    [Parameter, EditorRequired]
+    public IAtlasInterop? Maps { get; set; }
+
+    [Parameter]
+    public string? Height { get; set; }
+
+    [Parameter]
+    public bool Mulitline { get; set; }
+
+    [Parameter]
+    public string? Width { get; set; }
+
+    private static string? GetRowStyle(MapEventArgsViewModel item)
+    {
+        if (Enum.TryParse<MapEventType>(item.Args.Type, out var type))
+        {
+            switch (type)
+            {
+                case MapEventType.Error:
+                    return "background-color: palevioletred";
+                case MapEventType.Ready:
+                    return "background-color: green";
+                default:
+                    break;
+            }
+        }
+
+        return null;
+    }
+
+    private async Task CopyToClipboard(MapEventArgsViewModel item)
+    {
+        try
+        {
+            if (Maps is null) return;
+
+            var result = await Maps.Navigator.CopyTextToClipboard(item.JSON);
+
+            if (!string.IsNullOrWhiteSpace(result.Message))
+                await ToastService.ShowInfo(result.Message);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+}
