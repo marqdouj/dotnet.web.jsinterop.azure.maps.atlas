@@ -143,6 +143,10 @@
             Logger.LogError(ex, null);
             await ToastService.ShowError(ex.Message);
         }
+        finally
+        {
+            StateHasChanged();
+        }
     }
 
     private async Task ResetMap()
