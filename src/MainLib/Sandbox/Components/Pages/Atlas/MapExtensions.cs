@@ -1,4 +1,5 @@
-﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration;
+﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Controls;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Payloads;
@@ -26,6 +27,20 @@ namespace Sandbox.Components.Pages.Atlas
             }
         }
 
+        /// <summary>
+        /// Disposes all items and clears the list.
+        /// </summary>
+        /// <param name="items"></param>
+        /// <returns></returns>
+        public static async Task CleanUp(this List<IMapObjectReference>? items)
+        {
+            if (items == null) return;
+
+            foreach (var item in items)
+                await item.DisposeAsync();
+
+            items.Clear();
+        }
 
         public static async Task<bool> ErrorEventProcessed(this MapEventArgs e, ILogger logger, INotificationService toastService)
         {

@@ -21,7 +21,6 @@
             <FluentLabel>Controls:</FluentLabel>
             <FluentButton Disabled="@addControlsDisabled" IconStart="@(new Icons.Regular.Size20.Add())" Title="Add Controls" OnClick="@AddControls" />
             <FluentButton Disabled="@removeControlsDisabled" IconStart="@(new Icons.Regular.Size20.Delete())" Title="Remove Controls" OnClick="@RemoveControls" />
-            <FluentButton Disabled="@removeControlsDisabled" IconStart="@(new Icons.Regular.Size20.DeleteArrowBack())" Title="Remove Controls By Reference" OnClick="@RemoveControls" />
         </Toolbar>
 
         <MapContainer MapId="@mapId" />
@@ -33,7 +32,7 @@
     private const string title = "Maps - Basic";
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
-    private MapConfiguration? config;
+    private MapConfiguration config = default!;
     private Map? map;
     private bool hasInterop => atlasInterop != null;
     private bool createMapDisabled => !hasInterop || map != null;
@@ -42,29 +41,17 @@
     private bool addControlsDisabled => !hasInterop || addedControls != null || map == null;
     private bool removeControlsDisabled => !hasInterop || addedControls == null || map == null;
 
+    protected override void OnInitialized()
+    {
+        config = Configuration.GetValue(LogLevel.Trace);
+        atlasInterop = new(JSRuntime);
+        dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-        {
-            try
-            {
-                config = Configuration?.GetValue(LogLevel.Trace);
-
-                atlasInterop = new(JSRuntime);
-                dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
-
-                await CreateMap();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Initialization caused an exception.");
-                await ToastService.ShowError("Initialization caused an exception.");
-            }
-            finally
-            {
-                StateHasChanged();
-            }
-        }
+            await CreateMap();
     }
 
     public async ValueTask DisposeAsync()
@@ -90,8 +77,8 @@
     {
         try
         {
-            //This is all the supported basic controls
-            //You could remove any controls that you don't want from the list.
+            //These are all the supported basic controls
+            //Remove any controls that you don't want from the list.
             var items = MapExtensions.GetDefaultControls();
 
             await atlasInterop.Controls.Add(map!, items);
@@ -108,26 +95,8 @@
     {
         try
         {
-            var items = addedControls?.Select(c => c.Type).ToList();
-            await atlasInterop.Controls.Remove(map!, items);
-            addedControls = null;
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, null);
-            await ToastService.ShowError(ex.Message);
-        }
-    }
-
-    private async Task RemoveControlsByRef()
-    {
-        try
-        {
-            var refs = await atlasInterop.Controls.GetControls(map!);
-            await atlasInterop.Controls.RemoveControls(map!, refs);
-
-            foreach (var item in refs)
-                await item.DisposeAsync();
+            if (addedControls != null && addedControls.Count > 0)
+                await atlasInterop.Controls.Remove(map!, addedControls);
 
             addedControls = null;
         }
@@ -145,14 +114,18 @@
             if (map != null)
                 return;
 
-            //overrride the default map options (if any) that were set.
-            config?.MapOptions = MapExtensions.GetDefaultMapOptions();
-            map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config!);
+            //overrride the global map options (if any) that were set.
+            config!.MapOptions = MapExtensions.GetDefaultMapOptions();
+            map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config);
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, null);
             await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
         }
     }
 

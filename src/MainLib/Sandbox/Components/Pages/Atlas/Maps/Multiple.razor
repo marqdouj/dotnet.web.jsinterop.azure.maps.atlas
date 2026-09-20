@@ -35,7 +35,7 @@
     private const string title = "Maps - Multiple";
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
-    private MapConfiguration? config;
+    private MapConfiguration config = default!;
     private List<MapManager> mapManagers = [];
 
     protected override async Task OnInitializedAsync()
@@ -70,8 +70,8 @@
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Initialization caused an exception.");
-                await ToastService.ShowError("Initialization caused an exception.");
+                Logger.LogError(ex, null);
+                await ToastService.ShowError(ex.Message);
             }
             finally
             {

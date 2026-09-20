@@ -179,7 +179,7 @@ export class Popups {
         else {
             const id = Helpers.getSourceId(source);
             popups ??= map.popups.getPopups();
-            popup = popups.findLast(item => this.#hasId(item, id));
+            popup = popups.findLast(item => Helpers.hasId(item, id));
         }
 
         if (!popup) {
@@ -188,10 +188,6 @@ export class Popups {
         }
 
         return popup;
-    }
-
-    static #hasId(obj: any, id?: string): obj is atlas.Popup {
-        return obj instanceof atlas.Popup && (obj as any).id === id;
     }
 }
 

@@ -2,7 +2,6 @@
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers;
 using Microsoft.JSInterop;
-using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
@@ -17,7 +16,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// </summary>
         /// <param name="map"></param>
         /// <param name="items"></param>
-        /// <param name="getReferences">If true, then return the <see cref="IMapObjectReference"/> for the popups. Default is false.</param>
+        /// <param name="getReferences">
+        /// If true, then return the <see cref="IMapObjectReference"/> for the popups. Default is false.
+        /// IMPORTANT! Ensure the <see cref="IMapObjectReference"/> is disposed when you are done with it.
+        /// </param>
         /// <returns></returns>
         ValueTask<List<IMapObjectReference>> Add(Map map, IEnumerable<Popup> items, bool getReferences = false);
 
@@ -26,7 +28,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// </summary>
         /// <param name="map"></param>
         /// <param name="item"></param>
-        /// <param name="getReferences">If true, then return the <see cref="IMapObjectReference"/> for the popups. Default is false.</param>
+        /// <param name="getReferences">
+        /// If true, then return the <see cref="IMapObjectReference"/> for the popups. Default is false.
+        /// IMPORTANT! Ensure the <see cref="IMapObjectReference"/> items are disposed when you are done with them.
+        /// </param>
         /// <returns></returns>
         ValueTask<List<IMapObjectReference>> Add(Map map, Popup item, bool getReferences = false);
 
@@ -37,7 +42,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// <param name="layer"></param>
         /// <param name="item"></param>
         /// <param name="placeholders">Shape/Feature property names used to update the template.</param>
-        /// <param name="getReference">If true, then return the <see cref="IMapObjectReference"/> for the popup. Default is false.</param>
+        /// <param name="getReference">
+        /// If true, then return the <see cref="IMapObjectReference"/> for the popup. Default is false.
+        /// IMPORTANT! Ensure the <see cref="IMapObjectReference"/> is disposed when you are done with it.
+        /// </param>
         /// <returns></returns>
         ValueTask<IMapObjectReference?> AddHoverPopup(Map map, ILayer layer, Popup item, IEnumerable<string> placeholders, bool getReference = false);
 

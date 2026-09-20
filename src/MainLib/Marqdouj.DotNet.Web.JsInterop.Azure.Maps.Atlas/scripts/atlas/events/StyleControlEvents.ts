@@ -114,13 +114,9 @@ export class StyleControlEvents {
             return;
 
         const controls = map.controls.getControls();
-        const control = controls.findLast(value => this.#hasId(value, id));
+        const control = controls.findLast(value => Helpers.hasId(value, id));
 
-        return control;
-    }
-
-    static #hasId(obj: any, id: string): obj is atlas.control.StyleControl {
-        return obj instanceof atlas.control.StyleControl && (obj as any).id === id;
+        return (control instanceof atlas.control.StyleControl) ? control : undefined;
     }
 
     // #region General

@@ -30,7 +30,7 @@
     private const string title = "Maps - Layers";
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
-    private MapConfiguration? config;
+    private MapConfiguration config = default!;
     private Map? map;
     private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
     private ILayer? layer;
@@ -44,33 +44,15 @@
 
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            config = Configuration.GetValue(LogLevel.Trace);
-            atlasInterop = new(JSRuntime);
-            dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, null);
-            await ToastService.ShowError(ex.Message);
-        }
+        config = Configuration.GetValue(LogLevel.Trace);
+        atlasInterop = new(JSRuntime);
+        dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-        {
-            try
-            {
-                await CreateMap();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "");
-                await ToastService.ShowError(ex.Message);
-            }
-        }
+            await CreateMap();
     }
 
     public async ValueTask DisposeAsync()

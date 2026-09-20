@@ -3,6 +3,10 @@ import { Logger, LogLevel } from "./Logger";
 import { MapObjectReference } from ".";
 
 export class Helpers {
+    static hasId<T>(obj: any, id?: string): obj is T {
+        return obj instanceof Object && this.isNotEmptyOrNull(id) && (obj as any).id === id;
+    }
+
     static hasStringIndexSignature(obj: unknown): obj is Record<string, any> {
         return typeof obj === "object" && obj !== null;
     }
@@ -15,11 +19,14 @@ export class Helpers {
         return msf;
     }
 
-    static hasElements(items: any[]): boolean {
-        return (items && items.length > 0);
+    static hasElements(items?: any[]): boolean {
+        if (!items)
+            return false;
+
+        return items?.length > 0;
     }
 
-    static hasNoElements(items: any[]): boolean {
+    static hasNoElements(items?: any[]): boolean {
         return !this.hasElements(items);
     }
 

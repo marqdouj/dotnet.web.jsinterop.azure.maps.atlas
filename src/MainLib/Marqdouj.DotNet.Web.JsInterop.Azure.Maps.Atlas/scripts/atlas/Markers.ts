@@ -1,5 +1,6 @@
 import atlas from "azure-maps-control";
 import { MarkerEvents } from "../atlas";
+import { Helpers } from "./common/Helpers";
 
 export class Markers {
     public static add(map: atlas.Map, markers?: HtmlMarker[]): void {
@@ -50,13 +51,9 @@ export class Markers {
             return;
 
         const markers = map.markers.getMarkers();
-        const marker = markers.findLast(value => Markers.#hasId(value, id));
+        const marker = markers.findLast(value => Helpers.hasId(value, id));
 
         return marker;
-    }
-
-    static #hasId(obj: any, id: string): obj is atlas.HtmlMarker {
-        return obj instanceof atlas.HtmlMarker && (obj as any).id === id;
     }
 }
 
