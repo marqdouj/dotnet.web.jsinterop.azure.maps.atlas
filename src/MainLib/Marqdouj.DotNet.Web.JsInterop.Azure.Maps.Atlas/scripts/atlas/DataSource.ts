@@ -11,7 +11,7 @@ export class DataSource {
             return;
 
         sources.forEach((source) => {
-            const ds = this.#getDataSourceFromSource(map, mapId, source, eventName, true);
+            const ds = this.getDataSourceFromSource(map, mapId, source, eventName, true);
 
             if (ds) {
                 ds.clear();
@@ -25,13 +25,13 @@ export class DataSource {
     public static async importDataFromUrl(map: atlas.Map, source: any, url: string) {
         const eventName = "DataSource.importDataFromUrl";
         const mapId = Helpers.getMapId(map);
-        const ds = this.#getDataSourceFromSource(map, mapId, source, eventName, true);
+        const ds = this.getDataSourceFromSource(map, mapId, source, eventName, true);
 
         if (ds)
             await ds.importDataFromUrl(url);
     }
 
-    static #getDataSourceFromSource(map: atlas.Map, mapId: string, source: any, eventName: string, logNotFound: boolean) {
+    static getDataSourceFromSource(map: atlas.Map, mapId: string, source: any, eventName: string, logNotFound: boolean) {
         let ds: atlas.source.DataSource | undefined;
 
         if (source instanceof atlas.source.DataSource) {

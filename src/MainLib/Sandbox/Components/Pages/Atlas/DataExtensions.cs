@@ -52,28 +52,28 @@ namespace Sandbox.Components.Pages.Atlas
                 //await atlasInterop!.Sources.DataSource.ImportDataFromUrl(map, (IMapObjectReference)layer.Source!, url);
             }
 
-            await references.DisposeReferences();
+            await references.CleanUp();
             return results;
         }
 
-        private static async Task DisposeReferences(this List<IMapObjectReference> references)
-        {
-            foreach (var mref in references)
-                await mref.DisposeAsync();
-        }
+        //private static async Task DisposeReferences(this List<IMapObjectReference> references)
+        //{
+        //    foreach (var mref in references)
+        //        await mref.DisposeAsync();
+        //}
 
         #endregion
 
         #region AddDefaultFeatures()
 
-        private static async Task<List<string>> AddDefaultFeatures(this LayerType? layerType, IAtlasInterop atlasInterop, IMapDataService dataService, Map map, MapSource source)
+        private static async Task<List<IMapObjectReference>> AddDefaultFeatures(this LayerType? layerType, IAtlasInterop atlasInterop, IMapDataService dataService, Map map, MapSource source, bool getReferences = false)
         {
-            var results = new List<string>();
+            var results = new List<IMapObjectReference>();
 
             switch (layerType)
             {
                 case LayerType.Bubble:
-                    results = await AddBubbleLayerFeatures(atlasInterop, dataService, map, source);
+                    results = await AddBubbleLayerFeatures(atlasInterop, dataService, map, source, getReferences);
                     break;
                 case LayerType.HeatMap:
                     await atlasInterop.Map.SetCamera(map, new CameraOptions { Center = new Position(-122.33, 47.6), Zoom = 1, Pitch = 0, });
@@ -82,16 +82,16 @@ namespace Sandbox.Components.Pages.Atlas
                     await atlasInterop.Map.SetCamera(map, new CameraOptions { Center = new Position(-74.172363, 40.735657), Zoom = 11, Pitch = 0, });
                     break;
                 case LayerType.Line:
-                    results = await AddLineLayerFeatures(atlasInterop, dataService, map, source);
+                    results = await AddLineLayerFeatures(atlasInterop, dataService, map, source, getReferences);
                     break;
                 case LayerType.Polygon:
-                    results = await AddPolygonLayerFeatures(atlasInterop, dataService, map, source);
+                    results = await AddPolygonLayerFeatures(atlasInterop, dataService, map, source, getReferences);
                     break;
                 case LayerType.PolygonExtrusion:
-                    results = await AddPolygonExtrusionLayerFeatures(atlasInterop, dataService, map, source);
+                    results = await AddPolygonExtrusionLayerFeatures(atlasInterop, dataService, map, source, getReferences);
                     break;
                 case LayerType.Symbol:
-                    results = await AddSymbolLayerFeatures(atlasInterop, dataService, map, source);
+                    results = await AddSymbolLayerFeatures(atlasInterop, dataService, map, source, getReferences);
                     break;
                 case LayerType.Tile:
                     await atlasInterop.Map.SetCamera(map, new CameraOptions { Center = new Position(-122.426181, 47.608070), Zoom = 10.75, Pitch = 0, });
@@ -103,51 +103,51 @@ namespace Sandbox.Components.Pages.Atlas
             return results;
         }
 
-        private static async Task<List<string>> AddBubbleLayerFeatures(IAtlasInterop atlasInterop, IMapDataService dataService, Map map, MapSource source)
+        private static async Task<List<IMapObjectReference>> AddBubbleLayerFeatures(IAtlasInterop atlasInterop, IMapDataService dataService, Map map, MapSource source, bool getReferences)
         {
             var data = await dataService.GetBubbleLayerData();
             var p = new GeoJsonProperties { { "title", "my default bubble layer" } };
             var feature = new Feature<MultiPoint, GeoJsonProperties>(new MultiPoint(data), p);
-            var featureIDs = await atlasInterop.Features.Add(map, source.Id, [feature]);
+            var items = await atlasInterop.Features.Add(map, source.Id, [feature], getReferences);
 
             await atlasInterop.Map.SetCamera(map, new CameraOptions { Center = data[1], Zoom = 12, Pitch = 0, });
-            return featureIDs;
+            return items;
         }
 
-        private static async Task<List<string>> AddLineLayerFeatures(IAtlasInterop atlasInterop, IMapDataService dataService, Map map, MapSource source)
+        private static async Task<List<IMapObjectReference>> AddLineLayerFeatures(IAtlasInterop atlasInterop, IMapDataService dataService, Map map, MapSource source, bool getReferences)
         {
             var data = await dataService.GetLineLayerData();
             var p = new GeoJsonProperties { { "title", "my default line layer" } };
             var feature = new Feature<LineString, GeoJsonProperties>(new LineString(data), p);
-            var featureIDs = await atlasInterop.Features.Add(map, source.Id, [feature]);
+            var items = await atlasInterop.Features.Add(map, source.Id, [feature], getReferences);
 
             await atlasInterop.Map.SetCamera(map, new CameraOptions { Center = data[8], Zoom = 11, Pitch = 0, });
-            return featureIDs;
+            return items;
         }
 
-        private static async Task<List<string>> AddPolygonLayerFeatures(IAtlasInterop atlasInterop, IMapDataService dataService, Map map, MapSource source)
+        private static async Task<List<IMapObjectReference>> AddPolygonLayerFeatures(IAtlasInterop atlasInterop, IMapDataService dataService, Map map, MapSource source, bool getReferences)
         {
             var data = await dataService.GetPolygonLayerData();
             var p = new GeoJsonProperties { { "title", "my default polygon layer" } };
             var feature = new Feature<Polygon, GeoJsonProperties>(new Polygon(data), p);
-            var featureIDs = await atlasInterop.Features.Add(map, source.Id, [feature]);
+            var items = await atlasInterop.Features.Add(map, source.Id, [feature], getReferences);
 
             await atlasInterop.Map.SetCamera(map, new CameraOptions { Center = data[0][0], Zoom = 11, Pitch = 0, });
-            return featureIDs;
+            return items;
         }
 
-        private static async Task<List<string>> AddPolygonExtrusionLayerFeatures(IAtlasInterop atlasInterop, IMapDataService dataService, Map map, MapSource source)
+        private static async Task<List<IMapObjectReference>> AddPolygonExtrusionLayerFeatures(IAtlasInterop atlasInterop, IMapDataService dataService, Map map, MapSource source, bool getReferences)
         {
             var data = await dataService.GetPolygonExtLayerData();
             var p = new GeoJsonProperties { { "title", "my default polygon extrusion layer" } };
             var feature = new Feature<Polygon, GeoJsonProperties>(new Polygon(data), p);
-            var featureIDs = await atlasInterop.Features.Add(map, source.Id, [feature]);
+            var items = await atlasInterop.Features.Add(map, source.Id, [feature], getReferences);
 
             await atlasInterop.Map.SetCamera(map, new CameraOptions { Center = data[0][0], Zoom = 11, Pitch = 60, });
-            return featureIDs;
+            return items;
         }
 
-        private static async Task<List<string>> AddSymbolLayerFeatures(IAtlasInterop atlasInterop, IMapDataService dataService, Map map, MapSource source)
+        private static async Task<List<IMapObjectReference>> AddSymbolLayerFeatures(IAtlasInterop atlasInterop, IMapDataService dataService, Map map, MapSource source, bool getReferences)
         {
             var data = await dataService.GetSymbolLayerData();
             var i = 0;
@@ -161,9 +161,9 @@ namespace Sandbox.Components.Pages.Atlas
                 features.Add(feature);
             }
 
-            var featureIDs = await atlasInterop.Features.Add(map, source.Id, features);
+            var items = await atlasInterop.Features.Add(map, source.Id, features, getReferences);
             await atlasInterop.Map.SetCamera(map, new CameraOptions { Center = data[8], Zoom = 11, Pitch = 0, });
-            return featureIDs;
+            return items;
         }
 
         #endregion

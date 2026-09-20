@@ -21,12 +21,16 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         /// </summary>
         /// <param name="map"></param>
         /// <param name="sources"></param>
-        /// <param name="getReferences">If true, then return the <see cref="IMapObjectReference"/> for the sources. Default is false.</param>
+        /// <param name="getReferences">
+        /// If true, then return the <see cref="IMapObjectReference"/> for the sources. Default is false.
+        /// IMPORTANT! Ensure the <see cref="IMapObjectReference"/> items are disposed when you are done with them.
+        /// </param>
         /// <returns></returns>
         ValueTask<List<IMapObjectReference>> Add(Map map, IEnumerable<MapSource> sources, bool getReferences = false);
 
         /// <summary>
         /// Get the <see cref="IMapObjectReference"/> for all the sources.
+        /// IMPORTANT! Ensure the <see cref="IMapObjectReference"/> items are disposed when you are done with them.
         /// </summary>
         /// <param name="map"></param>
         /// <returns></returns>
@@ -34,6 +38,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
 
         /// <summary>
         /// Get the <see cref="IMapObjectReference"/> for the sources based on the id.
+        /// IMPORTANT! Ensure the <see cref="IMapObjectReference"/> items are disposed when you are done with them.
         /// </summary>
         /// <param name="map"></param>
         /// <param name="sources"></param>
@@ -42,6 +47,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
 
         /// <summary>
         /// Get the <see cref="IMapObjectReference"/> for the sources based on the id.
+        /// IMPORTANT! Ensure the <see cref="IMapObjectReference"/> items are disposed when you are done with them.
         /// </summary>
         /// <param name="map"></param>
         /// <param name="sourceIds"></param>
