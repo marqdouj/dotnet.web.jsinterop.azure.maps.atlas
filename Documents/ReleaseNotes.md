@@ -1,6 +1,8 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-3.5`
+   - `IMapObjectReference`. All modules have been refactored to make it easier to create references.
 - `11.0.0-Preview-3.4`
    - `IAtlasInterop.Popups`. New module has been added for popup support:
 - `11.0.0-Preview-3.3`

@@ -5,16 +5,23 @@ import { MapObjectReference } from "./common";
 import { MapEventTarget } from "./events";
 
 export class Popups {
-    public static add(map: atlas.Map, popups: PopupInfo[]): void {
+    public static add(map: atlas.Map, popups: PopupInfo[], getReferences: boolean = false): MapObjectReference[] {
+        const results: MapObjectReference[] = [];
+        const mapId = Helpers.getMapId(map);
+
         if (Helpers.hasNoElements(popups))
-            return;
+            return results;
 
         popups.forEach(info => {
             let popup = new atlas.Popup(info.options);
             (popup as any).id = info.id
 
             map.popups.add(popup);
+            if (getReferences)
+                results.push(Helpers.createMapObjectReference(mapId, MapEventTarget.Popup, popup, info.id));
         });
+
+        return results;
     }
 
     public static getReferences(map: atlas.Map, sources: PopupInfo[]): MapObjectReference[] {
@@ -69,7 +76,7 @@ export class Popups {
 
     // #region Hover Popup
 
-    public static addHoverPopup(map: atlas.Map, layerId: string, info: PopupInfo, placeholders: string[]) {
+    public static addHoverPopup(map: atlas.Map, layerId: string, info: PopupInfo, placeholders: string[], getReference: boolean = false) {
         const mapId = Helpers.getMapId(map);
         const lyr = map.layers.getLayerById(layerId);
 
@@ -86,6 +93,7 @@ export class Popups {
 
         if (!popup) {
             Logger.logMapMessage(mapId, LogLevel.Error, `addHoverPopup: popup was not created or can't be found where popup id = '${info.id}'.`);
+            return;
         }
 
         //Close the popup when the mouse leaves the shape.
@@ -98,6 +106,10 @@ export class Popups {
         */
         map.events.add('mousemove', lyr, (e: atlas.MapMouseEvent) => this.#symbolHovered(e, mapId, info, popup, placeholders));
         map.events.add('touchstart', lyr, (e: atlas.MapTouchEvent) => this.#symbolHovered(e, mapId, info, popup, placeholders));
+
+        if (getReference) {
+            return Helpers.createMapObjectReference(mapId, MapEventTarget.Popup, popup, info.id);
+        }
     }
 
     static #closeSymbolHovered(popup: atlas.Popup | undefined) {
