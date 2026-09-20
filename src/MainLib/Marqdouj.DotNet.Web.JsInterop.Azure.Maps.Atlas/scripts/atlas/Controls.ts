@@ -74,7 +74,7 @@ export class Controls {
         const controls = map.controls.getControls();
 
         mapControls.forEach((mc) => {
-            let control = this.#getItemFromSource(map, mc, controls);
+            let control = this.#getItemFromSource(map, mc, controls, false);
 
             if (!control) {
                 Logger.logMapMessage(mapId, LogLevel.Warn, `${eventName}: Control does not exists where id = '${mc.id}'.`);
