@@ -105,7 +105,7 @@ enum SourceType {
     VectorTile = 'VectorTile'
 }
 
-interface MapSource {
+export interface MapSource {
     id: string;
     type: SourceType;
     options?: any; // atlas.DataSourceOptions | atlas.ElevationTileSourceOptions | atlas.VectorTileSourceOptions | undefined;
