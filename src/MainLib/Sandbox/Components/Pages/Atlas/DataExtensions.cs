@@ -52,7 +52,7 @@ namespace Sandbox.Components.Pages.Atlas
                 //await atlasInterop!.Sources.DataSource.ImportDataFromUrl(map, (IMapObjectReference)layer.Source!, url);
             }
 
-            await references.CleanUp();
+            await references.DisposeItems();
             return results;
         }
 

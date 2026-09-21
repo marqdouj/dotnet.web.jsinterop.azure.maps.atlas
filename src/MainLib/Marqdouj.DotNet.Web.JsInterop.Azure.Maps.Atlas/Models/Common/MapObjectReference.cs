@@ -60,7 +60,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common
         /// </summary>
         /// <param name="items"></param>
         /// <returns></returns>
-        public static async Task CleanUp(this IEnumerable<IMapObjectReference>? items)
+        public static async Task DisposeItems(this IEnumerable<IMapObjectReference>? items)
         {
             if (items == null) return;
 
