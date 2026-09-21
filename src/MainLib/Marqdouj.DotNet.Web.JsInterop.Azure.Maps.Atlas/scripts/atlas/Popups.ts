@@ -5,20 +5,30 @@ import { MapObjectReference } from "./common";
 import { MapEventTarget } from "./events";
 
 export class Popups {
-    public static add(map: atlas.Map, popups: PopupInfo[], getReferences: boolean = false): MapObjectReference[] {
+    public static add(map: atlas.Map, sources: PopupInfo[], getReferences: boolean = false): MapObjectReference[] {
+        const eventName = "Popups.add";
         const results: MapObjectReference[] = [];
         const mapId = Helpers.getMapId(map);
 
-        if (Helpers.hasNoElements(popups))
+        if (Helpers.hasNoElements(sources))
             return results;
 
-        popups.forEach(info => {
-            let popup = new atlas.Popup(info.options);
-            (popup as any).id = info.id
+        const popups = map.popups.getPopups();
 
-            map.popups.add(popup);
-            if (getReferences)
-                results.push(Helpers.createMapObjectReference(mapId, MapEventTarget.Popup, popup, info.id));
+        sources.forEach(info => {
+            const item = this.#getPopupFromSource(map, info, popups);
+
+            if (!item) {
+                let popup = new atlas.Popup(info.options);
+                (popup as any).id = info.id
+
+                map.popups.add(popup);
+                if (getReferences)
+                    results.push(Helpers.createMapObjectReference(mapId, MapEventTarget.Popup, popup, info.id));
+            }
+            else {
+                Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: Popup already exists.`, info);
+            }
         });
 
         return results;
