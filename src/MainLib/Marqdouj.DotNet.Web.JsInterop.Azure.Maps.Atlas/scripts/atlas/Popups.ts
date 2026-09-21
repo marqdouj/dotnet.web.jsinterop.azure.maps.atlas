@@ -16,7 +16,7 @@ export class Popups {
         const popups = map.popups.getPopups();
 
         sources.forEach(info => {
-            const item = this.#getPopupFromSource(map, info, popups);
+            const item = this.#getPopupFromSource(map, info, popups, false);
 
             if (!item) {
                 let popup = new atlas.Popup(info.options);
@@ -95,7 +95,7 @@ export class Popups {
             return;
         }
 
-        let popup = this.#getPopupFromSource(map, info.id);
+        let popup = this.#getPopupFromSource(map, info.id, undefined, false);
         if (!popup) {
             this.add(map, [info]);
             popup = this.#getPopupFromSource(map, info.id);
@@ -178,7 +178,7 @@ export class Popups {
 
     // #endRegion
 
-    static #getPopupFromSource(map: atlas.Map, source: any, popups?: atlas.Popup[]): atlas.Popup | undefined {
+    static #getPopupFromSource(map: atlas.Map, source: any, popups?: atlas.Popup[], logIfNotFound: boolean = true): atlas.Popup | undefined {
         const eventName = "Popups.#getPopupFromSource";
 
         let popup: atlas.Popup | undefined;
@@ -192,7 +192,7 @@ export class Popups {
             popup = popups.findLast(item => Helpers.hasId(item, id));
         }
 
-        if (!popup) {
+        if (!popup && logIfNotFound) {
             const mapId = Helpers.getMapId(map);
             Logger.logMessage(mapId, LogLevel.Warn, `${eventName}: Popup not found.`, source);
         }

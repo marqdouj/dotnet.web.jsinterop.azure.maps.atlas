@@ -139,8 +139,8 @@
                 var p = new GeoJsonProperties { { "name", "Microsoft Building 41" }, { "description", "15571 NE 31st St, Redmond, WA 98052" }, { "color", "blue" } };
                 var feature = new Feature<Point, GeoJsonProperties?>(new Point(-122.1333, 47.63), p);
 
-                await atlasInterop.Features.Add(map, dataSource!.Id, [feature]);
-                await atlasInterop.Popups.AddHoverPopup(map, symbolLayer!, popup, ["name", "description"]);
+                _ = await atlasInterop.Features.Add(map, dataSource!.Id, [feature]);
+                _ = await atlasInterop.Popups.AddHoverPopup(map, symbolLayer!, popup, ["name", "description"]);
                 await ResetMap();
             }
             catch (Exception ex)
