@@ -12,13 +12,7 @@ export class DataSource {
 
         sources.forEach((source) => {
             const ds = this.getDataSourceFromSource(map, mapId, source, eventName, true);
-
-            if (ds) {
-                ds.clear();
-            }
-            else {
-                Logger.logMapMessage(mapId, LogLevel.Warn, `${eventName}: DataSource not found.`, source);
-            }
+            ds?.clear();
         });
     }
 
