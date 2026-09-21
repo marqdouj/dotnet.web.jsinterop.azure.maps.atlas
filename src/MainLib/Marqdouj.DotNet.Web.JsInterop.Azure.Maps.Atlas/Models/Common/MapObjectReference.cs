@@ -30,7 +30,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common
         string? Type { get; set; }
     }
 
-    internal class MapObjectReference : IAsyncDisposable, IMapObjectReference
+    internal sealed class MapObjectReference : IAsyncDisposable, IMapObjectReference
     {
         public string MapId { get; set; } = default!;
 
@@ -43,7 +43,28 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common
         public async ValueTask DisposeAsync()
         {
             if (JsReference != null)
+            {
                 await JsReference.DisposeAsync();
+                JsReference = null;
+            }
+        }
+    }
+
+    public static class MapObjectReferenceExtensions
+    {
+        /// <summary>
+        /// Disposes all references.
+        /// </summary>
+        /// <param name="items"></param>
+        /// <returns></returns>
+        public static async Task CleanUp(this List<IMapObjectReference>? items)
+        {
+            if (items == null) return;
+
+            foreach (var item in items)
+                await item.DisposeAsync();
+
+            items.Clear();
         }
     }
 }
