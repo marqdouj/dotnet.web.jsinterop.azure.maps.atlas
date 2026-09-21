@@ -161,8 +161,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         {
             var module = await moduleTask.Value;
             await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, items.Select(e => e.JsReference).ToList());
-            foreach (var item in items)
-                await item.DisposeAsync();
+            await items.CleanUp();
         }
 
         #endregion

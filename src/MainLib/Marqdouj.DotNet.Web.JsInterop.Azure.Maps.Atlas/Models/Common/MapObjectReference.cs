@@ -50,21 +50,22 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public static class MapObjectReferenceExtensions
     {
         /// <summary>
-        /// Disposes all references.
+        /// Disposes all items.
         /// </summary>
         /// <param name="items"></param>
         /// <returns></returns>
-        public static async Task CleanUp(this List<IMapObjectReference>? items)
+        public static async Task CleanUp(this IEnumerable<IMapObjectReference>? items)
         {
             if (items == null) return;
 
             foreach (var item in items)
                 await item.DisposeAsync();
-
-            items.Clear();
         }
     }
 }

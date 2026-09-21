@@ -139,8 +139,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         {
             var module = await moduleTask.Value;
             await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, layers.Select(e => e.JsReference));
-            foreach (var item in layers)
-                await item.DisposeAsync();
+            await layers.CleanUp();
         }
 
         public async ValueTask Remove(Map map, IMapObjectReference layer)

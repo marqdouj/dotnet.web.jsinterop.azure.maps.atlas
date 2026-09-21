@@ -1,6 +1,7 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Sources;
+using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
 
@@ -147,8 +148,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         {
             var module = await moduleTask.Value;
             await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.JsReference));
-            foreach (var item in sources)
-                await item.DisposeAsync();
+            await sources.CleanUp();
         }
 
         public async ValueTask Remove(Map map, IMapObjectReference source)
