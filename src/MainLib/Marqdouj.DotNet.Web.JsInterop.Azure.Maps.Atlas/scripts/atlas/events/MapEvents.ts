@@ -10,9 +10,11 @@ export class MapEvents {
     public static add(dotNetRef: any, map: atlas.Map, mapEvents?: events.EventInfo[]) {
         const eventName = "MapEvents.add";
         const mapId = Helpers.getMapId(map);
-        mapEvents ??= [];
 
-        mapEvents.forEach((me) => {
+        if (Helpers.hasNoElements(mapEvents))
+            return;
+
+        mapEvents!.forEach((me) => {
             me.eventName ??= events.MapEventNotify.NotifyMapEvent;
             let callback: any;
 
@@ -61,7 +63,9 @@ export class MapEvents {
 
     public static remove(map: atlas.Map, mapEvents: events.EventInfo[]) {
         const mapId = Helpers.getMapId(map);
-        mapEvents ?? [];
+
+        if (Helpers.hasNoElements(mapEvents))
+            return;
 
         mapEvents.forEach((me) => {
             const callback: any = this.#eventsMap.getCallback(mapId, me);

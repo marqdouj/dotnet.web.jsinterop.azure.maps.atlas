@@ -449,266 +449,222 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
 
         public async ValueTask<List<Polygon>> BoundingBoxToPolygon(object bboxes)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<Polygon>>(GetJsInteropMethod(), bboxes);
+            return await moduleTask.InvokeAsyncTC<List<Polygon>>(GetJsInteropMethod(), bboxes);
         }
 
         public async ValueTask<List<double>> ConvertAcceleration(IEnumerable<double> accelerations, AccelerationUnits fromUnits, AccelerationUnits toUnits, int? decimals = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<double>>(GetJsInteropMethod(), accelerations, fromUnits, toUnits, decimals);
+            return await moduleTask.InvokeAsyncTC<List<double>>(GetJsInteropMethod(), accelerations, fromUnits, toUnits, decimals);
         }
 
         public async ValueTask<List<double>> ConvertArea(IEnumerable<double> areas, AreaUnits fromUnits, AreaUnits toUnits, int? decimals = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<double>>(GetJsInteropMethod(), areas, fromUnits, toUnits, decimals);
+            return await moduleTask.InvokeAsyncTC<List<double>>(GetJsInteropMethod(), areas, fromUnits, toUnits, decimals);
         }
 
         public async ValueTask<List<double>> ConvertDistance(IEnumerable<double> distances, DistanceUnits fromUnits, DistanceUnits toUnits, int? decimals = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<double>>(GetJsInteropMethod(), distances, fromUnits, toUnits, decimals);
+            return await moduleTask.InvokeAsyncTC<List<double>>(GetJsInteropMethod(), distances, fromUnits, toUnits, decimals);
         }
 
         public async ValueTask<List<double>> ConvertSpeed(IEnumerable<double> speeds, SpeedUnits fromUnits, SpeedUnits toUnits, int? decimals = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<double>>(GetJsInteropMethod(), speeds, fromUnits, toUnits, decimals);
+            return await moduleTask.InvokeAsyncTC<List<double>>(GetJsInteropMethod(), speeds, fromUnits, toUnits, decimals);
         }
 
         public async ValueTask<List<double>> ConvertTimespan(IEnumerable<double> timespan, TimeUnits fromUnits, TimeUnits toUnits, int? decimals = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<double>>(GetJsInteropMethod(), timespan, fromUnits, toUnits, decimals);
+            return await moduleTask.InvokeAsyncTC<List<double>>(GetJsInteropMethod(), timespan, fromUnits, toUnits, decimals);
         }
 
         public async ValueTask<double> GetAcceleration(double initialSpeed, double distance, double timespan, SpeedUnits? speedUnits = null, DistanceUnits? distanceUnits = null, TimeUnits? timeUnits = null, AccelerationUnits? accelerationUnits = null, int? decimals = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<double>(GetJsInteropMethod(), initialSpeed, distance, timespan, speedUnits, distanceUnits, timeUnits, accelerationUnits, decimals);
+            return await moduleTask.InvokeAsyncTC<double>(GetJsInteropMethod(), initialSpeed, distance, timespan, speedUnits, distanceUnits, timeUnits, accelerationUnits, decimals);
         }
 
         public async ValueTask<double> GetAccelerationFromFeatures(object origin, object destination, string timestampProperty, string? speedProperty = null, SpeedUnits? speedUnits = null, AccelerationUnits? accelerationUnits = null, int? decimals = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<double>(GetJsInteropMethod(), origin, destination, timestampProperty, speedProperty, speedUnits, accelerationUnits, decimals);
+            return await moduleTask.InvokeAsyncTC<double>(GetJsInteropMethod(), origin, destination, timestampProperty, speedProperty, speedUnits, accelerationUnits, decimals);
         }
 
         public async ValueTask<double> GetAccelerationFromSpeeds(double initialSpeed, double finalSpeed, double timespan, SpeedUnits? speedUnits = null, TimeUnits? timeUnits = null, AccelerationUnits? accelerationUnits = null, int? decimals = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<double>(GetJsInteropMethod(), initialSpeed, finalSpeed, timespan, speedUnits, timeUnits, accelerationUnits, decimals);
+            return await moduleTask.InvokeAsyncTC<double>(GetJsInteropMethod(), initialSpeed, finalSpeed, timespan, speedUnits, timeUnits, accelerationUnits, decimals);
         }
 
         public async ValueTask<List<List<double>>> GetAffineTransformToSource(object source, object target, object targetPoints, int? decimals = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<List<double>>>(GetJsInteropMethod(), source, target, targetPoints, decimals);
+            return await moduleTask.InvokeAsyncTC<List<List<double>>>(GetJsInteropMethod(), source, target, targetPoints, decimals);
         }
 
         public async ValueTask<List<List<double>>> GetAffineTransformToTarget(object source, object target, object sourcePoints, int? decimals = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<List<double>>>(GetJsInteropMethod(), source, target, sourcePoints, decimals);
+            return await moduleTask.InvokeAsyncTC<List<List<double>>>(GetJsInteropMethod(), source, target, sourcePoints, decimals);
         }
 
         public async ValueTask<List<double>> GetArea(IEnumerable<object> data, AreaUnits? areaUnits = null, int? decimals = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<double>>(GetJsInteropMethod(), data, areaUnits, decimals);
+            return await moduleTask.InvokeAsyncTC<List<double>>(GetJsInteropMethod(), data, areaUnits, decimals);
         }
 
         public async ValueTask<List<Position>> GetCardinalSpline(object positions, double? tension = null, double? nodeSize = null, bool? close = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), positions, tension, nodeSize, close);
+            return await moduleTask.InvokeAsyncTC<List<Position>>(GetJsInteropMethod(), positions, tension, nodeSize, close);
         }
 
         public async ValueTask<Feature<Point, DistanceProperties>> GetClosestPointOnGeometry(object pt, object geom, DistanceUnits? units = null, double? decimals = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<Feature<Point, DistanceProperties>>(GetJsInteropMethod(), pt, geom, units, decimals);
+            return await moduleTask.InvokeAsyncTC<Feature<Point, DistanceProperties>>(GetJsInteropMethod(), pt, geom, units, decimals);
         }
 
         public async ValueTask<Polygon> GetConvexHull(object data)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<Polygon>(GetJsInteropMethod(), data);
+            return await moduleTask.InvokeAsyncTC<Polygon>(GetJsInteropMethod(), data);
         }
         
         public async ValueTask<Position> GetDestination(object origin, double heading, double distance, DistanceUnits? units = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<Position>(GetJsInteropMethod(), origin, heading, distance, units);
+            return await moduleTask.InvokeAsyncTC<Position>(GetJsInteropMethod(), origin, heading, distance, units);
         }
 
         public async ValueTask<double> GetDistanceTo(object origin, object destination, DistanceUnits? units = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<double>(GetJsInteropMethod(), origin, destination, units);
+            return await moduleTask.InvokeAsyncTC<double>(GetJsInteropMethod(), origin, destination, units);
         }
 
         public async ValueTask<double> GetEarthRadius(DistanceUnits? units = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<double>(GetJsInteropMethod(), units);
+            return await moduleTask.InvokeAsyncTC<double>(GetJsInteropMethod(), units);
         }
 
         public async ValueTask<List<Position>> GetGeodesicPath(object path, double? nodeSize = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), path, nodeSize);
+            return await moduleTask.InvokeAsyncTC<List<Position>>(GetJsInteropMethod(), path, nodeSize);
         }
 
         public async ValueTask<List<List<Position>>> GetGeodesicPaths(object path, double? nodeSize = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<List<Position>>>(GetJsInteropMethod(), path, nodeSize);
+            return await moduleTask.InvokeAsyncTC<List<List<Position>>>(GetJsInteropMethod(), path, nodeSize);
         }
 
         public async ValueTask<double> GetHeading(object origin, object destination)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<double>(GetJsInteropMethod(), origin, destination);
+            return await moduleTask.InvokeAsyncTC<double>(GetJsInteropMethod(), origin, destination);
         }
 
         public async ValueTask<double> GetLengthOfPath(object path, DistanceUnits? units = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<double>(GetJsInteropMethod(), path, units);
+            return await moduleTask.InvokeAsyncTC<double>(GetJsInteropMethod(), path, units);
         }
 
         public async ValueTask<List<Position>> GetPathDenormalizedAtAntimerian(object path)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), path);
+            return await moduleTask.InvokeAsyncTC<List<Position>>(GetJsInteropMethod(), path);
         }
 
         public async ValueTask<List<List<Position>>> GetPathSplitByAntimeridian(object path)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<List<Position>>>(GetJsInteropMethod(), path);
+            return await moduleTask.InvokeAsyncTC<List<List<Position>>>(GetJsInteropMethod(), path);
         }
 
         public async ValueTask<double> GetPixelHeading(object origin, object destination)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<double>(GetJsInteropMethod(), origin, destination);
+            return await moduleTask.InvokeAsyncTC<double>(GetJsInteropMethod(), origin, destination);
         }
 
         public async ValueTask<Feature<Point, HeadingProperties>> GetPointWithHeadingAlongPath(object path, double distance, DistanceUnits? units = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<Feature<Point, HeadingProperties>>(GetJsInteropMethod(), path, distance, units);
+            return await moduleTask.InvokeAsyncTC<Feature<Point, HeadingProperties>>(GetJsInteropMethod(), path, distance, units);
         }
 
         public async ValueTask<List<Feature<Point, HeadingProperties>>> GetPointsWithHeadingAlongPath(object path, double distance)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<Feature<Point, HeadingProperties>>>(GetJsInteropMethod(), path, distance);
+            return await moduleTask.InvokeAsyncTC<List<Feature<Point, HeadingProperties>>>(GetJsInteropMethod(), path, distance);
         }
 
         public async ValueTask<Position> GetPosition(object data)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<Position>(GetJsInteropMethod(), data);
+            return await moduleTask.InvokeAsyncTC<Position>(GetJsInteropMethod(), data);
         }
 
         public async ValueTask<Position> GetPositionAlongPath(object path, double distance, DistanceUnits? units = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<Position>(GetJsInteropMethod(), path, distance, units);
+            return await moduleTask.InvokeAsyncTC<Position>(GetJsInteropMethod(), path, distance, units);
         }
 
         public async ValueTask<List<Position>> GetPositions(object data)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), data);
+            return await moduleTask.InvokeAsyncTC<List<Position>>(GetJsInteropMethod(), data);
         }
 
         public async ValueTask<List<Position>> GetPositionsAlongPath(object path, double numPositions)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), path, numPositions);
+            return await moduleTask.InvokeAsyncTC<List<Position>>(GetJsInteropMethod(), path, numPositions);
         }
 
         public async ValueTask<List<Position>> GetRegularPolygonPath(object origin, double radius, int numberOfPositions, DistanceUnits? units = null, double? offset = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), origin, radius, numberOfPositions, units, offset);
+            return await moduleTask.InvokeAsyncTC<List<Position>>(GetJsInteropMethod(), origin, radius, numberOfPositions, units, offset);
         }
 
         public async ValueTask<List<List<Position>>> GetRegularPolygonPaths(object origin, double radius, int numberOfPositions, DistanceUnits? units = null, double? offset = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<List<Position>>>(GetJsInteropMethod(), origin, radius, numberOfPositions, units, offset);
+            return await moduleTask.InvokeAsyncTC<List<List<Position>>>(GetJsInteropMethod(), origin, radius, numberOfPositions, units, offset);
         }
 
         public async ValueTask<double> GetSpeed(object origin, object destination, double timespan, TimeUnits? timeUnits = null, SpeedUnits? speedUnits = null, int? decimals = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<double>(GetJsInteropMethod(), origin, destination, timespan, timeUnits, speedUnits, decimals);
+            return await moduleTask.InvokeAsyncTC<double>(GetJsInteropMethod(), origin, destination, timespan, timeUnits, speedUnits, decimals);
         }
 
         public async ValueTask<double> GetSpeedFromFeatures(object origin, object destination, string timestampProperty, SpeedUnits? speedUnits = null, int? decimals = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<double>(GetJsInteropMethod(), origin, destination, timestampProperty, speedUnits, decimals);
+            return await moduleTask.InvokeAsyncTC<double>(GetJsInteropMethod(), origin, destination, timestampProperty, speedUnits, decimals);
         }
 
         public async ValueTask<double> GetTravelDistance(double timespan, double speed, DistanceUnits? distanceUnits = null, TimeUnits? timeUnits = null, SpeedUnits? speedUnits = null, AccelerationUnits? accelerationUnits = null, double? acceleration = null, int? decimals = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<double>(GetJsInteropMethod(), distanceUnits, timespan, speed, acceleration, timeUnits, speedUnits, accelerationUnits, decimals);
+            return await moduleTask.InvokeAsyncTC<double>(GetJsInteropMethod(), distanceUnits, timespan, speed, acceleration, timeUnits, speedUnits, accelerationUnits, decimals);
         }
 
         public async ValueTask<Position> Interpolate(object origin, object destination, double? fraction = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<Position>(GetJsInteropMethod(), origin, destination, fraction);
+            return await moduleTask.InvokeAsyncTC<Position>(GetJsInteropMethod(), origin, destination, fraction);
         }
 
         public async ValueTask<List<Position>> MercatorPixelsToPositions(object pixels, double zoom)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), pixels, zoom);
+            return await moduleTask.InvokeAsyncTC<List<Position>>(GetJsInteropMethod(), pixels, zoom);
         }
 
         public async ValueTask<List<Pixel>> MercatorPositionsToPixels(object positions, double zoom)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<Pixel>>(GetJsInteropMethod(), positions, zoom);
+            return await moduleTask.InvokeAsyncTC<List<Pixel>>(GetJsInteropMethod(), positions, zoom);
         }
 
         public async ValueTask<double> NormalizeLatitude(double lat)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<double>(GetJsInteropMethod(), lat);
+            return await moduleTask.InvokeAsyncTC<double>(GetJsInteropMethod(), lat);
         }
 
         public async ValueTask<double> NormalizeLongitude(double lng)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<double>(GetJsInteropMethod(), lng);
+            return await moduleTask.InvokeAsyncTC<double>(GetJsInteropMethod(), lng);
         }
 
         public async ValueTask<List<Position>> RotatePositions(object positions, object origin, double angle)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), positions, origin, angle);
+            return await moduleTask.InvokeAsyncTC<List<Position>>(GetJsInteropMethod(), positions, origin, angle);
         }
 
         public async ValueTask<List<Position>> SimplifyPositions(object points, double tolerance)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<Position>>(GetJsInteropMethod("Simplify"), points, tolerance);
+            return await moduleTask.InvokeAsyncTC<List<Position>>(GetJsInteropMethod("Simplify"), points, tolerance);
         }
 
         public async ValueTask<List<Pixel>> SimplifyPixels(object points, double tolerance)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<Pixel>>(GetJsInteropMethod("Simplify"), points, tolerance);
+            return await moduleTask.InvokeAsyncTC<List<Pixel>>(GetJsInteropMethod("Simplify"), points, tolerance);
         }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")

@@ -8,7 +8,8 @@ export class Layers {
         const results: MapObjectReference[] = [];
         const mapId = Helpers.getMapId(map);
 
-        mapLayers ?? [];
+        if (Helpers.hasNoElements(mapLayers))
+            return;
 
         mapLayers.forEach((ml) => {
             let lyr: atlas.layer.Layer | undefined = undefined;
@@ -51,7 +52,7 @@ export class Layers {
         return results;
     }
 
-    public static getLayers(map: atlas.Map, ids?: string[]) {
+    public static getReferences(map: atlas.Map, ids?: string[]) {
         if (ids) 
             return this.#getLayersById(map, ids);
         else
@@ -74,6 +75,9 @@ export class Layers {
         const results: MapObjectReference[] = [];
         const mapId = Helpers.getMapId(map);
 
+        if (Helpers.hasNoElements(ids))
+            return;
+
         ids.forEach((id) => {
             results.push(this.#getReference(mapId, map.layers.getLayerById(id), id));
         });
@@ -95,12 +99,12 @@ export class Layers {
 
     static #removeByRef(map: atlas.Map, layers: atlas.layer.Layer[]) {
         const sourceIds = layers.map(e => e.getId());
-        LayerEvents.removeBySource(map, sourceIds)
+        LayerEvents.removeByLayer(map, sourceIds)
         map.layers.remove(layers);
     }
 
     static #removeById(map: atlas.Map, ids: string[]) {
-        LayerEvents.removeBySource(map, ids)
+        LayerEvents.removeByLayer(map, ids)
         map.layers.remove(ids);
     }
 
@@ -126,22 +130,12 @@ export class Layers {
         return result;
     }
 
-    static #getReference(mapId: string, layer?: atlas.layer.Layer, layerId: string = "") {
+    static #getReference(mapId: string, layer?: atlas.layer.Layer, layerId?: string | undefined) {
         const type = this.#getLayerType(layer);
-        const dnr = !layer ? null : DotNet.createJSObjectReference(layer);
-        let id = layer?.getId();
-        if (Helpers.isEmptyOrNull(id)) {
-            id = layerId;
-        }
-        const msf: MapObjectReference = { mapId: mapId, id: id, type: type, jsReference: dnr };
-
-        return msf;
+        return Helpers.createMapObjectReference(mapId, type, layer, layerId);
     }
 
-    static #getLayerType(layer: atlas.layer.Layer | undefined): string | undefined {
-        if (!layer)
-            return;
-
+    static #getLayerType(layer: atlas.layer.Layer | undefined): string {
         if (layer instanceof atlas.layer.BubbleLayer)
             return LayerType.Bubble;
 
@@ -165,6 +159,8 @@ export class Layers {
 
         if (layer instanceof atlas.layer.TileLayer)
             return LayerType.Tile;
+
+        return "Unknown";
     }
 }
 

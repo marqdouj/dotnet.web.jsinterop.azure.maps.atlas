@@ -25,7 +25,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// </summary>
         /// <param name="map"></param>
         /// <returns></returns>
-        ValueTask<List<IMapObjectReference>> GetLayers(Map map);
+        ValueTask<List<IMapObjectReference>> GetReferences(Map map);
 
         /// <summary>
         /// Get the <see cref="IMapObjectReference"/> for the layers based on the id.
@@ -33,7 +33,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// <param name="map"></param>
         /// <param name="layers"></param>
         /// <returns></returns>
-        ValueTask<List<IMapObjectReference>> GetLayers(Map map, IEnumerable<ILayer> layers);
+        ValueTask<List<IMapObjectReference>> GetReferences(Map map, IEnumerable<ILayer> layers);
 
         /// <summary>
         /// Get the <see cref="IMapObjectReference"/> for the layers based on the id.
@@ -41,7 +41,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// <param name="map"></param>
         /// <param name="layerIds"></param>
         /// <returns></returns>
-        ValueTask<List<IMapObjectReference>> GetLayers(Map map, IEnumerable<string> layerIds);
+        ValueTask<List<IMapObjectReference>> GetReferences(Map map, IEnumerable<string> layerIds);
 
         /// <summary>
         /// Remove the layers from the map.
@@ -104,30 +104,25 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
 
         public async ValueTask<List<IMapObjectReference>> Add(Map map, IEnumerable<ILayer> layers, bool getReferences = false)
         {
-            var module = await moduleTask.Value;
-            var items = await module.InvokeAsync<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, layers.Cast<object>().ToList(), getReferences);
+            var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, layers.Cast<object>().ToList(), getReferences);
             return [.. items.Cast<IMapObjectReference>()];
         }
 
-        public async ValueTask<List<IMapObjectReference>> GetLayers(Map map)
+        public async ValueTask<List<IMapObjectReference>> GetReferences(Map map)
         {
-            var module = await moduleTask.Value;
-            var items = await module.InvokeAsync<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference);
+            var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference);
             return [.. items.Cast<IMapObjectReference>()];
         }
 
-        public async ValueTask<List<IMapObjectReference>> GetLayers(Map map, IEnumerable<string> layerIds)
+        public async ValueTask<List<IMapObjectReference>> GetReferences(Map map, IEnumerable<string> layerIds)
         {
-            var module = await moduleTask.Value;
-            var items = await module.InvokeAsync<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, layerIds);
+            var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, layerIds);
             return [.. items.Cast<IMapObjectReference>()];
         }
 
-        public async ValueTask<List<IMapObjectReference>> GetLayers(Map map, IEnumerable<ILayer> layers)
+        public async ValueTask<List<IMapObjectReference>> GetReferences(Map map, IEnumerable<ILayer> layers)
         {
-            var module = await moduleTask.Value;
-            var items = await module.InvokeAsync<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, layers.Select(e => e.Id));
-            return [.. items.Cast<IMapObjectReference>()];
+            return  await GetReferences(map, layers.Select(e => e.Id));
         }
 
         public async ValueTask Remove(Map map, ILayer layer)
@@ -137,10 +132,8 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
 
         public async ValueTask Remove(Map map, IEnumerable<IMapObjectReference> layers)
         {
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, layers.Select(e => e.JsReference));
-            foreach (var item in layers)
-                await item.DisposeAsync();
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, layers.Select(e => e.JsReference));
+            await layers.DisposeItems();
         }
 
         public async ValueTask Remove(Map map, IMapObjectReference layer)
@@ -150,8 +143,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
 
         public async ValueTask Remove(Map map, IEnumerable<string> sourceIds)
         {
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, sourceIds);
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, sourceIds);
         }
 
         public async ValueTask Remove(Map map, string id)
@@ -161,8 +153,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
 
         public async ValueTask Remove(Map map, IEnumerable<ILayer> layers)
         {
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, layers.Select(e => e.Id));
+            await Remove(map, layers.Select(e => e.Id));
         }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")

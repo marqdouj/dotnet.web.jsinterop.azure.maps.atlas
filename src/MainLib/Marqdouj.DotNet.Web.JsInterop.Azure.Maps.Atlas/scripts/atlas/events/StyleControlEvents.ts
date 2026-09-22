@@ -7,12 +7,14 @@ import { Logger, LogLevel } from "../common/Logger";
 export class StyleControlEvents {
     static readonly #eventsMap: EventsMap = new EventsMap();
 
-    public static add(dotNetRef: any, map: atlas.Map, styleControlEvents?: events.EventInfo[]) {
+    public static add(dotNetRef: any, map: atlas.Map, controlEvents?: events.EventInfo[]) {
         const eventName = "StyleControlEvents.add";
         const mapId = Helpers.getMapId(map);
-        styleControlEvents ??= [];
 
-        styleControlEvents.forEach((me) => {
+        if (Helpers.hasNoElements(controlEvents))
+            return;
+
+        controlEvents!.forEach((me) => {
             me.eventName ??= events.MapEventNotify.NotifyMapEvent;
             let callback: any;
             const target = this.#getTarget(map, me);
@@ -40,12 +42,14 @@ export class StyleControlEvents {
         });
     }
 
-    public static remove(map: atlas.Map, mapEvents: events.EventInfo[]) {
+    public static remove(map: atlas.Map, controlEvents: events.EventInfo[]) {
         const eventName = "StyleControlEvents.remove";
         const mapId = Helpers.getMapId(map);
-        mapEvents ?? [];
 
-        mapEvents.forEach((me) => {
+        if (Helpers.hasNoElements(controlEvents))
+            return;
+
+        controlEvents.forEach((me) => {
             const callback: any = this.#eventsMap.getCallback(mapId, me);
 
             if (callback) {
@@ -69,7 +73,9 @@ export class StyleControlEvents {
         const eventName = "StyleControlEvents.removeBySource";
         const mapId = Helpers.getMapId(map);
 
-        sources ??= [];
+        if (Helpers.hasNoElements(sources))
+            return;
+
         sources.forEach((source) => {
             const target = this.#getTargetFromSource(map, source);
 
@@ -114,13 +120,9 @@ export class StyleControlEvents {
             return;
 
         const controls = map.controls.getControls();
-        const control = controls.findLast(value => this.#hasId(value, id));
+        const control = controls.findLast(value => Helpers.hasId(value, id));
 
-        return control;
-    }
-
-    static #hasId(obj: any, id: string): obj is atlas.control.StyleControl {
-        return obj instanceof atlas.control.StyleControl && (obj as any).id === id;
+        return (control instanceof atlas.control.StyleControl) ? control : undefined;
     }
 
     // #region General

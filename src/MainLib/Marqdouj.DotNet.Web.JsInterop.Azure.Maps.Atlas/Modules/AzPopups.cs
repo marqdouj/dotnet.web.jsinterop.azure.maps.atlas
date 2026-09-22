@@ -16,16 +16,24 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// </summary>
         /// <param name="map"></param>
         /// <param name="items"></param>
+        /// <param name="getReferences">
+        /// If true, then return the <see cref="IMapObjectReference"/> for the popups. Default is false.
+        /// IMPORTANT! Ensure the <see cref="IMapObjectReference"/> is disposed when you are done with it.
+        /// </param>
         /// <returns></returns>
-        ValueTask Add(Map map, IEnumerable<Popup> items);
+        ValueTask<List<IMapObjectReference>> Add(Map map, IEnumerable<Popup> items, bool getReferences = false);
 
         /// <summary>
         /// Add popups.
         /// </summary>
         /// <param name="map"></param>
         /// <param name="item"></param>
+        /// <param name="getReferences">
+        /// If true, then return the <see cref="IMapObjectReference"/> for the popups. Default is false.
+        /// IMPORTANT! Ensure the <see cref="IMapObjectReference"/> items are disposed when you are done with them.
+        /// </param>
         /// <returns></returns>
-        ValueTask Add(Map map, Popup item);
+        ValueTask<List<IMapObjectReference>> Add(Map map, Popup item, bool getReferences = false);
 
         /// <summary>
         /// Adds a hover popup to the map.
@@ -34,8 +42,12 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// <param name="layer"></param>
         /// <param name="item"></param>
         /// <param name="placeholders">Shape/Feature property names used to update the template.</param>
+        /// <param name="getReference">
+        /// If true, then return the <see cref="IMapObjectReference"/> for the popup. Default is false.
+        /// IMPORTANT! Ensure the <see cref="IMapObjectReference"/> is disposed when you are done with it.
+        /// </param>
         /// <returns></returns>
-        ValueTask AddHoverPopup(Map map, ILayer layer, Popup item, IEnumerable<string> placeholders);
+        ValueTask<IMapObjectReference?> AddHoverPopup(Map map, ILayer layer, Popup item, IEnumerable<string> placeholders, bool getReference = false);
 
         /// <summary>
         /// Gets the <see cref="IMapObjectReference"/> for the popup.
@@ -90,27 +102,44 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// <param name="item"></param>
         /// <returns></returns>
         ValueTask Remove(Map map, Popup item);
+
+        /// <summary>
+        /// Show/Hide the popup.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="item"></param>
+        /// <param name="show">if true, open the popup; otherwise close it.</param>
+        /// <returns></returns>
+        ValueTask Show(Map map, Popup item, bool show);
+
+        /// <summary>
+        /// Show/Hide the popups.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="items"></param>
+        /// <param name="show">if true, open the popup; otherwise close it.</param>
+        /// <returns></returns>
+        ValueTask Show(Map map, IEnumerable<Popup> items, bool show);
     }
 
     internal class AzPopups(Lazy<Task<IJSObjectReference>> moduleTask) : IAtlasPopups
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = moduleTask;
 
-        public async ValueTask Add(Map map, Popup item)
+        public async ValueTask<List<IMapObjectReference>> Add(Map map, Popup item, bool getReferences = false)
         {
-            await Add(map, [item]);
+            return await Add(map, [item], getReferences);
         }
 
-        public async ValueTask Add(Map map, IEnumerable<Popup> items)
+        public async ValueTask<List<IMapObjectReference>> Add(Map map, IEnumerable<Popup> items, bool getReferences = false)
         {
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, items?.Cast<object>().ToList());
+            var results = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, items?.Cast<object>().ToList());
+            return [.. results.Cast<IMapObjectReference>()];
         }
 
-        public async ValueTask AddHoverPopup(Map map, ILayer layer, Popup item, IEnumerable<string> placeholders)
+        public async ValueTask<IMapObjectReference?> AddHoverPopup(Map map, ILayer layer, Popup item, IEnumerable<string> placeholders, bool getReference = false)
         {
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, layer.Id, item, placeholders);
+            return await moduleTask.InvokeAsyncTC<MapObjectReference?>(GetJsInteropMethod(), map.MapReference, layer.Id, item, placeholders, getReference);
         }
 
         public async ValueTask<IMapObjectReference> GetReference(Map map, Popup item)
@@ -121,8 +150,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
 
         public async ValueTask<List<IMapObjectReference>> GetReferences(Map map, IEnumerable<Popup> items)
         {
-            var module = await moduleTask.Value;
-            var results = await module.InvokeAsync<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, items);
+            var results = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, items);
             return [.. results.Cast<IMapObjectReference>()];
         }
 
@@ -135,8 +163,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
 
         public async ValueTask Remove(Map map, IEnumerable<Popup> items)
         {
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, items);
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, items);
         }
 
         public async ValueTask Remove(Map map, IMapObjectReference item)
@@ -146,10 +173,22 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
 
         public async ValueTask Remove(Map map, IEnumerable<IMapObjectReference> items)
         {
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, items.Select(e => e.JsReference).ToList());
-            foreach (var item in items)
-                await item.DisposeAsync();
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, items.Select(e => e.JsReference).ToList());
+            await items.DisposeItems();
+        }
+
+        #endregion
+
+        #region Show
+
+        public async ValueTask Show(Map map, Popup item, bool show)
+        {
+            await Show(map, [item], show);
+        }
+
+        public async ValueTask Show(Map map, IEnumerable<Popup> items, bool show)
+        {
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map, items, show);
         }
 
         #endregion

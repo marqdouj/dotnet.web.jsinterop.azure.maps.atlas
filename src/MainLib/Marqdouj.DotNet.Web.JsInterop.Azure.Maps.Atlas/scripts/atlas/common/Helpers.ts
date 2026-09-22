@@ -3,11 +3,54 @@ import { Logger, LogLevel } from "./Logger";
 import { MapObjectReference } from ".";
 
 export class Helpers {
+    static hasProperty(obj: any, key: string): boolean {
+        return key in obj;
+    }
+
+    static hasDuplicates(items: any[] | undefined, property: string, logMessge: boolean = true, throwMessage: boolean = false): boolean {
+        if (!this.hasElements(items))
+            return false;
+
+        if (!this.hasStringIndexSignature(items)) {
+            const sigMsg = "Duplicate check requires an object that supports Record<string, any>";
+            Logger.logMessage("Checking for duplicates", LogLevel.Error, sigMsg, items);
+            throw new Error(sigMsg);
+        }
+
+        if (!this.hasProperty(items![0], property)) {
+            const propMsg = `Duplicate check requires that the property name '${property}' exists.`;
+            Logger.logMessage("Checking for duplicates", LogLevel.Error, propMsg, items);
+            throw new Error(propMsg);
+        }
+
+        // keep only the first occurrence of each item with the same property.
+        const uniqueValues = [
+            ...new Map(items.map(item => [item[property], item])).values()
+        ];
+
+        var isTrue = uniqueValues.length != items.length;
+
+        if (isTrue && logMessge) {
+            Logger.logMessage("Checking for duplicates", LogLevel.Error, `Items with duplicate '${property}' values were found`, items);
+        }
+
+        if (isTrue && throwMessage) {
+            throw new Error(`Items with duplicate '${property}' values were found`);
+        }
+
+        return isTrue;
+    }
+
+
+    static hasId<T>(obj: any, id?: string): obj is T {
+        return obj instanceof Object && this.isNotEmptyOrNull(id) && (obj as any).id === id;
+    }
+
     static hasStringIndexSignature(obj: unknown): obj is Record<string, any> {
         return typeof obj === "object" && obj !== null;
     }
 
-    static createMapObjectReference(mapId: string, type: string, item?: object, id?: string): MapObjectReference {
+    static createMapObjectReference(mapId: string, type: string, item?: object, id?: string | undefined): MapObjectReference {
         const dnr = !item ? null : DotNet.createJSObjectReference(item);
         id ??= Helpers.getSourceId(item);
         const msf: MapObjectReference = { mapId: mapId, id: id, type: type, jsReference: dnr };
@@ -15,11 +58,14 @@ export class Helpers {
         return msf;
     }
 
-    static hasElements(items: any[]): boolean {
-        return (items && items.length > 0);
+    static hasElements(items?: any[]): boolean {
+        if (!items)
+            return false;
+
+        return items?.length > 0;
     }
 
-    static hasNoElements(items: any[]): boolean {
+    static hasNoElements(items?: any[]): boolean {
         return !this.hasElements(items);
     }
 

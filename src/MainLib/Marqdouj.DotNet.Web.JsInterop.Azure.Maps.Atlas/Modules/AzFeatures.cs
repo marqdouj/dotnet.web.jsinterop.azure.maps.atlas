@@ -1,4 +1,6 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Sources;
 using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
@@ -14,20 +16,31 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// Adds a list of <see cref="IFeature"/> to the map.
         /// </summary>
         /// <param name="map"></param>
-        /// <param name="dataSourceId">id of the datasource to add the features to.</param>
+        /// <param name="source">DataSource id, <see cref="MapSource"/> for a DataSource, or <see cref="IJSObjectReference"/> for a DataSource</param>
         /// <param name="features"></param>
-        /// <returns>List of IDs for the features that were added.</returns>
-        ValueTask<List<string>> Add(Map map, string dataSourceId, IEnumerable<object> features);
+        /// <param name="getReferences">
+        /// If true, then return the <see cref="IMapObjectReference"/> for the items. Default is false.
+        /// IMPORTANT! Ensure the <see cref="IMapObjectReference"/> items are disposed when you are done with them.
+        /// </param>
+        /// <returns></returns>
+        ValueTask<List<IMapObjectReference>> Add(Map map, object source, IEnumerable<object> features, bool getReferences = false);
     }
 
     internal class AzFeatures(Lazy<Task<IJSObjectReference>> moduleTask) : IAtlasFeatures
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = moduleTask;
 
-        public async ValueTask<List<string>> Add(Map map, string dataSourceId, IEnumerable<object> features)
+        public async ValueTask<List<IMapObjectReference>> Add(Map map, object source, IEnumerable<object> features, bool getReferences = false)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<string>>(GetJsInteropMethod(), map.MapReference, dataSourceId, features);
+            try
+            {
+                var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, source, features, getReferences);
+                return [.. items.Cast<IMapObjectReference>()];
+            }
+            catch (JSException ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")

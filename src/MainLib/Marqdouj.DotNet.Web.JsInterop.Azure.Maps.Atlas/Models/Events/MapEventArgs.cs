@@ -62,7 +62,9 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events
         /// <returns>The item or null if not found.</returns>
         public T? GetPayloadItem<T>(string key) where T : class
         {
-            if (Payload?.TryGetValue(key, out var payloadItem) ?? false)
+            var payloadItem = Payload?.FirstOrDefault(e => e.Key.Equals(key, StringComparison.OrdinalIgnoreCase)).Value;
+
+            if (payloadItem != null)
             {
                 if (payloadItem is JsonElement elem)
                 {

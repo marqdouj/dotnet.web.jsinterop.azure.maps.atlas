@@ -21,32 +21,42 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         /// </summary>
         /// <param name="map"></param>
         /// <param name="sources"></param>
-        /// <param name="getReferences">If true, then return the <see cref="IMapObjectReference"/> for the sources. Default is false.</param>
+        /// <param name="getReferences">
+        /// If true, then return the <see cref="IMapObjectReference"/> for the sources. Default is false.
+        /// IMPORTANT! Ensure the <see cref="IMapObjectReference"/> items are disposed when you are done with them.
+        /// </param>
         /// <returns></returns>
         ValueTask<List<IMapObjectReference>> Add(Map map, IEnumerable<MapSource> sources, bool getReferences = false);
 
         /// <summary>
-        /// Get the <see cref="IMapObjectReference"/> for all the sources.
+        /// Add map sources.
         /// </summary>
         /// <param name="map"></param>
+        /// <param name="source"></param>
+        /// <param name="getReference">
+        /// If true, then return the <see cref="IMapObjectReference"/> for the source. Default is false.
+        /// IMPORTANT! Ensure the <see cref="IMapObjectReference"/> item is disposed when you are done with it.
+        /// </param>
         /// <returns></returns>
-        ValueTask<List<IMapObjectReference>> GetSources(Map map);
+        ValueTask<IMapObjectReference?> Add(Map map, MapSource source, bool getReference = false);
 
         /// <summary>
-        /// Get the <see cref="IMapObjectReference"/> for the sources based on the id.
+        /// Get the <see cref="IMapObjectReference"/> for the sources.
+        /// IMPORTANT! Ensure the <see cref="IMapObjectReference"/> items are disposed when you are done with them.
         /// </summary>
         /// <param name="map"></param>
         /// <param name="sources"></param>
         /// <returns></returns>
-        ValueTask<List<IMapObjectReference>> GetSources(Map map, IEnumerable<MapSource> sources);
+        ValueTask<List<IMapObjectReference>> GetReferences(Map map, IEnumerable<MapSource> sources);
 
         /// <summary>
-        /// Get the <see cref="IMapObjectReference"/> for the sources based on the id.
+        /// Get the <see cref="IMapObjectReference"/> for the sources.
+        /// IMPORTANT! Ensure the <see cref="IMapObjectReference"/> items are disposed when you are done with them.
         /// </summary>
         /// <param name="map"></param>
         /// <param name="sourceIds"></param>
         /// <returns></returns>
-        ValueTask<List<IMapObjectReference>> GetSources(Map map, IEnumerable<string> sourceIds);
+        ValueTask<List<IMapObjectReference>> GetReferences(Map map, IEnumerable<string> sourceIds);
 
         /// <summary>
         /// Remove the sources from the map.
@@ -68,7 +78,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
 
         /// <summary>
         /// Remove the sources from the map based on Id.
-        /// IMPORTANT! If you have an <see cref="IMapObjectReference"/> to the source it must be disposed.
+        /// IMPORTANT! If you have an <see cref="IMapObjectReference"/> to the item it must be disposed.
         /// </summary>
         /// <param name="map"></param>
         /// <param name="sources"></param>
@@ -77,7 +87,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
 
         /// <summary>
         /// Remove the sources from the map based on Id.
-        /// IMPORTANT! If you have an <see cref="IMapObjectReference"/> to the source it must be disposed.
+        /// IMPORTANT! If you have an <see cref="IMapObjectReference"/> to the item it must be disposed.
         /// </summary>
         /// <param name="map"></param>
         /// <param name="source"></param>
@@ -86,7 +96,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
 
         /// <summary>
         /// Remove the sources from the map based on Id.
-        /// IMPORTANT! If you have an <see cref="IMapObjectReference"/> to the source it must be disposed.
+        /// IMPORTANT! If you have an <see cref="IMapObjectReference"/> to the item it must be disposed.
         /// </summary>
         /// <param name="map"></param>
         /// <param name="sourceIds"></param>
@@ -95,7 +105,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
 
         /// <summary>
         /// Remove the sources from the map based on Id.
-        /// IMPORTANT! If you have an <see cref="IMapObjectReference"/> to the source it must be disposed.
+        /// IMPORTANT! If you have an <see cref="IMapObjectReference"/> to the item it must be disposed.
         /// </summary>
         /// <param name="map"></param>
         /// <param name="sourceId">Id to the <see cref="MapSource"/></param>
@@ -111,38 +121,33 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
 
         public async ValueTask<List<IMapObjectReference>> Add(Map map, IEnumerable<MapSource> sources, bool getReferences = false)
         {
-            var module = await moduleTask.Value;
-            var items = await module.InvokeAsync<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, sources, getReferences);
+            var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, sources, getReferences);
             return [.. items.Cast<IMapObjectReference>()];
         }
 
-        public async ValueTask<List<IMapObjectReference>> GetSources(Map map)
+        public async ValueTask<IMapObjectReference?> Add(Map map, MapSource source, bool getReference = false)
         {
-            var module = await moduleTask.Value;
-            var items = await module.InvokeAsync<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference);
+            var items = await Add(map, [source], getReference);
+            return items.FirstOrDefault();
+        }
+
+        public async ValueTask<List<IMapObjectReference>> GetReferences(Map map, IEnumerable<string> sourceIds)
+        {
+            var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, sourceIds);
             return [.. items.Cast<IMapObjectReference>()];
         }
 
-        public async ValueTask<List<IMapObjectReference>> GetSources(Map map, IEnumerable<string> sourceIds)
+        public async ValueTask<List<IMapObjectReference>> GetReferences(Map map, IEnumerable<MapSource> sources)
         {
-            var module = await moduleTask.Value;
-            var items = await module.InvokeAsync<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, sourceIds);
-            return [.. items.Cast<IMapObjectReference>()];
-        }
-
-        public async ValueTask<List<IMapObjectReference>> GetSources(Map map, IEnumerable<MapSource> sources)
-        {
-            var module = await moduleTask.Value;
-            var items = await module.InvokeAsync<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.Id));
+            var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.Id));
             return [.. items.Cast<IMapObjectReference>()];
         }
 
         public async ValueTask Remove(Map map, IEnumerable<IMapObjectReference> sources)
         {
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.JsReference));
-            foreach (var item in sources)
-                await item.DisposeAsync();
+            sources.ValidateReferenceType<SourceType>();
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.JsReference));
+            await sources.DisposeItems();
         }
 
         public async ValueTask Remove(Map map, IMapObjectReference source)
@@ -152,8 +157,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
 
         public async ValueTask Remove(Map map, IEnumerable<string> sourceIds)
         {
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, sourceIds);
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, sourceIds);
         }
 
         public async ValueTask Remove(Map map, string sourceId)
@@ -163,8 +167,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
 
         public async ValueTask Remove(Map map, IEnumerable<MapSource> sources)
         {
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.Id));
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.Id));
         }
 
         public async ValueTask Remove(Map map, MapSource source)

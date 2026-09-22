@@ -3,5 +3,6 @@
     <File Path=".editorconfig" />
   </Folder>
   <Project Path="Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas/Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.csproj" />
+  <Project Path="Sandbox.CustomJs/Sandbox.CustomJs.csproj" Id="d9858a51-2b9e-4161-9d0e-2766aafad6ac" />
   <Project Path="Sandbox/Sandbox.csproj" Id="08fb50a8-28ce-4d81-817b-e928d8ea245a" />
 </Solution>

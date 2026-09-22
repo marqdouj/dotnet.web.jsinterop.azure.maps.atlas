@@ -14,16 +14,18 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         /// <summary>
         /// Clear the DataSources.
         /// </summary>
+        /// <param name="map"></param>
         /// <param name="sources"><see cref="IMapObjectReference"/> to a <see cref="DataSource"/></param>
         /// <returns></returns>
-        ValueTask Clear(IEnumerable<IMapObjectReference> sources);
+        ValueTask Clear(Map map, IEnumerable<IMapObjectReference> sources);
 
         /// <summary>
         /// Clear the DataSource.
         /// </summary>
+        /// <param name="map"></param>
         /// <param name="source"><see cref="IMapObjectReference"/> to a <see cref="DataSource"/></param>
         /// <returns></returns>
-        ValueTask Clear(IMapObjectReference source);
+        ValueTask Clear(Map map, IMapObjectReference source);
 
         /// <summary>
         /// Clear the DataSources.
@@ -74,29 +76,26 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = moduleTask;
 
-        public async ValueTask Clear(IEnumerable<IMapObjectReference> sources)
+        public async ValueTask Clear(Map map, IEnumerable<IMapObjectReference> sources)
         {
             sources.ValidateReferenceType<SourceType>();
 
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), null, sources.Select(e => e.JsReference));
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map, sources.Select(e => e.JsReference));
         }
 
-        public async ValueTask Clear(IMapObjectReference source)
+        public async ValueTask Clear(Map map, IMapObjectReference source)
         {
-            await Clear([source]);
+            await Clear(map, [source]);
         }
 
         public async ValueTask Clear(Map map, IEnumerable<string> sourceIds)
         {
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, sourceIds);
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, sourceIds);
         }
 
         public async ValueTask Clear(Map map, IEnumerable<MapSource> sources)
         {
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.Id));
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.Id));
         }
 
         public async ValueTask Clear(Map map, string id)
@@ -108,14 +107,12 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         {
             source.ValidateReferenceType<SourceType>(SourceType.Data);
 
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, source.JsReference, url);
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, source.JsReference, url);
         }
 
         public async ValueTask ImportDataFromUrl(Map map, string source, string url)
         {
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, source, url);
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, source, url);
         }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")

@@ -42,7 +42,7 @@
     private const string title = "Maps - Popups";
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
-    private MapConfiguration? config;
+    private MapConfiguration config = default!;
     private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions(new Position(-122.1333, 47.63), 12.5);
     private Map? map;
     private bool mapNotReady => map == null;
@@ -52,28 +52,17 @@
     //Create a popup but leave it closed so we can update it and display it later.
     private readonly Popup popup = new Popup { Options = new PopupOptions { PixelOffset = new Pixel(0, -18), CloseButton = false, Content = popupTemplate } };
 
+    protected override void OnInitialized()
+    {
+        config = Configuration.GetValue(LogLevel.Trace);
+        atlasInterop = new(JSRuntime);
+        dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-        {
-            try
-            {
-                config = Configuration?.GetValue(LogLevel.Trace);
-                atlasInterop = new(JSRuntime);
-                dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
-
-                await CreateMap();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Initialization caused an exception.");
-                await ToastService.ShowError("Initialization caused an exception.");
-            }
-            finally
-            {
-                StateHasChanged();
-            }
-        }
+            await CreateMap();
     }
 
     public async ValueTask DisposeAsync()
@@ -107,8 +96,12 @@
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, null);
+            Logger.LogMapError(ex);
             await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
         }
     }
 
@@ -123,7 +116,7 @@
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, null);
+            Logger.LogMapError(ex);
             await ToastService.ShowError(ex.Message);
         }
     }
@@ -146,13 +139,13 @@
                 var p = new GeoJsonProperties { { "name", "Microsoft Building 41" }, { "description", "15571 NE 31st St, Redmond, WA 98052" }, { "color", "blue" } };
                 var feature = new Feature<Point, GeoJsonProperties?>(new Point(-122.1333, 47.63), p);
 
-                await atlasInterop.Features.Add(map, dataSource!.Id, [feature]);
-                await atlasInterop.Popups.AddHoverPopup(map, symbolLayer!, popup, ["name", "description"]);
+                _ = await atlasInterop.Features.Add(map, dataSource!.Id, [feature]);
+                _ = await atlasInterop.Popups.AddHoverPopup(map, symbolLayer!, popup, ["name", "description"]);
                 await ResetMap();
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, null);
+                Logger.LogMapError(ex);
                 await ToastService.ShowError(ex.Message);
             }
         }

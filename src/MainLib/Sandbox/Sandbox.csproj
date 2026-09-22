@@ -16,5 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas\Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.csproj" />
+    <ProjectReference Include="..\Sandbox.CustomJs\Sandbox.CustomJs.csproj" />
   </ItemGroup>
 </Project>

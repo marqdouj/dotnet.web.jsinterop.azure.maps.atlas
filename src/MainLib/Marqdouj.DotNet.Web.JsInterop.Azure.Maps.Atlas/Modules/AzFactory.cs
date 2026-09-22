@@ -57,28 +57,45 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
 
         public async ValueTask<Map> CreateMap<T>(DotNetObjectReference<T> dotNetRef, string mapId, MapConfiguration configuration, IEnumerable<MapControl>? controls = null, IEnumerable<MapEvent>? events = null) where T : class
         {
-            var module = await moduleTask.Value;
 
             if (configuration.JsLogLevel != null)
                 await SetLogLevel((LogLevel)configuration.JsLogLevel);
 
-            var mapRef = await module.InvokeAsync<IJSObjectReference>(GetJsInteropMethod(), dotNetRef, mapId, configuration, controls?.Cast<object>().ToList(), events?.Cast<object>().ToList())
-                ?? throw new Exception($"Failed to create an atlas.Map instance where mapId = '{mapId}'.");
-
-            return new Map(mapRef, mapId);
+            try
+            {
+                var mapRef = await moduleTask.InvokeAsyncTC<IJSObjectReference>(GetJsInteropMethod(), dotNetRef, mapId, configuration, controls?.Cast<object>().ToList(), events?.Cast<object>().ToList())
+                    ?? throw new Exception($"Failed to create an atlas.Map instance where mapId = '{mapId}'.");
+                return new Map(mapRef, mapId);
+            }
+            catch (JSException ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async ValueTask SetLogLevel(LogLevel logLevel)
         {
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), logLevel);
+            try
+            {
+                await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), logLevel);
+            }
+            catch (JSException ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async ValueTask RemoveMap(Map map)
         {
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference);
-            await map.DisposeAsync();
+            try
+            {
+                await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference);
+                await map.DisposeAsync();
+            }
+            catch (JSException ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")

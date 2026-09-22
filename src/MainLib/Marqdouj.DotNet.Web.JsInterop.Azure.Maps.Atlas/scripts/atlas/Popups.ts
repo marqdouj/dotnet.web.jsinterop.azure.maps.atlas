@@ -5,16 +5,33 @@ import { MapObjectReference } from "./common";
 import { MapEventTarget } from "./events";
 
 export class Popups {
-    public static add(map: atlas.Map, popups: PopupInfo[]): void {
-        if (Helpers.hasNoElements(popups))
-            return;
+    public static add(map: atlas.Map, sources: PopupInfo[], getReferences: boolean = false): MapObjectReference[] {
+        const eventName = "Popups.add";
+        const results: MapObjectReference[] = [];
+        const mapId = Helpers.getMapId(map);
 
-        popups.forEach(info => {
-            let popup = new atlas.Popup(info.options);
-            (popup as any).id = info.id
+        if (Helpers.hasNoElements(sources))
+            return results;
 
-            map.popups.add(popup);
+        const popups = map.popups.getPopups();
+
+        sources.forEach(info => {
+            const item = this.#getInstance(map, info, popups, false);
+
+            if (!item) {
+                let popup = new atlas.Popup(info.options);
+                (popup as any).id = info.id
+
+                map.popups.add(popup);
+                if (getReferences)
+                    results.push(Helpers.createMapObjectReference(mapId, MapEventTarget.Popup, popup, info.id));
+            }
+            else {
+                Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: Popup already exists.`, info);
+            }
         });
+
+        return results;
     }
 
     public static getReferences(map: atlas.Map, sources: PopupInfo[]): MapObjectReference[] {
@@ -27,7 +44,7 @@ export class Popups {
         const popups = map.popups.getPopups();
 
         sources.forEach(info => {
-            const popup = this.#getPopupFromSource(map, info.id, popups);
+            const popup = this.#getInstance(map, info.id, popups);
             const dnr = Helpers.createMapObjectReference(mapId, MapEventTarget.Popup, popup, info.id);
             results.push(dnr);
         });
@@ -42,7 +59,7 @@ export class Popups {
         const popups = map.popups.getPopups();
 
         sources.forEach(source => {
-            const popup = this.#getPopupFromSource(map, source, popups);
+            const popup = this.#getInstance(map, source, popups);
             if (popup) {
                 map.popups.remove(popup);
             }
@@ -56,7 +73,7 @@ export class Popups {
         const popups = map.popups.getPopups();
 
         sources.forEach(source => {
-            const popup = this.#getPopupFromSource(map, source, popups);
+            const popup = this.#getInstance(map, source, popups);
             
             if (popup) {
                 if (open)
@@ -69,7 +86,7 @@ export class Popups {
 
     // #region Hover Popup
 
-    public static addHoverPopup(map: atlas.Map, layerId: string, info: PopupInfo, placeholders: string[]) {
+    public static addHoverPopup(map: atlas.Map, layerId: string, info: PopupInfo, placeholders: string[], getReference: boolean = false) {
         const mapId = Helpers.getMapId(map);
         const lyr = map.layers.getLayerById(layerId);
 
@@ -78,14 +95,15 @@ export class Popups {
             return;
         }
 
-        let popup = this.#getPopupFromSource(map, info.id);
+        let popup = this.#getInstance(map, info.id, undefined, false);
         if (!popup) {
             this.add(map, [info]);
-            popup = this.#getPopupFromSource(map, info.id);
+            popup = this.#getInstance(map, info.id);
         }
 
         if (!popup) {
             Logger.logMapMessage(mapId, LogLevel.Error, `addHoverPopup: popup was not created or can't be found where popup id = '${info.id}'.`);
+            return;
         }
 
         //Close the popup when the mouse leaves the shape.
@@ -98,6 +116,10 @@ export class Popups {
         */
         map.events.add('mousemove', lyr, (e: atlas.MapMouseEvent) => this.#symbolHovered(e, mapId, info, popup, placeholders));
         map.events.add('touchstart', lyr, (e: atlas.MapTouchEvent) => this.#symbolHovered(e, mapId, info, popup, placeholders));
+
+        if (getReference) {
+            return Helpers.createMapObjectReference(mapId, MapEventTarget.Popup, popup, info.id);
+        }
     }
 
     static #closeSymbolHovered(popup: atlas.Popup | undefined) {
@@ -156,7 +178,7 @@ export class Popups {
 
     // #endRegion
 
-    static #getPopupFromSource(map: atlas.Map, source: any, popups?: atlas.Popup[]): atlas.Popup | undefined {
+    static #getInstance(map: atlas.Map, source: any, popups?: atlas.Popup[], logIfNotFound: boolean = true): atlas.Popup | undefined {
         const eventName = "Popups.#getPopupFromSource";
 
         let popup: atlas.Popup | undefined;
@@ -167,19 +189,15 @@ export class Popups {
         else {
             const id = Helpers.getSourceId(source);
             popups ??= map.popups.getPopups();
-            popup = popups.findLast(item => this.#hasId(item, id));
+            popup = popups.findLast(item => Helpers.hasId(item, id));
         }
 
-        if (!popup) {
+        if (!popup && logIfNotFound) {
             const mapId = Helpers.getMapId(map);
             Logger.logMessage(mapId, LogLevel.Warn, `${eventName}: Popup not found.`, source);
         }
 
         return popup;
-    }
-
-    static #hasId(obj: any, id?: string): obj is atlas.Popup {
-        return obj instanceof atlas.Popup && (obj as any).id === id;
     }
 }
 

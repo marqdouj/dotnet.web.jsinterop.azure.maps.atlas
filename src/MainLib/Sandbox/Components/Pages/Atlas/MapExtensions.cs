@@ -3,6 +3,7 @@ using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Controls;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Payloads;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Types;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Exceptions;
 using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using Microsoft.FluentUI.AspNetCore.Components;
 using System.Text.Json;
@@ -26,6 +27,22 @@ namespace Sandbox.Components.Pages.Atlas
             }
         }
 
+        /// <summary>
+        /// Checks if exception is <see cref="JS2CSharpException"/> and logs accordingly.
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="ex"></param>
+        public static void LogMapError(this ILogger logger, Exception ex)
+        {
+            if (ex is JS2CSharpException jsEx)
+            {
+                jsEx.LogError(logger);
+            }
+            else
+            {
+                logger.LogError(ex, null);
+            }
+        }
 
         public static async Task<bool> ErrorEventProcessed(this MapEventArgs e, ILogger logger, INotificationService toastService)
         {

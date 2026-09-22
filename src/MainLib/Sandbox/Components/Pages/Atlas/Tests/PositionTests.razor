@@ -63,7 +63,7 @@
 		}
 		catch (Exception ex)
 		{
-			Logger.LogError(ex, null);
+			Logger.LogMapError(ex);
 			await ToastService.ShowError(ex.Message);
 		}
 		finally
@@ -86,7 +86,7 @@
 		{
 			result.Status = MathTestRunStatus.Failed;
 			result.Exception = ex;
-			Logger.LogError(ex, null);
+			Logger.LogMapError(ex);
 			await ToastService.ShowError(ex.Message);
 		}
 
@@ -107,7 +107,7 @@
 		{
 			result.Status = MathTestRunStatus.Failed;
 			result.Exception = ex;
-			Logger.LogError(ex, null);
+			Logger.LogMapError(ex);
 			await ToastService.ShowError(ex.Message);
 		}
 
@@ -128,7 +128,7 @@
 		{
 			result.Status = MathTestRunStatus.Failed;
 			result.Exception = ex;
-			Logger.LogError(ex, null);
+			Logger.LogMapError(ex);
 			await ToastService.ShowError(ex.Message);
 		}
 
@@ -149,7 +149,7 @@
 		{
 			result.Status = MathTestRunStatus.Failed;
 			result.Exception = ex;
-			Logger.LogError(ex, null);
+			Logger.LogMapError(ex);
 			await ToastService.ShowError(ex.Message);
 		}
 
@@ -170,7 +170,7 @@
 		{
 			result.Status = MathTestRunStatus.Failed;
 			result.Exception = ex;
-			Logger.LogError(ex, null);
+			Logger.LogMapError(ex);
 			await ToastService.ShowError(ex.Message);
 		}
 
@@ -191,7 +191,7 @@
 		{
 			result.Status = MathTestRunStatus.Failed;
 			result.Exception = ex;
-			Logger.LogError(ex, null);
+			Logger.LogMapError(ex);
 			await ToastService.ShowError(ex.Message);
 		}
 
