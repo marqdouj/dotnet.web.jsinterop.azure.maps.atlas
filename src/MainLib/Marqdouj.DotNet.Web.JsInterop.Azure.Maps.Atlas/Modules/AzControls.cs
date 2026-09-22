@@ -34,6 +34,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
 
         /// <summary>
         /// Remove controls from the map.
+        /// IMPORTANT! Ensure any <see cref="IMapObjectReference"/> to the items are disposed.
         /// </summary>
         /// <param name="map"><see cref="Map"/></param>
         /// <param name="controls">List of controls types to remove. <see cref="ControlType"/>.</param>
