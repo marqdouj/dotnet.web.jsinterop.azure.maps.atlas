@@ -11,16 +11,18 @@ export class MarkerEvents {
     public static add(dotNetRef: any, map: atlas.Map, markerEvents?: events.EventInfo[]) {
         const eventName = "MarkerEvents.add";
         const mapId = Helpers.getMapId(map);
-        markerEvents ??= [];
 
-        markerEvents.forEach((me) => {
+        if (Helpers.hasNoElements(markerEvents))
+            return;
+
+        markerEvents!.forEach((me) => {
             me.eventName ??= events.MapEventNotify.NotifyMapEvent;
             let callback: any;
             const target = this.#getTarget(map, me);
 
             if (target) {
                 if (Helpers.isValueInEnum(MarkerEventGeneral, me.type)) {
-                    callback = this.#getNotifyLayerEventGeneralCallback(dotNetRef, mapId, me);
+                    callback = this.#getNotifyEventGeneralCallback(dotNetRef, mapId, me);
                 }
 
                 if (callback) {
@@ -41,12 +43,14 @@ export class MarkerEvents {
         });
     }
 
-    public static remove(map: atlas.Map, mapEvents: events.EventInfo[]) {
+    public static remove(map: atlas.Map, markerEvents: events.EventInfo[]) {
         const eventName = "MarkerEvents.remove";
         const mapId = Helpers.getMapId(map);
-        mapEvents ?? [];
 
-        mapEvents.forEach((me) => {
+        if (Helpers.hasNoElements(markerEvents))
+            return;
+
+        markerEvents.forEach((me) => {
             const callback: any = this.#eventsMap.getCallback(mapId, me);
 
             if (callback) {
@@ -70,7 +74,9 @@ export class MarkerEvents {
         const eventName = "MarkerEvents.removeBySource";
         const mapId = Helpers.getMapId(map);
 
-        sources ??= [];
+        if (Helpers.hasNoElements(sources))
+            return;
+
         sources.forEach((source) => {
             const target = this.#getTargetFromSource(map, source);
 
@@ -108,21 +114,21 @@ export class MarkerEvents {
 
     // #region LayerEventGeneral
 
-    static #getNotifyLayerEventGeneralCallback(dotNetRef: any, mapId: string, event: events.EventInfo) {
+    static #getNotifyEventGeneralCallback(dotNetRef: any, mapId: string, event: events.EventInfo) {
         let callback: any = this.#eventsMap.getCallback(mapId, event);
 
         if (callback) {
             return callback;
         }
 
-        callback = (e: atlas.TargetedEvent) => this.#notifyMarkerEventGeneral(e, dotNetRef, mapId, event);
+        callback = (e: atlas.TargetedEvent) => this.#notifyEventGeneral(e, dotNetRef, mapId, event);
 
         this.#eventsMap.addCallback(mapId, event, callback);
 
         return callback;
     }
 
-    static #notifyMarkerEventGeneral = (callback: atlas.TargetedEvent, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
+    static #notifyEventGeneral = (callback: atlas.TargetedEvent, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
         const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
