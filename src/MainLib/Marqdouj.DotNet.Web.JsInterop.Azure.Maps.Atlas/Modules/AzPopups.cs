@@ -102,6 +102,24 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// <param name="item"></param>
         /// <returns></returns>
         ValueTask Remove(Map map, Popup item);
+
+        /// <summary>
+        /// Show/Hide the popup.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="item"></param>
+        /// <param name="show">if true, open the popup; otherwise close it.</param>
+        /// <returns></returns>
+        ValueTask Show(Map map, Popup item, bool show);
+
+        /// <summary>
+        /// Show/Hide the popups.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="items"></param>
+        /// <param name="show">if true, open the popup; otherwise close it.</param>
+        /// <returns></returns>
+        ValueTask Show(Map map, IEnumerable<Popup> items, bool show);
     }
 
     internal class AzPopups(Lazy<Task<IJSObjectReference>> moduleTask) : IAtlasPopups
@@ -157,6 +175,20 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         {
             await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, items.Select(e => e.JsReference).ToList());
             await items.DisposeItems();
+        }
+
+        #endregion
+
+        #region Show
+
+        public async ValueTask Show(Map map, Popup item, bool show)
+        {
+            await Show(map, [item], show);
+        }
+
+        public async ValueTask Show(Map map, IEnumerable<Popup> items, bool show)
+        {
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map, items, show);
         }
 
         #endregion
