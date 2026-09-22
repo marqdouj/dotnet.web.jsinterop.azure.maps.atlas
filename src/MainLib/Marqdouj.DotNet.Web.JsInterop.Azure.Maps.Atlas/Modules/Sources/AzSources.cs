@@ -121,15 +121,8 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
 
         public async ValueTask<List<IMapObjectReference>> Add(Map map, IEnumerable<MapSource> sources, bool getReferences = false)
         {
-            try
-            {
-                var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, sources, getReferences);
-                return [.. items.Cast<IMapObjectReference>()];
-            }
-            catch (JSException ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, sources, getReferences);
+            return [.. items.Cast<IMapObjectReference>()];
         }
 
         public async ValueTask<IMapObjectReference?> Add(Map map, MapSource source, bool getReference = false)
@@ -140,42 +133,21 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
 
         public async ValueTask<List<IMapObjectReference>> GetReferences(Map map, IEnumerable<string> sourceIds)
         {
-            try
-            {
-                var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, sourceIds);
-                return [.. items.Cast<IMapObjectReference>()];
-            }
-            catch (JSException ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, sourceIds);
+            return [.. items.Cast<IMapObjectReference>()];
         }
 
         public async ValueTask<List<IMapObjectReference>> GetReferences(Map map, IEnumerable<MapSource> sources)
         {
-            try
-            {
-                var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.Id));
-                return [.. items.Cast<IMapObjectReference>()];
-            }
-            catch (JSException ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.Id));
+            return [.. items.Cast<IMapObjectReference>()];
         }
 
         public async ValueTask Remove(Map map, IEnumerable<IMapObjectReference> sources)
         {
-            try
-            {
-                sources.ValidateReferenceType<SourceType>();
-                await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.JsReference));
-                await sources.DisposeItems();
-            }
-            catch (JSException ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            sources.ValidateReferenceType<SourceType>();
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.JsReference));
+            await sources.DisposeItems();
         }
 
         public async ValueTask Remove(Map map, IMapObjectReference source)
@@ -185,14 +157,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
 
         public async ValueTask Remove(Map map, IEnumerable<string> sourceIds)
         {
-            try
-            {
-                await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, sourceIds);
-            }
-            catch (JSException ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, sourceIds);
         }
 
         public async ValueTask Remove(Map map, string sourceId)
@@ -202,14 +167,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
 
         public async ValueTask Remove(Map map, IEnumerable<MapSource> sources)
         {
-            try
-            {
-                await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.Id));
-            }
-            catch (JSException ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.Id));
         }
 
         public async ValueTask Remove(Map map, MapSource source)
