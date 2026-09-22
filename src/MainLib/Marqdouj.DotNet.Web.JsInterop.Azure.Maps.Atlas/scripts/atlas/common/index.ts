@@ -13,3 +13,8 @@ export interface MapObjectReference {
     type: string | undefined;
     jsReference: any;
 }
+
+export enum EditAction {
+    Update = 'update',
+    Replace = 'replace',
+}

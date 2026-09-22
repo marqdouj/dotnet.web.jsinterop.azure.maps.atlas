@@ -1,8 +1,9 @@
 import * as atlas from "azure-maps-control"
-import { Logger, LogLevel } from "./common/Logger"
 import { Helpers } from "./common/Helpers";
+import { EditAction } from "./common";
 
 export class Map {
+    // #region Camera
     public static getCamera(map: atlas.Map) {
         return map.getCamera();
     }
@@ -32,4 +33,99 @@ export class Map {
             map.setCamera(options);
         }
     }
+    // #endregion
+
+    // #region Service
+    public static getServiceOptions(map: atlas.Map): any {
+        const options = map.getServiceOptions();
+        return options;
+    }
+
+    public static setServiceOptions(map: atlas.Map, options: atlas.ServiceOptions | undefined, action: EditAction): void {
+        if (!options) return;
+
+        let updatedOptions = options;
+
+        switch (action) {
+            case EditAction.Replace:
+                break;
+            case EditAction.Update:
+                updatedOptions = Helpers.removeNullish(updatedOptions);
+                break;
+        }
+
+        map.setServiceOptions(updatedOptions);
+    }
+    // #endregion
+
+    // #region Style
+    public static getStyle(map: atlas.Map): any {
+        const options = map.getStyle();
+
+        return options;
+    }
+
+    public static setStyle(map: atlas.Map, options: atlas.StyleOptions | undefined, action: EditAction): void {
+        if (!options) return;
+
+        let updatedOptions = options;
+
+        switch (action) {
+            case EditAction.Replace:
+                break;
+            case EditAction.Update:
+                updatedOptions = Helpers.removeNullish(updatedOptions);
+                break;
+        }
+
+        const diff = action === EditAction.Update;
+        map.setStyle(updatedOptions, diff);
+    }
+    // #endregion
+
+    // #region Traffic
+    public static getTraffic(map: atlas.Map): atlas.TrafficOptions | undefined {
+        const options = map.getTraffic();
+        return options;
+    }
+
+    public static setTraffic(map: atlas.Map, options: atlas.TrafficOptions | undefined, action: EditAction): void {
+        if (!options) return;
+
+        let updatedOptions = options;
+
+        switch (action) {
+            case EditAction.Replace:
+                break;
+            case EditAction.Update:
+                updatedOptions = Helpers.removeNullish(updatedOptions);
+                break;
+        }
+
+        map.setTraffic(updatedOptions);
+    }
+    // #endregion
+
+    // #region UserInteraction
+    public static getUserInteraction(map: atlas.Map): any {
+        const options = map.getUserInteraction();
+        return options;
+    }
+
+    public static setUserInteraction(map: atlas.Map, options: atlas.UserInteractionOptions | undefined, action: EditAction): void {
+        if (!options) return;
+
+        let updatedOptions = options;
+
+        switch (action) {
+            case EditAction.Replace:
+                break;
+            case EditAction.Update:
+                updatedOptions = Helpers.removeNullish(updatedOptions);
+                break;
+        }
+
+        map.setUserInteraction(updatedOptions);
+    }
+    // #endregion
 }

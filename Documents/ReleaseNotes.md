@@ -1,6 +1,12 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-3.6`
+   - `IAtlasMap`. Added new methods:
+	- `GetServiceOptions/SetServiceOptions`. Gets or sets the map service options.
+	- `GetStyle/SetStyle`. Gets or sets the map style options.
+	- `GetTraffic/SetTraffic`. Gets or sets the map traffic options.
+	- `GetUserInteraction/SetUserInteraction`. Gets or sets the map user interaction options.
 - `11.0.0-Preview-3.5`
    - `IMapObjectReference`. Modules have been refactored to make it easier to create references.
    - `JS2CSharpException`. When this library catches a [JSException](https://learn.microsoft.com/en-us/dotnet/api/microsoft.jsinterop.jsexception)
