@@ -95,12 +95,12 @@ export class Layers {
 
     static #removeByRef(map: atlas.Map, layers: atlas.layer.Layer[]) {
         const sourceIds = layers.map(e => e.getId());
-        LayerEvents.removeBySource(map, sourceIds)
+        LayerEvents.removeByLayer(map, sourceIds)
         map.layers.remove(layers);
     }
 
     static #removeById(map: atlas.Map, ids: string[]) {
-        LayerEvents.removeBySource(map, ids)
+        LayerEvents.removeByLayer(map, ids)
         map.layers.remove(ids);
     }
 

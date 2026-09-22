@@ -52,7 +52,9 @@ export class LayerEvents {
     public static remove(map: atlas.Map, mapEvents: events.EventInfo[]) {
         const eventName = "LayerEvents.remove";
         const mapId = Helpers.getMapId(map);
-        mapEvents ?? [];
+
+        if (Helpers.hasNoElements(mapEvents))
+            return;
 
         mapEvents.forEach((me) => {
             const callback: any = this.#eventsMap.getCallback(mapId, me);
@@ -74,12 +76,14 @@ export class LayerEvents {
         });
     }
 
-    public static removeBySource(map: atlas.Map, sources: any[]) {
+    public static removeByLayer(map: atlas.Map, layers: any[]) {
         const eventName = "LayerEvents.removeBySource";
         const mapId = Helpers.getMapId(map);
 
-        sources ??= [];
-        sources.forEach((source) => {
+        if (Helpers.hasNoElements(layers))
+            return;
+
+        layers.forEach((source) => {
             const target = this.#getTargetFromSource(map, source);
 
             if (target) {

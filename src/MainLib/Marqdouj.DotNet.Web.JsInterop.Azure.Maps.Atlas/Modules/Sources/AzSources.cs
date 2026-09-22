@@ -168,6 +168,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         {
             try
             {
+                sources.ValidateReferenceType<SourceType>();
                 await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.JsReference));
                 await sources.DisposeItems();
             }

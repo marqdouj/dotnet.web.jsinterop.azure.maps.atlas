@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Exceptions
 {
