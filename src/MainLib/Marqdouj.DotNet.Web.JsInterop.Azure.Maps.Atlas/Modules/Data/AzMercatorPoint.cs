@@ -79,14 +79,12 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Data
 
         public async ValueTask<MercatorPoint> FromPosition(object position)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<MercatorPoint>(GetJsInteropMethod(), position);
+            return await moduleTask.InvokeAsyncInternal<MercatorPoint>(GetJsInteropMethod(), position);
         }
 
         public async ValueTask<List<MercatorPoint>> FromPositions(object positions)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<MercatorPoint>>(GetJsInteropMethod(), positions);
+            return await moduleTask.InvokeAsyncInternal<List<MercatorPoint>>(GetJsInteropMethod(), positions);
         }
 
         #endregion
@@ -95,34 +93,28 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Data
 
         public async ValueTask<Position> ToPosition(object mercator)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<Position>(GetJsInteropMethod(), mercator);
+            return await moduleTask.InvokeAsyncInternal<Position>(GetJsInteropMethod(), mercator);
         }
 
         public async ValueTask<List<Position>> ToPositions(object mercators)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), mercators);
+            return await moduleTask.InvokeAsyncInternal<List<Position>>(GetJsInteropMethod(), mercators);
         }
         #endregion
 
         public async ValueTask<Dictionary<string, float>> ToFloat32Array(object positions)
         {
-            var module = await moduleTask.Value;
-            //await module.InvokeAsync<List<float>>(GetJsInteropMethod(), positions);
-            return await module.InvokeAsync<Dictionary<string, float>>(GetJsInteropMethod(), positions);
+            return await moduleTask.InvokeAsyncInternal<Dictionary<string, float>>(GetJsInteropMethod(), positions);
         }
 
         public async ValueTask<double> MercatorScale(double latitude)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<double>(GetJsInteropMethod(), latitude);
+            return await moduleTask.InvokeAsyncInternal<double>(GetJsInteropMethod(), latitude);
         }
 
         public async ValueTask<double> MeterInMercatorUnits(double latitude)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<double>(GetJsInteropMethod(), latitude);
+            return await moduleTask.InvokeAsyncInternal<double>(GetJsInteropMethod(), latitude);
         }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")

@@ -80,8 +80,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         {
             sources.ValidateReferenceType<SourceType>();
 
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map, sources.Select(e => e.JsReference));
+            await moduleTask.InvokeVoidAsyncInternal(GetJsInteropMethod(), map, sources.Select(e => e.JsReference));
         }
 
         public async ValueTask Clear(Map map, IMapObjectReference source)
@@ -91,14 +90,12 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
 
         public async ValueTask Clear(Map map, IEnumerable<string> sourceIds)
         {
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, sourceIds);
+            await moduleTask.InvokeVoidAsyncInternal(GetJsInteropMethod(), map.MapReference, sourceIds);
         }
 
         public async ValueTask Clear(Map map, IEnumerable<MapSource> sources)
         {
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.Id));
+            await moduleTask.InvokeVoidAsyncInternal(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.Id));
         }
 
         public async ValueTask Clear(Map map, string id)
@@ -110,14 +107,12 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         {
             source.ValidateReferenceType<SourceType>(SourceType.Data);
 
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, source.JsReference, url);
+            await moduleTask.InvokeVoidAsyncInternal(GetJsInteropMethod(), map.MapReference, source.JsReference, url);
         }
 
         public async ValueTask ImportDataFromUrl(Map map, string source, string url)
         {
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, source, url);
+            await moduleTask.InvokeVoidAsyncInternal(GetJsInteropMethod(), map.MapReference, source, url);
         }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")

@@ -67,31 +67,27 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Data
         public async ValueTask<bool> AreEqual(object pos1, object pos2, double? precision = null)
         {
             var module = await moduleTask.Value;
-            return await module.InvokeAsync<bool>(GetJsInteropMethod(), pos1, pos2, precision);
+            return await moduleTask.InvokeAsyncInternal<bool>(GetJsInteropMethod(), pos1, pos2, precision);
         }
 
         public async ValueTask<Position> FromLatLng(object latLng)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<Position>(GetJsInteropMethod(), latLng);
+            return await moduleTask.InvokeAsyncInternal<Position>(GetJsInteropMethod(), latLng);
         }
 
         public async ValueTask<Position> FromLatLng(double lat, double lng, double? elv = null)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<Position>(GetJsInteropMethod($"{nameof(FromLatLng)}Values"), lat, lng, elv);
+            return await moduleTask.InvokeAsyncInternal<Position>(GetJsInteropMethod($"{nameof(FromLatLng)}Values"), lat, lng, elv);
         }
 
         public async ValueTask<List<Position>> FromLatLngs(object latLng)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), latLng);
+            return await moduleTask.InvokeAsyncInternal<List<Position>>(GetJsInteropMethod(), latLng);
         }
 
         public async ValueTask<Position> FromPosition(object position)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<Position>(GetJsInteropMethod(), position);
+            return await moduleTask.InvokeAsyncInternal<Position>(GetJsInteropMethod(), position);
         }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")

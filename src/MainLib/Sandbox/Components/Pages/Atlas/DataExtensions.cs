@@ -34,7 +34,7 @@ namespace Sandbox.Components.Pages.Atlas
 
             if (source != null)
             {
-                references = await atlasInterop.Sources.Add(map, [source!], layerType == LayerType.HeatMap);
+                _= await atlasInterop.Sources.Add(map, [source!], layerType == LayerType.HeatMap);
                 layer.Source = source?.Id;
             }
 
@@ -52,7 +52,6 @@ namespace Sandbox.Components.Pages.Atlas
                 //await atlasInterop!.Sources.DataSource.ImportDataFromUrl(map, (IMapObjectReference)layer.Source!, url);
             }
 
-            await references.DisposeItems();
             return results;
         }
 

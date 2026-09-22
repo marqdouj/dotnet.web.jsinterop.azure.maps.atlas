@@ -35,14 +35,12 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
 
         public async Task<MapCamera> GetCamera(Map map)
         {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<MapCamera>(GetJsInteropMethod(), map.MapReference);
+            return await moduleTask.InvokeAsyncInternal<MapCamera>(GetJsInteropMethod(), map.MapReference);
         }
 
         public async ValueTask SetCamera(Map map, CameraOptions? camera, CameraBoundsOptions? cameraBounds = null, AnimationOptions? animation = null)
         {
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, camera, cameraBounds, animation);
+            await moduleTask.InvokeVoidAsyncInternal(GetJsInteropMethod(), map.MapReference, camera, cameraBounds, animation);
         }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")

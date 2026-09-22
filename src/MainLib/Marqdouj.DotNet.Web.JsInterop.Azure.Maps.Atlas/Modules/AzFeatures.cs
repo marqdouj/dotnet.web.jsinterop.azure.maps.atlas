@@ -32,9 +32,15 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
 
         public async ValueTask<List<IMapObjectReference>> Add(Map map, object source, IEnumerable<object> features, bool getReferences = false)
         {
-            var module = await moduleTask.Value;
-            var items = await module.InvokeAsync<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, source, features, getReferences);
-            return [.. items.Cast<IMapObjectReference>()];
+            try
+            {
+                var items = await moduleTask.InvokeAsyncInternal<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, source, features, getReferences);
+                return [.. items.Cast<IMapObjectReference>()];
+            }
+            catch (JSException ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")

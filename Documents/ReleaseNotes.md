@@ -2,7 +2,9 @@
 
 ### [<- Go Back](../README.md)
 - `11.0.0-Preview-3.5`
-   - `IMapObjectReference`. All modules have been refactored to make it easier to create references.
+   - `IMapObjectReference`. Modules have been refactored to make it easier to create references.
+   - `JS2CSharpException`. When this library catches a [JSException](https://learn.microsoft.com/en-us/dotnet/api/microsoft.jsinterop.jsexception)
+	  it will use that to create an instance of the JS2CSharpException exception and throw that.
 - `11.0.0-Preview-3.4`
    - `IAtlasInterop.Popups`. New module has been added for popup support:
 - `11.0.0-Preview-3.3`

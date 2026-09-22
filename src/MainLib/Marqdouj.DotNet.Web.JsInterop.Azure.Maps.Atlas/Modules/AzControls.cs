@@ -47,21 +47,18 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
 
         public async ValueTask<List<IMapObjectReference>> Add(Map map, IEnumerable<MapControl> controls, bool getReferences = false)
         {
-            var module = await moduleTask.Value;
-            var results = await module.InvokeAsync<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, controls.Cast<object>().ToList(), getReferences);
+            var results = await moduleTask.InvokeAsyncInternal<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, controls.Cast<object>().ToList(), getReferences);
             return [.. results.Cast<IMapObjectReference>()];
         }
 
         public async ValueTask Remove(Map map, IEnumerable<MapControl> controls)
         {
-            var module = await moduleTask.Value;
-            await module.InvokeVoidAsync(GetJsInteropMethod(), map.MapReference, controls);
+            await moduleTask.InvokeVoidAsyncInternal(GetJsInteropMethod(), map.MapReference, controls);
         }
 
         public async ValueTask<List<IMapObjectReference>> GetReferences(Map map, IEnumerable<MapControl> controls)
         {
-            var module = await moduleTask.Value;
-            var items = await module.InvokeAsync<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, controls);
+            var items = await moduleTask.InvokeAsyncInternal<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, controls);
             return [.. items.Cast<IMapObjectReference>()];
         }
 

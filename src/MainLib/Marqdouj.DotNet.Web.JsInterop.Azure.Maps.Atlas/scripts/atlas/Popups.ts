@@ -16,7 +16,7 @@ export class Popups {
         const popups = map.popups.getPopups();
 
         sources.forEach(info => {
-            const item = this.#getPopupFromSource(map, info, popups, false);
+            const item = this.#getInstance(map, info, popups, false);
 
             if (!item) {
                 let popup = new atlas.Popup(info.options);
@@ -44,7 +44,7 @@ export class Popups {
         const popups = map.popups.getPopups();
 
         sources.forEach(info => {
-            const popup = this.#getPopupFromSource(map, info.id, popups);
+            const popup = this.#getInstance(map, info.id, popups);
             const dnr = Helpers.createMapObjectReference(mapId, MapEventTarget.Popup, popup, info.id);
             results.push(dnr);
         });
@@ -59,7 +59,7 @@ export class Popups {
         const popups = map.popups.getPopups();
 
         sources.forEach(source => {
-            const popup = this.#getPopupFromSource(map, source, popups);
+            const popup = this.#getInstance(map, source, popups);
             if (popup) {
                 map.popups.remove(popup);
             }
@@ -73,7 +73,7 @@ export class Popups {
         const popups = map.popups.getPopups();
 
         sources.forEach(source => {
-            const popup = this.#getPopupFromSource(map, source, popups);
+            const popup = this.#getInstance(map, source, popups);
             
             if (popup) {
                 if (open)
@@ -95,10 +95,10 @@ export class Popups {
             return;
         }
 
-        let popup = this.#getPopupFromSource(map, info.id, undefined, false);
+        let popup = this.#getInstance(map, info.id, undefined, false);
         if (!popup) {
             this.add(map, [info]);
-            popup = this.#getPopupFromSource(map, info.id);
+            popup = this.#getInstance(map, info.id);
         }
 
         if (!popup) {
@@ -178,7 +178,7 @@ export class Popups {
 
     // #endRegion
 
-    static #getPopupFromSource(map: atlas.Map, source: any, popups?: atlas.Popup[], logIfNotFound: boolean = true): atlas.Popup | undefined {
+    static #getInstance(map: atlas.Map, source: any, popups?: atlas.Popup[], logIfNotFound: boolean = true): atlas.Popup | undefined {
         const eventName = "Popups.#getPopupFromSource";
 
         let popup: atlas.Popup | undefined;
