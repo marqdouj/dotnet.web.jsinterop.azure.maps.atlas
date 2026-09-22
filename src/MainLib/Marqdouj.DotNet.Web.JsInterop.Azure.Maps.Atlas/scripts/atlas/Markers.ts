@@ -4,9 +4,10 @@ import { Helpers } from "./common/Helpers";
 
 export class Markers {
     public static add(map: atlas.Map, markers?: HtmlMarker[]): void {
-        markers ??= [];
+        if (Helpers.hasNoElements(markers))
+            return;
 
-        markers.forEach(markerDef => {
+        markers!.forEach(markerDef => {
             let options = { ...(markerDef as any).options };
             if (options.popup) {
                 options.popup = new atlas.Popup(options.popup.options)
@@ -25,7 +26,8 @@ export class Markers {
     }
 
     public static remove(map: atlas.Map, markers: HtmlMarker[]): void {
-        markers ??= [];
+        if (Helpers.hasNoElements(markers))
+            return;
 
         const sourceIds = markers.map(e => e.id);
         MarkerEvents.removeBySource(map, sourceIds)
@@ -43,7 +45,7 @@ export class Markers {
     }
 
     static getMarker(map: atlas.Map, id: string | undefined): atlas.HtmlMarker | undefined {
-        return Markers.#doGetMarker(map, id);
+        return this.#doGetMarker(map, id);
     }
 
     static #doGetMarker(map: atlas.Map, id: string | undefined): atlas.HtmlMarker | undefined {
