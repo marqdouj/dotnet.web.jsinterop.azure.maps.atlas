@@ -4,7 +4,13 @@
 - `11.0.0-Preview-3.5`
    - `IMapObjectReference`. Modules have been refactored to make it easier to create references.
    - `JS2CSharpException`. When this library catches a [JSException](https://learn.microsoft.com/en-us/dotnet/api/microsoft.jsinterop.jsexception)
-	  it will use that to create an instance of the JS2CSharpException exception and throw that.
+	  it will create an instance of the JS2CSharpException exception and throw that.
+   - `Lazy<Task<IJSObjectReference>>`. Extension methods have been added to wrap method calls in a try/catch to handle JSException and process the catch with `JS2CSharpException` .
+	  - `InvokeAsyncTC<T>`.
+	  - `InvokeVoidAsyncTC`.
+   - `Custom (JSInterop)`.
+	  - `Sandbox.CustomJs` library has been added that contains a custom script.
+	  - `Controls`. New demo page that uses the custom script.
 - `11.0.0-Preview-3.4`
    - `IAtlasInterop.Popups`. New module has been added for popup support:
 - `11.0.0-Preview-3.3`

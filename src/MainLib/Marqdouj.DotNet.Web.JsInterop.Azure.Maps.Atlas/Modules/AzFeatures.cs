@@ -34,7 +34,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         {
             try
             {
-                var items = await moduleTask.InvokeAsyncInternal<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, source, features, getReferences);
+                var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, source, features, getReferences);
                 return [.. items.Cast<IMapObjectReference>()];
             }
             catch (JSException ex)

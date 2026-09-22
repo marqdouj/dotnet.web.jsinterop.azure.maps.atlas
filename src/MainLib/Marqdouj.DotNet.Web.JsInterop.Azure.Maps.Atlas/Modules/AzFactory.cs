@@ -63,7 +63,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
 
             try
             {
-                var mapRef = await moduleTask.InvokeAsyncInternal<IJSObjectReference>(GetJsInteropMethod(), dotNetRef, mapId, configuration, controls?.Cast<object>().ToList(), events?.Cast<object>().ToList())
+                var mapRef = await moduleTask.InvokeAsyncTC<IJSObjectReference>(GetJsInteropMethod(), dotNetRef, mapId, configuration, controls?.Cast<object>().ToList(), events?.Cast<object>().ToList())
                     ?? throw new Exception($"Failed to create an atlas.Map instance where mapId = '{mapId}'.");
                 return new Map(mapRef, mapId);
             }
@@ -77,7 +77,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         {
             try
             {
-                await moduleTask.InvokeVoidAsyncInternal(GetJsInteropMethod(), logLevel);
+                await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), logLevel);
             }
             catch (JSException ex)
             {
@@ -89,7 +89,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         {
             try
             {
-                await moduleTask.InvokeVoidAsyncInternal(GetJsInteropMethod(), map.MapReference);
+                await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference);
                 await map.DisposeAsync();
             }
             catch (JSException ex)

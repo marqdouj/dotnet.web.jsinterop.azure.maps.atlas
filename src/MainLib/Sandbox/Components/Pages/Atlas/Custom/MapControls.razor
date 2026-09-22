@@ -1,0 +1,157 @@
+﻿@page "/maps-custom-controls"
+@rendermode InteractiveServer
+@inject IOptions<MapConfiguration> Configuration
+@inject IJSRuntime JSRuntime
+@inject ILogger<MapControls> Logger
+@inject INotificationService ToastService
+
+<MapPage Title="@title">
+    <SummaryContent>
+        <FluentText As="TextTag.Paragraph">
+            This page demonstrates how to add/remove map controls using custom JSInterop.
+        </FluentText>
+    </SummaryContent>
+
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
+            <FluentSpacer Width="10px" />
+            <FluentLabel>Controls:</FluentLabel>
+            <FluentButton Disabled="@addControlsDisabled" IconStart="@(new Icons.Regular.Size20.Add())" Title="Add Controls" OnClick="@AddControls" />
+            <FluentButton Disabled="@removeControlsDisabled" IconStart="@(new Icons.Regular.Size20.Delete())" Title="Remove Controls" OnClick="@RemoveControls" />
+        </Toolbar>
+
+        <MapContainer MapId="@mapId" />
+    </ChildContent>
+</MapPage>
+
+@code {
+    private const string mapId = "mapBasic";
+    private const string title = "Maps - Basic";
+    private DotNetObjectReference<ComponentBase>? dotNetRef;
+    private AtlasInterop atlasInterop = default!;
+    private MapConfiguration config = default!;
+    private Sandbox.CustomJs.CustomInterop customInterop = default!;
+    private Map? map;
+    private bool hasInterop => atlasInterop != null;
+    private bool mapNotReady => map == null;
+    private bool createMapDisabled => !hasInterop || map != null;
+    private bool removeMapDisabled => !hasInterop || map == null;
+    private List<MapControl>? addedControls;
+    private bool addControlsDisabled => !hasInterop || addedControls != null || map == null;
+    private bool removeControlsDisabled => !hasInterop || addedControls == null || map == null;
+
+    protected override void OnInitialized()
+    {
+        config = Configuration.GetValue(LogLevel.Trace);
+        atlasInterop = new(JSRuntime);
+        dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
+        customInterop = new(JSRuntime);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await CreateMap();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            dotNetRef?.Dispose();
+
+            if (map != null)
+                await map.DisposeAsync();
+
+            if (atlasInterop != null)
+                await atlasInterop.DisposeAsync();
+
+            if (customInterop != null)
+                await customInterop.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+
+    #region Map
+
+    private async Task AddControls()
+    {
+        try
+        {
+            //These are all the supported basic controls
+            //Remove any controls that you don't want from the list.
+            var items = MapExtensions.GetDefaultControls();
+
+            await customInterop.AddControls(map!.MapReference, items);
+            addedControls = items;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task RemoveControls()
+    {
+        try
+        {
+            if (addedControls != null)
+                await customInterop.RemoveControls(map!.MapReference, addedControls);
+            addedControls = null;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task CreateMap()
+    {
+        try
+        {
+            if (map != null)
+                return;
+
+            config!.MapOptions ??= MapExtensions.GetDefaultMapOptions();
+            map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task ResetMap()
+    {
+        try
+        {
+            if (map == null)
+                return;
+
+            await atlasInterop.Map.SetCamera(map, config!.MapOptions!.Camera);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    [JSInvokable]
+    public async Task NotifyMapEvent(MapEventArgs e)
+    {
+        await e.ErrorEventProcessed(Logger, ToastService);
+    }
+
+    #endregion
+}

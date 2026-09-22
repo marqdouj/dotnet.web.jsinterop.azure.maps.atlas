@@ -43,17 +43,17 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Events
 
         public async ValueTask Add<T>(DotNetObjectReference<T> dotNetRef, Map map, IEnumerable<LayerEvent> events) where T : class
         {
-            await moduleTask.InvokeVoidAsyncInternal(GetJsInteropMethod(), dotNetRef, map.MapReference, events.Cast<object>().ToList());
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), dotNetRef, map.MapReference, events.Cast<object>().ToList());
         }
 
         public async ValueTask Remove(Map map, IEnumerable<LayerEvent> events)
         {
-            await moduleTask.InvokeVoidAsyncInternal(GetJsInteropMethod(), map.MapReference, events.Cast<object>().ToList());
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, events.Cast<object>().ToList());
         }
 
         public async ValueTask RemoveBySource(Map map, IEnumerable<object> sources)
         {
-            await moduleTask.InvokeVoidAsyncInternal(GetJsInteropMethod(), map.MapReference, sources);
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, sources);
         }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")

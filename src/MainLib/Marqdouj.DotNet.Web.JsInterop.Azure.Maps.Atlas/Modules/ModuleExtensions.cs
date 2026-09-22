@@ -26,7 +26,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         StyleControlEvents,
     }
 
-    internal static class ModuleExtensions
+    /// <summary>
+    /// 
+    /// </summary>
+    public static class ModuleExtensions
     {
         internal static string GetJsModuleMethod(this JsModule module, [CallerMemberName] string name = "")
             => $"{module}.{name.ToJsonName()}";
@@ -41,7 +44,16 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
             return $"{firstChar}{remainder}";
         }
 
-        internal static async ValueTask<T> InvokeAsyncInternal<T>(this Lazy<Task<IJSObjectReference>> moduleTask, string identifier, params object?[]? args)
+        /// <summary>
+        /// Wraps calls to moduleTask.InvokeAsync with a try/catch.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="moduleTask"></param>
+        /// <param name="identifier"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        /// <exception cref="JS2CSharpException"></exception>
+        public static async ValueTask<T> InvokeAsyncTC<T>(this Lazy<Task<IJSObjectReference>> moduleTask, string identifier, params object?[]? args)
         {
             try
             {
@@ -54,7 +66,15 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
             }
         }
 
-        internal static async ValueTask InvokeVoidAsyncInternal(this Lazy<Task<IJSObjectReference>> moduleTask, string identifier, params object?[]? args)
+        /// <summary>
+        /// Wraps calls to moduleTask.InvokeVoidAsync with a try/catch.
+        /// </summary>
+        /// <param name="moduleTask"></param>
+        /// <param name="identifier"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        /// <exception cref="JS2CSharpException"></exception>
+        public static async ValueTask InvokeVoidAsyncTC(this Lazy<Task<IJSObjectReference>> moduleTask, string identifier, params object?[]? args)
         {
             try
             {

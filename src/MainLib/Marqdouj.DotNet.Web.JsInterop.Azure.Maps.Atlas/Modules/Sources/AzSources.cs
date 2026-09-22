@@ -123,7 +123,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         {
             try
             {
-                var items = await moduleTask.InvokeAsyncInternal<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, sources, getReferences);
+                var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, sources, getReferences);
                 return [.. items.Cast<IMapObjectReference>()];
             }
             catch (JSException ex)
@@ -142,7 +142,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         {
             try
             {
-                var items = await moduleTask.InvokeAsyncInternal<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, sourceIds);
+                var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, sourceIds);
                 return [.. items.Cast<IMapObjectReference>()];
             }
             catch (JSException ex)
@@ -155,7 +155,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         {
             try
             {
-                var items = await moduleTask.InvokeAsyncInternal<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.Id));
+                var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.Id));
                 return [.. items.Cast<IMapObjectReference>()];
             }
             catch (JSException ex)
@@ -168,7 +168,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         {
             try
             {
-                await moduleTask.InvokeVoidAsyncInternal(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.JsReference));
+                await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.JsReference));
                 await sources.DisposeItems();
             }
             catch (JSException ex)
@@ -186,7 +186,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         {
             try
             {
-                await moduleTask.InvokeVoidAsyncInternal(GetJsInteropMethod(), map.MapReference, sourceIds);
+                await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, sourceIds);
             }
             catch (JSException ex)
             {
@@ -203,7 +203,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         {
             try
             {
-                await moduleTask.InvokeVoidAsyncInternal(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.Id));
+                await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.Id));
             }
             catch (JSException ex)
             {

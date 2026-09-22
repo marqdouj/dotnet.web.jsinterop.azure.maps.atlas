@@ -22,7 +22,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
 
         public async ValueTask<CopyTextResult> CopyTextToClipboard(string text)
         {
-            return await moduleTask.InvokeAsyncInternal<CopyTextResult>(GetJsInteropMethod(), text);
+            return await moduleTask.InvokeAsyncTC<CopyTextResult>(GetJsInteropMethod(), text);
         }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")

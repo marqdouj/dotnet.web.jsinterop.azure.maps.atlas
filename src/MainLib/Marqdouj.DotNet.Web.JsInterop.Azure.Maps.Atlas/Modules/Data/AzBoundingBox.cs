@@ -183,112 +183,112 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Data
 
         public async ValueTask<bool> ContainsPosition(object bounds, object position)
         {
-            return await moduleTask.InvokeAsyncInternal<bool>(GetJsInteropMethod(), bounds, position);
+            return await moduleTask.InvokeAsyncTC<bool>(GetJsInteropMethod(), bounds, position);
         }
 
         public async ValueTask<bool> CrossesAntimeridian(object bounds)
         {
-            return await moduleTask.InvokeAsyncInternal<bool>(GetJsInteropMethod(), bounds);
+            return await moduleTask.InvokeAsyncTC<bool>(GetJsInteropMethod(), bounds);
         }
 
         public async ValueTask<BoundingBox> FromBoundingBox(object data)
         {
-            return await moduleTask.InvokeAsyncInternal<BoundingBox>(GetJsInteropMethod(), data);
+            return await moduleTask.InvokeAsyncTC<BoundingBox>(GetJsInteropMethod(), data);
         }
 
         public async ValueTask<BoundingBox> FromData(object data)
         {
-            return await moduleTask.InvokeAsyncInternal<BoundingBox>(GetJsInteropMethod(), data);
+            return await moduleTask.InvokeAsyncTC<BoundingBox>(GetJsInteropMethod(), data);
         }
 
         public async ValueTask<BoundingBox> FromDimensions(object data, double width, double height)
         {
-            return await moduleTask.InvokeAsyncInternal<BoundingBox>(GetJsInteropMethod(), data, width, height);
+            return await moduleTask.InvokeAsyncTC<BoundingBox>(GetJsInteropMethod(), data, width, height);
         }
 
         public async ValueTask<BoundingBox> FromEdges(double west, double south, double east, double north)
         {
-            return await moduleTask.InvokeAsyncInternal<BoundingBox>(GetJsInteropMethod(), west, south, east, north );
+            return await moduleTask.InvokeAsyncTC<BoundingBox>(GetJsInteropMethod(), west, south, east, north );
         }
 
         public async ValueTask<BoundingBox> FromLatLngs(object data)
         {
-            return await moduleTask.InvokeAsyncInternal<BoundingBox>(GetJsInteropMethod(), data);
+            return await moduleTask.InvokeAsyncTC<BoundingBox>(GetJsInteropMethod(), data);
         }
 
         public async ValueTask<BoundingBox> FromPositions(object data)
         {
-            return await moduleTask.InvokeAsyncInternal<BoundingBox>(GetJsInteropMethod(), data);
+            return await moduleTask.InvokeAsyncTC<BoundingBox>(GetJsInteropMethod(), data);
         }
 
         public async ValueTask<Position> GetCenter(object data)
         {
-            return await moduleTask.InvokeAsyncInternal<Position>(GetJsInteropMethod(), data);
+            return await moduleTask.InvokeAsyncTC<Position>(GetJsInteropMethod(), data);
         }
 
         public async ValueTask<double> GetHeight(object data)
         {
-            return await moduleTask.InvokeAsyncInternal<double>(GetJsInteropMethod(), data);
+            return await moduleTask.InvokeAsyncTC<double>(GetJsInteropMethod(), data);
         }
 
         public async ValueTask<Position> GetNorthEast(object data)
         {
-            return await moduleTask.InvokeAsyncInternal<Position>(GetJsInteropMethod(), data);
+            return await moduleTask.InvokeAsyncTC<Position>(GetJsInteropMethod(), data);
         }
 
         public async ValueTask<Position> GetNorthWest(object data)
         {
-            return await moduleTask.InvokeAsyncInternal<Position>(GetJsInteropMethod(), data);
+            return await moduleTask.InvokeAsyncTC<Position>(GetJsInteropMethod(), data);
         }
 
         public async ValueTask<Position> GetSouthEast(object data)
         {
-            return await moduleTask.InvokeAsyncInternal<Position>(GetJsInteropMethod(), data);
+            return await moduleTask.InvokeAsyncTC<Position>(GetJsInteropMethod(), data);
         }
 
         public async ValueTask<Position> GetSouthWest(object data)
         {
-            return await moduleTask.InvokeAsyncInternal<Position>(GetJsInteropMethod(), data);
+            return await moduleTask.InvokeAsyncTC<Position>(GetJsInteropMethod(), data);
         }
 
         public async ValueTask<double> GetNorth(object data)
         {
-            return await moduleTask.InvokeAsyncInternal<double>(GetJsInteropMethod(), data);
+            return await moduleTask.InvokeAsyncTC<double>(GetJsInteropMethod(), data);
         }
 
         public async ValueTask<double> GetSouth(object data)
         {
-            return await moduleTask.InvokeAsyncInternal<double>(GetJsInteropMethod(), data);
+            return await moduleTask.InvokeAsyncTC<double>(GetJsInteropMethod(), data);
         }
 
         public async ValueTask<double> GetEast(object data)
         {
-            return await moduleTask.InvokeAsyncInternal<double>(GetJsInteropMethod(), data);
+            return await moduleTask.InvokeAsyncTC<double>(GetJsInteropMethod(), data);
         }
 
         public async ValueTask<double> GetWest(object data)
         {
-            return await moduleTask.InvokeAsyncInternal<double>(GetJsInteropMethod(), data);
+            return await moduleTask.InvokeAsyncTC<double>(GetJsInteropMethod(), data);
         }
 
         public async ValueTask<double> GetWidth(object data)
         {
-            return await moduleTask.InvokeAsyncInternal<double>(GetJsInteropMethod(), data);
+            return await moduleTask.InvokeAsyncTC<double>(GetJsInteropMethod(), data);
         }
 
         public async ValueTask<bool> Intersect(object bounds1, object bounds2)
         {
-            return await moduleTask.InvokeAsyncInternal<bool>(GetJsInteropMethod(), bounds1, bounds2);
+            return await moduleTask.InvokeAsyncTC<bool>(GetJsInteropMethod(), bounds1, bounds2);
         }
 
         public async ValueTask<BoundingBox> Merge(object bounds1, object bounds2)
         {
-            return await moduleTask.InvokeAsyncInternal<BoundingBox>(GetJsInteropMethod(), bounds1, bounds2);
+            return await moduleTask.InvokeAsyncTC<BoundingBox>(GetJsInteropMethod(), bounds1, bounds2);
         }
 
         public async ValueTask<List<BoundingBox>> SplitOnAntimeridian(object bounds)
         {
-            return await moduleTask.InvokeAsyncInternal<List<BoundingBox>>(GetJsInteropMethod(), bounds);
+            return await moduleTask.InvokeAsyncTC<List<BoundingBox>>(GetJsInteropMethod(), bounds);
         }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")

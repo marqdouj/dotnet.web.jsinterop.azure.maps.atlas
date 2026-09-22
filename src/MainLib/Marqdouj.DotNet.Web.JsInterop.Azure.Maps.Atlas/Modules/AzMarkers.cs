@@ -61,12 +61,12 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
 
         public async ValueTask Add(Map map, IEnumerable<HtmlMarker> items)
         {
-            await moduleTask.InvokeVoidAsyncInternal(GetJsInteropMethod(), map.MapReference, items?.Cast<object>().ToList());
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, items?.Cast<object>().ToList());
         }
 
         public async ValueTask Clear(Map map)
         {
-            await moduleTask.InvokeVoidAsyncInternal(GetJsInteropMethod(), map.MapReference);
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference);
         }
 
         public async ValueTask Remove(Map map, HtmlMarker item)
@@ -76,7 +76,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
 
         public async ValueTask Remove(Map map, IEnumerable<HtmlMarker> items)
         {
-            await moduleTask.InvokeVoidAsyncInternal(GetJsInteropMethod(), map.MapReference, items?.Cast<object>().ToList());
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, items?.Cast<object>().ToList());
         }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")
