@@ -27,33 +27,22 @@
     private const string title = "Maps - Design";
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
-    private MapConfiguration? config;
+    private MapConfiguration config = default!;
     private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
     private Map? map;
     private bool mapNotReady => map == null;
 
+    protected override void OnInitialized()
+    {
+        config = Configuration.GetValue(LogLevel.Trace);
+        atlasInterop = new(JSRuntime);
+        dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-        {
-            try
-            {
-                config = Configuration?.GetValue(LogLevel.Trace);
-                atlasInterop = new(JSRuntime);
-                dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
-
-                await CreateMap();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Initialization caused an exception.");
-                await ToastService.ShowError("Initialization caused an exception.");
-            }
-            finally
-            {
-                StateHasChanged();
-            }
-        }
+            await CreateMap();
     }
 
     public async ValueTask DisposeAsync()
@@ -82,13 +71,17 @@
             if (map != null)
                 return;
 
-            config?.MapOptions = mapOptions;
+            config.MapOptions = mapOptions;
             map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config!, MapExtensions.GetDefaultControls());
         }
         catch (Exception ex)
         {
             Logger.LogMapError(ex);
             await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
         }
     }
 

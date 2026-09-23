@@ -1,0 +1,259 @@
+﻿@page "/maps-options"
+@using System.Reflection
+@rendermode InteractiveServer
+@inject IOptions<MapConfiguration> Configuration
+@inject IJSRuntime JSRuntime
+@inject ILogger<Design> Logger
+@inject INotificationService ToastService
+@inject IMapDataService DataService
+
+<MapPage Title="@title">
+    <SummaryContent>
+        <FluentText As="TextTag.Paragraph">
+            This page demonstrates changing some of the map style and user interaction options.
+        </FluentText>
+    </SummaryContent>
+
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
+        </Toolbar>
+        
+        <FluentStack Style="overflow:auto">
+            <FluentCard Height="@height" Width="265px" Style="overflow:auto;">
+                <FluentText Color="Color.Primary" As="TextTag.H6">Style</FluentText>
+                @foreach (var item in styleViewModel.Items)
+                {
+                    <FluentCheckbox Disabled="@mapNotReady" Tooltip="@item.Tooltip" Label="@item.Label" @bind-Value:get="@item.Value" @bind-Value:set="@((e) => OnStyleOptionsChanged(e, item))" />
+                }
+                <FluentText Color="Color.Primary" As="TextTag.H6">User Interaction</FluentText>
+                @foreach (var item in userViewModel.Items)
+                {
+                    <FluentCheckbox Disabled="@mapNotReady" Tooltip="@item.Tooltip" Label="@item.Label" @bind-Value:get="@item.Value" @bind-Value:set="@((e) => OnUserOptionsChanged(e, item))" />
+                }
+            </FluentCard>
+
+            <MapContainer MapId="@mapId" MinWidth="400px"/>
+        </FluentStack>
+    </ChildContent>
+</MapPage>
+
+@code {
+    private const string mapId = "mapOptions";
+    private const string title = "Maps - Options";
+    private readonly string height = "400px";
+    private DotNetObjectReference<ComponentBase>? dotNetRef;
+    private AtlasInterop atlasInterop = default!;
+    private MapConfiguration config = default!;
+    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
+    private Map? map;
+    private bool mapNotReady => map == null;
+    private StyleViewModel styleViewModel = default!;
+    private UserInteractionViewModel userViewModel = default!;
+
+    protected override void OnInitialized()
+    {
+        config = Configuration.GetValue(LogLevel.Trace);
+        config.MapOptions = mapOptions;
+        mapOptions.Style ??= new();
+        mapOptions.UserInteraction ??= new();
+        atlasInterop = new(JSRuntime);
+        dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
+
+        ResetViewModels();
+    }
+
+    private void ResetViewModels()
+    {
+        styleViewModel = new((StyleOptions?)config.MapOptions?.Style?.Clone() ?? new());
+        userViewModel = new((UserInteractionOptions?)config.MapOptions?.UserInteraction?.Clone() ?? new());
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await CreateMap();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            dotNetRef?.Dispose();
+
+            if (map != null)
+                await map.DisposeAsync();
+
+            if (atlasInterop != null)
+                await atlasInterop.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+
+    private async Task OnStyleOptionsChanged(bool value, BoolPropertyViewModel vm)
+    {
+        try
+        {
+            vm.Value = value;
+            await atlasInterop.Map.SetStyle(map!, styleViewModel.Options);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task OnUserOptionsChanged(bool value, BoolPropertyViewModel vm)
+    {
+        try
+        {
+            vm.Value = value;
+            await atlasInterop.Map.SetUserInteraction(map!, userViewModel.Options);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    #region Map
+
+    private async Task CreateMap()
+    {
+        try
+        {
+            if (map != null)
+                return;
+
+            map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config!, MapExtensions.GetDefaultControls());
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task ResetMap()
+    {
+        try
+        {
+            if (map == null)
+                return;
+
+            ResetViewModels();
+            await atlasInterop.Map.SetCamera(map, mapOptions.Camera);
+            await atlasInterop.Map.SetStyle(map, styleViewModel.Options);
+            await atlasInterop.Map.SetUserInteraction(map, userViewModel.Options);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    [JSInvokable]
+    public async Task NotifyMapEvent(MapEventArgs e)
+    {
+        await e.ErrorEventProcessed(Logger, ToastService);
+    }
+
+    #endregion
+
+    private class BoolPropertyViewModel
+    {
+        private readonly PropertyInfo info;
+        private readonly bool defaultValue;
+
+        public BoolPropertyViewModel(string propertyName, string label, object model, bool defaultValue = true)
+        {
+            this.info = model.GetType().GetProperty(propertyName) ?? throw new ArgumentOutOfRangeException(nameof(propertyName));
+            Label = label;
+            Model = model;
+            this.defaultValue = defaultValue;
+        }
+
+        public string Label { get; }
+        public object Model { get; }
+        public string? Tooltip { get; set; }
+
+        public bool Value
+        {
+            get
+            {
+                var current = (bool?)info.GetValue(Model);
+                return current ?? defaultValue;
+            }
+            set
+            {
+                info.SetValue(Model, value);
+            }
+        }
+    }
+
+    private class StyleViewModel
+    {
+        public StyleViewModel(StyleOptions options)
+        {
+            Options = options;
+            ShowFeedbackLink = new(nameof(StyleOptions.ShowFeedbackLink), "Show Feedback Link", options);
+            ShowLabels = new(nameof(StyleOptions.ShowLogo), "Show Logo", options);
+            ShowLogo = new(nameof(StyleOptions.ShowLabels), "Show Labels", options);
+            ShowTileBoundaries = new(nameof(StyleOptions.ShowTileBoundaries), "Show Tile Boundaries", options);
+
+            Items = [ShowFeedbackLink, ShowLabels, ShowLogo, ShowTileBoundaries];
+
+            ShowFeedbackLink.Tooltip = "Specifies if the feedback link should be displayed on the map or not.";
+            ShowLabels.Tooltip = "Specifies if the map should display labels.";
+            ShowLogo.Tooltip = "Specifies if the Microsoft logo should be hidden or not. If set to true a Microsoft copyright string will be added to the map.";
+            ShowTileBoundaries.Tooltip = "Specifies if the map should render an outline around each tile and the tile ID.";
+        }
+
+        public StyleOptions Options { get; }
+        public BoolPropertyViewModel ShowFeedbackLink { get; }
+        public BoolPropertyViewModel ShowLabels { get; }
+        public BoolPropertyViewModel ShowLogo { get; }
+        public BoolPropertyViewModel ShowTileBoundaries { get; }
+
+        public List<BoolPropertyViewModel> Items { get; }
+    }
+
+    private class UserInteractionViewModel
+    {
+        public UserInteractionViewModel(UserInteractionOptions options)
+        {
+            Options = options;
+            BoxZoomInteraction = new(nameof(UserInteractionOptions.BoxZoomInteraction), "Box Zoom Interaction", options);
+            DblClickZoomInteraction = new(nameof(UserInteractionOptions.DblClickZoomInteraction), "DblClick Zoom Interaction", options);
+            DragPanInteraction = new(nameof(UserInteractionOptions.DragPanInteraction), "Drag Pan Interaction", options);
+            DragRotateInteraction = new(nameof(UserInteractionOptions.DragRotateInteraction), "Drag Rotate Interaction", options);
+            ScrollZoomInteraction = new(nameof(UserInteractionOptions.ScrollZoomInteraction), "Scroll Zoom Interaction", options);
+
+            BoxZoomInteraction.Tooltip = "Whether the Shift + left click and drag will draw a zoom box.";
+            DblClickZoomInteraction.Tooltip = "Whether double left click will zoom the map inwards.";
+            DragPanInteraction.Tooltip = "Whether left click and drag will pan the map.";
+            DragRotateInteraction.Tooltip = "Whether right click and drag will rotate and pitch the map.";
+            ScrollZoomInteraction.Tooltip = "Whether the map should zoom on scroll input.";
+
+            Items = [BoxZoomInteraction, DblClickZoomInteraction, DragPanInteraction, DragRotateInteraction, ScrollZoomInteraction];
+        }
+
+        public UserInteractionOptions Options { get; }
+        public BoolPropertyViewModel BoxZoomInteraction { get; }
+        public BoolPropertyViewModel DblClickZoomInteraction { get; }
+        public BoolPropertyViewModel DragPanInteraction { get; }
+        public BoolPropertyViewModel DragRotateInteraction { get; }
+        public BoolPropertyViewModel ScrollZoomInteraction { get; }
+
+        public List<BoolPropertyViewModel> Items { get; }
+    }
+}

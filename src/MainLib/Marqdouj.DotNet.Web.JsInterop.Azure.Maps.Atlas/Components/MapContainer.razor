@@ -3,7 +3,9 @@
 @code {
     private const string defaultStyle = "border: var(--strokeWidthThin) solid var(--colorNeutralStroke1);";
     private string mapDivStyle => string.IsNullOrWhiteSpace(Style) ? defaultStyle : Style;
-    private string mapStyle => $"height:{Height ?? "100%"};width:{Width ?? "100%"};{mapDivStyle}";
+    private string mapMinHeight => string.IsNullOrWhiteSpace(MinHeight) ? "" : $"min-height:{AddSemiColonIfMissing(MinHeight)}";
+    private string mapMinWidth => string.IsNullOrWhiteSpace(MinWidth) ? "" : $"min-width:{AddSemiColonIfMissing(MinWidth)}";
+    private string mapStyle => $"height:{Height ?? "100%"};width:{Width ?? "100%"};{AddSemiColonIfMissing(mapDivStyle)}{mapMinHeight}{mapMinWidth}";
 
     [Parameter, EditorRequired]
     public string MapId { get; set; }
@@ -19,4 +21,22 @@
 
     [Parameter]
     public string? Width { get; set; }
+
+    [Parameter]
+    public string? MinHeight { get; set; }
+
+    [Parameter]
+    public string? MinWidth { get; set; }
+
+    private static string AddSemiColonIfMissing(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return "";
+
+        value = value.Trim();
+        if (!value.EndsWith(';'))
+            value = $"{value};";
+
+        return value;
+    }
 }
