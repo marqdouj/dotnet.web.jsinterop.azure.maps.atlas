@@ -1,4 +1,4 @@
-﻿@page "/design"
+﻿@page "/maps-options"
 @rendermode InteractiveServer
 @inject IOptions<MapConfiguration> Configuration
 @inject IJSRuntime JSRuntime
@@ -9,7 +9,7 @@
 <MapPage Title="@title">
     <SummaryContent>
         <FluentText As="TextTag.Paragraph">
-            This page demonstrates how to create/remove a map instance, and its controls.
+            This page demonstrates map options.
         </FluentText>
     </SummaryContent>
 
@@ -23,8 +23,8 @@
 </MapPage>
 
 @code {
-    private const string mapId = "mapDesign";
-    private const string title = "Maps - Design";
+    private const string mapId = "mapOptions";
+    private const string title = "Maps - Options";
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
     private MapConfiguration? config = default!;
