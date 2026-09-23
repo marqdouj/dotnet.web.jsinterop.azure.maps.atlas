@@ -33,5 +33,6 @@ In the source code, see the `Sandbox` web app for examples on using this library
 	- `GetStyle/SetStyle`. Gets or sets the map style options.
 	- `GetTraffic/SetTraffic`. Gets or sets the map traffic options.
 	- `GetUserInteraction/SetUserInteraction`. Gets or sets the map user interaction options.
+   - `MapContainer`. Added `MinHeight` and `MinWidth` parameters.
 
 ## [Release Notes (All)](Documents/ReleaseNotes.md)

@@ -27,14 +27,14 @@
     private const string title = "Maps - Design";
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
-    private MapConfiguration? config = default!;
+    private MapConfiguration config = default!;
     private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
     private Map? map;
     private bool mapNotReady => map == null;
 
     protected override void OnInitialized()
     {
-        config = Configuration?.GetValue(LogLevel.Trace);
+        config = Configuration.GetValue(LogLevel.Trace);
         atlasInterop = new(JSRuntime);
         dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
     }

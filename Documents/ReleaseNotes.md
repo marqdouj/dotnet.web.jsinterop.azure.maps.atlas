@@ -7,6 +7,7 @@
 	- `GetStyle/SetStyle`. Gets or sets the map style options.
 	- `GetTraffic/SetTraffic`. Gets or sets the map traffic options.
 	- `GetUserInteraction/SetUserInteraction`. Gets or sets the map user interaction options.
+   - `MapContainer`. Added `MinHeight` and `MinWidth` parameters.
 - `11.0.0-Preview-3.5`
    - `IMapObjectReference`. Modules have been refactored to make it easier to create references.
    - `JS2CSharpException`. When this library catches a [JSException](https://learn.microsoft.com/en-us/dotnet/api/microsoft.jsinterop.jsexception)
