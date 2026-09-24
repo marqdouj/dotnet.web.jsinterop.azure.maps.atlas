@@ -64,8 +64,8 @@
     private bool mapNotReady => map == null;
     private readonly Dictionary<string, string> languages = AtlasGlobalUI.Languages;
     private readonly Dictionary<string, string> views = AtlasGlobalUI.Views;
-    private string? selectedLanguage = AtlasGlobalUI.DefaultLanguage;
-    private string? selectedView = AtlasGlobalUI.DefaultView;
+    private string? selectedLanguage;// = AtlasGlobalUI.DefaultLanguage;
+    private string? selectedView;// = AtlasGlobalUI.DefaultView;
     private string? apiVersion;
 
     protected override void OnInitialized()
@@ -84,11 +84,17 @@
             try
             {
                 apiVersion = await atlasInterop.Map.GetVersion();
+                selectedLanguage = await atlasInterop.Map.GetLanguage();
+                selectedView = await atlasInterop.Map.GetView() ?? AtlasGlobalUI.DefaultView;
             }
             catch (Exception ex)
             {
                 Logger.LogMapError(ex);
                 await ToastService.ShowError(ex.Message);
+            }
+            finally
+            {
+                StateHasChanged();
             }
         }
     }
@@ -158,6 +164,14 @@
                 return;
 
             await atlasInterop.Map.SetCamera(map, mapOptions.Camera);
+
+            selectedLanguage = AtlasGlobalUI.DefaultLanguage;
+            await atlasInterop.Map.SetLanguage(selectedLanguage);
+            selectedView = AtlasGlobalUI.DefaultView;
+            await atlasInterop.Map.SetView(selectedView);
+            await RemoveAndCreateMap();
+
+
         }
         catch (Exception ex)
         {

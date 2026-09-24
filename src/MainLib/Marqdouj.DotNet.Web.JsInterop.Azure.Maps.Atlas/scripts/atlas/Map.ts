@@ -131,8 +131,16 @@ export class Map {
 
     // #region View
 
+    public static getLanguage() {
+        return atlas.getLanguage();
+    }
+
     public static getVersion(): string {
         return atlas.getVersion();
+    }
+
+    public static getView() {
+        return atlas.getView();
     }
 
     public static setLanguage(language: string) {

@@ -113,10 +113,22 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         #endregion
 
         /// <summary>
+        /// Gets the default language used by the map and service modules.
+        /// </summary>
+        /// <returns></returns>
+        ValueTask<string> GetLanguage();
+
+        /// <summary>
         /// Gets the current API version number based on build number.
         /// </summary>
         /// <returns></returns>
         ValueTask<string> GetVersion();
+
+        /// <summary>
+        /// Gets which set of geopolitically disputed borders and labels are displayed on the map.
+        /// </summary>
+        /// <returns></returns>
+        ValueTask<string> GetView();
 
         /// <summary>
         /// Sets the default language used by the map and service modules.
@@ -207,9 +219,19 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
 
         #endregion
 
-        #region View
+        #region Language, View, Version
+
+        public async ValueTask<string> GetLanguage()
+        {
+            return await moduleTask.InvokeAsyncTC<string>(GetJsInteropMethod());
+        }
 
         public async ValueTask<string> GetVersion()
+        {
+            return await moduleTask.InvokeAsyncTC<string>(GetJsInteropMethod());
+        }
+
+        public async ValueTask<string> GetView()
         {
             return await moduleTask.InvokeAsyncTC<string>(GetJsInteropMethod());
         }
