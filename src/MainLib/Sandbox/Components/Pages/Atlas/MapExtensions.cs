@@ -13,17 +13,24 @@ namespace Sandbox.Components.Pages.Atlas
 {
     internal static class MapExtensions
     {
-        private static readonly JsonSerializerOptions jsonMinOptions = new()
+        private static readonly JsonSerializerOptions jsonMinOptionsWriteIndented = new()
         {
             WriteIndented = true,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
+        private static readonly JsonSerializerOptions jsonMinOptions = new()
+        {
+            WriteIndented = false,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        };
+
 
         extension<T>(T obj)
         {
-            internal string ToJsonMin()
+            internal string ToJsonMin(bool writeIndented = true)
             {
-                return JsonSerializer.Serialize(obj, jsonMinOptions);
+                var options = writeIndented ? jsonMinOptionsWriteIndented : jsonMinOptions;
+                return JsonSerializer.Serialize(obj, options);
             }
         }
 
