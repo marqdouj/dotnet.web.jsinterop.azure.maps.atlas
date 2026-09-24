@@ -111,6 +111,26 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         ValueTask SetUserInteraction(Map map, UserInteractionOptions options, SetOptionsAction setAction = SetOptionsAction.Update);
 
         #endregion
+
+        /// <summary>
+        /// Gets the current API version number based on build number.
+        /// </summary>
+        /// <returns></returns>
+        ValueTask<string> GetVersion();
+
+        /// <summary>
+        /// Sets the default language used by the map and service modules.
+        /// </summary>
+        /// <param name="language"></param>
+        /// <returns></returns>
+        ValueTask SetLanguage(string language);
+
+        /// <summary>
+        /// Specifies which set of geopolitically disputed borders and labels are displayed on the map.
+        /// </summary>
+        /// <param name="view"></param>
+        /// <returns></returns>
+        ValueTask SetView(string view);
     }
 
     internal class AzMap(Lazy<Task<IJSObjectReference>> moduleTask) : IAtlasMap
@@ -183,6 +203,25 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         public async ValueTask SetUserInteraction(Map map, UserInteractionOptions options, SetOptionsAction setAction = SetOptionsAction.Update)
         {
             await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, options, setAction);
+        }
+
+        #endregion
+
+        #region View
+
+        public async ValueTask<string> GetVersion()
+        {
+            return await moduleTask.InvokeAsyncTC<string>(GetJsInteropMethod());
+        }
+
+        public async ValueTask SetLanguage(string language)
+        {
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), language);
+        }
+
+        public async ValueTask SetView(string view)
+        {
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), view);
         }
 
         #endregion

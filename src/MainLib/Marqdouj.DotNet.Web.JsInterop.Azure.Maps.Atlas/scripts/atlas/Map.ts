@@ -128,4 +128,20 @@ export class Map {
         map.setUserInteraction(updatedOptions);
     }
     // #endregion
+
+    // #region View
+
+    public static getVersion(): string {
+        return atlas.getVersion();
+    }
+
+    public static setLanguage(language: string) {
+        atlas.setLanguage(language);
+    }
+
+    public static setView(view: string) {
+        atlas.setView(view);
+    }
+
+    // #endregion
 }
