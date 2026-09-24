@@ -27,12 +27,7 @@ In the source code, see the `Sandbox` web app for examples on using this library
 ## [Build Solution](Documents/BuildSolution.md)
 
 ## Release Notes (Current)
-- `11.0.0-Preview-3.6`
-   - `IAtlasMap`. Added new methods:
-	- `GetServiceOptions/SetServiceOptions`. Gets or sets the map service options.
-	- `GetStyle/SetStyle`. Gets or sets the map style options.
-	- `GetTraffic/SetTraffic`. Gets or sets the map traffic options.
-	- `GetUserInteraction/SetUserInteraction`. Gets or sets the map user interaction options.
-   - `MapContainer`. Added `MinHeight` and `MinWidth` parameters.
+- `11.0.0-Preview-3.7`
+   - `Sandbox`: add `Notify Events` page. Demonstrates using custom events for notifications.
 
 ## [Release Notes (All)](Documents/ReleaseNotes.md)

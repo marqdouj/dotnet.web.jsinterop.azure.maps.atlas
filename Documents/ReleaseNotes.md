@@ -1,6 +1,8 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-3.7`
+   - `Sandbox`: add `Notify Events` page. Demonstrates using custom events for notifications.
 - `11.0.0-Preview-3.6`
    - `IAtlasMap`. Added new methods:
 	- `GetServiceOptions/SetServiceOptions`. Gets or sets the map service options.
