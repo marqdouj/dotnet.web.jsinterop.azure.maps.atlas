@@ -1,0 +1,223 @@
+﻿@page "/maps-atlas-global"
+@rendermode InteractiveServer
+@inject IOptions<MapConfiguration> Configuration
+@inject IJSRuntime JSRuntime
+@inject ILogger<AtlasGlobal> Logger
+@inject INotificationService ToastService
+
+<MapPage Title="@title">
+    <SummaryContent>
+        <FluentText As="TextTag.Paragraph">
+            This page demonstrates how to interact with Azure Maps global settings for "language" and "view".
+            <br />
+            By default, the language is "en-US" and the view is "Auto" (browser detected).
+            Changing the global settings will affect all maps created after the change.
+            <br />
+            You can override the language and view for each map when creating them or
+            by changing a map's style after it has been created.
+            <br />
+            Change the language and/or view using the dropdowns in the toolbar.
+            The map will automatically be removed and then created again. You should see the changes take effect.
+            <br />
+            <br />
+            NOTE:<br />
+            Depending on which version of the azure maps language service is being used, some of the languages
+            may not work as expected. For example, you set the language to 'Afrikaans', then leave this page and
+            come back to it and you might see the language listed as 
+            <a href="https://github.com/MicrosoftDocs/azure-docs/blob/main/articles/azure-maps/supported-languages.md" target="_blank">'Neutral Ground Truth'</a>.
+        </FluentText>
+    </SummaryContent>
+
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
+            <FluentSpacer Width="15px"/>
+            <FluentLabel Disabled="@mapNotReady">Language:</FluentLabel>
+            <FluentSelect Disabled="@mapNotReady"
+                          Tooltip="Sets the default language used by the map and service modules."
+                          Items="@languages"
+                          TOption="KeyValuePair<string, string>"
+                          TValue="string"
+                          Value="@selectedLanguage"
+                          OptionText="@(item => item.Value)"
+                          OptionValue="@(item => item.Key)"
+                          ValueChanged="@OnLanguageChanged" />
+            <FluentLabel Disabled="@mapNotReady">View:</FluentLabel>
+            <FluentSelect Disabled="@mapNotReady"
+                          Tooltip="Specifies which set of geopolitically disputed borders and labels are displayed on the map."
+                          Items="@views"
+                          TOption="KeyValuePair<string, string>"
+                          TValue="string"
+                          Value="@selectedView"
+                          OptionText="@(item => item.Value)"
+                          OptionValue="@(item => item.Key)"
+                          ValueChanged="@OnViewChanged" />
+
+            <FluentLabel Disabled="@mapNotReady">API Version: @apiVersion</FluentLabel>
+        </Toolbar>
+
+        <MapContainer MapId="@mapId" />
+    </ChildContent>
+</MapPage>
+
+@code {
+    private const string mapId = "mapAtlasGlobal";
+    private const string title = "Maps - Atlas Global";
+    private DotNetObjectReference<ComponentBase>? dotNetRef;
+    private AtlasInterop atlasInterop = default!;
+    private MapConfiguration config = default!;
+    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions(new Position(0, 0), 0);
+    private Map? map;
+    private bool mapNotReady => map == null;
+    private readonly Dictionary<string, string> languages = AtlasGlobalUI.Languages;
+    private readonly Dictionary<string, string> views = AtlasGlobalUI.Views;
+    private string? selectedLanguage;
+    private string? selectedView;
+    private string? apiVersion;
+
+    protected override void OnInitialized()
+    {
+        config = Configuration.GetValue(LogLevel.Trace);
+        atlasInterop = new(JSRuntime);
+        dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await CreateMap();
+
+            try
+            {
+                apiVersion = await atlasInterop.Map.GetVersion();
+                selectedLanguage = await atlasInterop.Map.GetLanguage();
+                selectedView = await atlasInterop.Map.GetView() ?? AtlasGlobalUI.DefaultView;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogMapError(ex);
+                await ToastService.ShowError(ex.Message);
+            }
+            finally
+            {
+                StateHasChanged();
+            }
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            dotNetRef?.Dispose();
+
+            if (map != null)
+                await map.DisposeAsync();
+
+            if (atlasInterop != null)
+                await atlasInterop.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+
+    #region Map
+
+    private async Task CreateMap()
+    {
+        try
+        {
+            if (map != null)
+                return;
+
+            config.MapOptions = mapOptions;
+            map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config!, MapExtensions.GetDefaultControls());
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task RemoveMap()
+    {
+        try
+        {
+            if (map == null)
+                return;
+
+            await atlasInterop.Factory.RemoveMap(map);
+            map = null;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task ResetMap()
+    {
+        try
+        {
+            if (map == null)
+                return;
+
+            await atlasInterop.Map.SetCamera(map, mapOptions.Camera);
+
+            selectedLanguage = AtlasGlobalUI.DefaultLanguage;
+            await atlasInterop.Map.SetLanguage(selectedLanguage);
+            selectedView = AtlasGlobalUI.DefaultView;
+            await atlasInterop.Map.SetView(selectedView);
+            await RemoveAndCreateMap();
+
+
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task OnLanguageChanged(string? language)
+    {
+        if (map != null && !string.IsNullOrEmpty(language))
+        {
+            selectedLanguage = language;
+            await atlasInterop.Map.SetLanguage(language);
+            await RemoveAndCreateMap();
+        }
+    }
+
+    private async Task OnViewChanged(string? view)
+    {
+        if (map != null && !string.IsNullOrEmpty(view))
+        {
+            selectedView = view;
+            await atlasInterop.Map.SetView(view);
+            await RemoveAndCreateMap();
+        }
+    }
+
+    private async Task RemoveAndCreateMap()
+    {
+        await RemoveMap();
+        await CreateMap();
+    }
+
+    [JSInvokable]
+    public async Task NotifyMapEvent(MapEventArgs e)
+    {
+        await e.ErrorEventProcessed(Logger, ToastService);
+    }
+
+    #endregion
+}
