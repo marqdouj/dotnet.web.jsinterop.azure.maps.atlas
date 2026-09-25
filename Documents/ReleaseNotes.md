@@ -2,48 +2,48 @@
 
 ### [<- Go Back](../README.md)
 - `11.0.0-Preview-3.7`
-   - `IAtlasMap`. New methods.
+  - `IAtlasMap`. New methods.
 	- `GetVersion`. Gets the current API version number based on build number.
 	- `GetLanguage/SetLanguage`. Gets/Sets the default language used by the map and service modules.
 	- `GetView/SetView`. Gets/Sets which set of geopolitically disputed borders and labels are displayed on the map.
-   - `Sandbox`: Add new demo pages.
+  - `Sandbox`: Add new demo pages.
 	- `NotifyEvents`. Demonstrates using custom events for notifications.
 	- `AtlasGlobal`. Demonstrates getting the map version, and setting the language and/or view.
 - `11.0.0-Preview-3.6`
-   - `IAtlasMap`. Added new methods:
+  - `IAtlasMap`. Added new methods:
 	- `GetServiceOptions/SetServiceOptions`. Gets or sets the map service options.
-	- `GetStyle/SetStyle`. Gets or sets the map style options.
+    - `GetStyle/SetStyle`. Gets or sets the map style options.
 	- `GetTraffic/SetTraffic`. Gets or sets the map traffic options.
-	- `GetUserInteraction/SetUserInteraction`. Gets or sets the map user interaction options.
-   - `MapContainer`. Added `MinHeight` and `MinWidth` parameters.
+    - `GetUserInteraction/SetUserInteraction`. Gets or sets the map user interaction options.
+  - `MapContainer`. Added `MinHeight` and `MinWidth` parameters.
 - `11.0.0-Preview-3.5`
-   - `IMapObjectReference`. Modules have been refactored to make it easier to create references.
-   - `JS2CSharpException`. When this library catches a [JSException](https://learn.microsoft.com/en-us/dotnet/api/microsoft.jsinterop.jsexception)
+  - `IMapObjectReference`. Modules have been refactored to make it easier to create references.
+  - `JS2CSharpException`. When this library catches a [JSException](https://learn.microsoft.com/en-us/dotnet/api/microsoft.jsinterop.jsexception)
 	  it will create an instance of the JS2CSharpException exception and throw that.
-   - `Lazy<Task<IJSObjectReference>>`. Extension methods have been added to wrap method calls in a try/catch to handle JSException and process the catch with `JS2CSharpException` .
-	  - `InvokeAsyncTC<T>`.
-	  - `InvokeVoidAsyncTC`.
-   - `Custom (JSInterop)`.
-	  - `Sandbox.CustomJs` library has been added that contains a custom script.
-	  - `Controls`. New demo page that uses the custom script.
+  - `Lazy<Task<IJSObjectReference>>`. Extension methods have been added to wrap method calls in a try/catch to handle JSException and process the catch with `JS2CSharpException` .
+	- `InvokeAsyncTC<T>`.
+	- `InvokeVoidAsyncTC`.
+  - `Custom (JSInterop)`.
+	- `Sandbox.CustomJs` library has been added that contains a custom script.
+	- `Controls`. New demo page that uses the custom script.
 - `11.0.0-Preview-3.4`
-   - `IAtlasInterop.Popups`. New module has been added for popup support:
+  - `IAtlasInterop.Popups`. New module has been added for popup support:
 - `11.0.0-Preview-3.3`
-   - `IAtlasInterop.Events`. New modules have been added for event support:
-	  - Layer, Map, Marker, and StyleControl.
+  - `IAtlasInterop.Events`. New modules have been added for event support:
+	- Layer, Map, Marker, and StyleControl.
 - `11.0.0-Preview-3.2`
-   - `IAtlasSource`. 
-	  - `Clear` methods has been updated and moved to `IAtlasDataSource`.
-	  - `Remove/GetSources`. Method signatures have been updated.
+  - `IAtlasSource`. 
+	- `Clear` methods has been updated and moved to `IAtlasDataSource`.
+	- `Remove/GetSources`. Method signatures have been updated.
 - `11.0.0-Preview-3.1`
-   - `Map Controls`. You can now interact with basic map controls via `AtlasInterop.Controls`.
-   - `IOptions<MapConfiguration>`. Added extension method `GetValue()`.
-   - `MapConfiguration`. Now implements `ICloneable`.
-   - `Map Sources`. You can now interact with basic map sources via `AtlasInterop.Sources`.
-   - `Map Layers`. You can now interact with basic map layers via `AtlasInterop.Layers`.
+  - `Map Controls`. You can now interact with basic map controls via `AtlasInterop.Controls`.
+  - `IOptions<MapConfiguration>`. Added extension method `GetValue()`.
+  - `MapConfiguration`. Now implements `ICloneable`.
+  - `Map Sources`. You can now interact with basic map sources via `AtlasInterop.Sources`.
+  - `Map Layers`. You can now interact with basic map layers via `AtlasInterop.Layers`.
 - `11.0.0-Preview-3.0`
    - `Map Instances`. You can now create/remove instances of the atlas Map via `AtlasInterop.Factory`.
 - `11.0.0-Preview-2.0`
-   - `Namespaces`. Changed all namespaces to match folder structure (copy and paste issue).
-   - `DistanceProperties`. Renamed `distance` to `Distance`.
+  - `Namespaces`. Changed all namespaces to match folder structure (copy and paste issue).
+  - `DistanceProperties`. Renamed `distance` to `Distance`.
 - `11.0.0-Preview-1.0`: Initial pre-release.
