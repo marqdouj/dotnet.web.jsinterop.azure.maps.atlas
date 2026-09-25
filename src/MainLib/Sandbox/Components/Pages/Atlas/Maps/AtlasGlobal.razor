@@ -18,6 +18,13 @@
             <br />
             Change the language and/or view using the dropdowns in the toolbar.
             The map will automatically be removed and then created again. You should see the changes take effect.
+            <br />
+            <br />
+            NOTE:<br />
+            Depending on which version of the azure maps language service is being used, some of the languages
+            may not work as expected. For example, you set the language to 'Afrikaans', then leave this page and
+            come back to it and you might see the language listed as 
+            <a href="https://github.com/MicrosoftDocs/azure-docs/blob/main/articles/azure-maps/supported-languages.md" target="_blank">'Neutral Ground Truth'</a>.
         </FluentText>
     </SummaryContent>
 
@@ -54,8 +61,8 @@
 </MapPage>
 
 @code {
-    private const string mapId = "mapDesign";
-    private const string title = "Maps - Design";
+    private const string mapId = "mapAtlasGlobal";
+    private const string title = "Maps - Atlas Global";
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
     private MapConfiguration config = default!;
@@ -64,8 +71,8 @@
     private bool mapNotReady => map == null;
     private readonly Dictionary<string, string> languages = AtlasGlobalUI.Languages;
     private readonly Dictionary<string, string> views = AtlasGlobalUI.Views;
-    private string? selectedLanguage;// = AtlasGlobalUI.DefaultLanguage;
-    private string? selectedView;// = AtlasGlobalUI.DefaultView;
+    private string? selectedLanguage;
+    private string? selectedView;
     private string? apiVersion;
 
     protected override void OnInitialized()

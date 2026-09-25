@@ -99,6 +99,8 @@
             { "no", "Norwegian" },
             { "nb", "Norwegian (Bokmål)" },
             { "nn", "Norwegian (Nynorsk)" },
+            { "NGT", "Neutral Ground Truth (Local)" },
+            { "NGT-Latn", "Neutral Ground Truth (Latin)" },
             { "or", "Odia" },
             { "ps", "Pashto" },
             { "fa", "Persian" },
