@@ -1,0 +1,130 @@
+﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.ImageSprite;
+using Microsoft.JSInterop;
+using System.Runtime.CompilerServices;
+
+namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
+{
+    /// <summary>
+    /// Interface for Azure Maps image sprites.
+    /// </summary>
+    public interface IAtlasImageSprite
+    {
+        /// <summary>
+        /// adds an image to the map's sprite collection. The image can be provided either as raw image data or as a base64-encoded string. 
+        /// Optional metadata can also be supplied to define properties of the image.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="id"></param>
+        /// <param name="icon"></param>
+        /// <param name="meta"></param>
+        /// <returns></returns>
+        ValueTask<bool> Add(Map map, string id, ImageData icon, StyleImageMetadata? meta);
+
+        /// <summary>
+        /// Adds an image to the map's sprite collection. The image is provided as a base64-encoded string. 
+        /// Optional metadata can also be supplied to define properties of the image.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="id"></param>
+        /// <param name="icon"></param>
+        /// <param name="meta"></param>
+        /// <returns></returns>
+        ValueTask Add(Map map, string id, string icon, StyleImageMetadata? meta);
+
+        /// <summary>
+        /// Clears all images from the map's sprite collection, effectively removing all custom images that have been added.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <returns></returns>
+        ValueTask Clear(Map map);
+
+        /// <summary>
+        /// Creates an image in the map's sprite collection based on a predefined template. 
+        /// The template defines the characteristics of the image, such as its shape, color, and other properties.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="templateDef"></param>
+        /// <returns></returns>
+        ValueTask<bool> CreateFromTemplate(Map map, ImageTemplate templateDef);
+
+        /// <summary>
+        /// Gets a list of all image IDs currently present in the map's sprite collection.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <returns></returns>
+        ValueTask<List<string>> GetImageIds(Map map);
+
+        /// <summary>
+        /// Gets a value indicating whether an image with the specified ID exists in the map's sprite collection.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="templateDef"></param>
+        /// <returns></returns>
+        ValueTask<bool> HasImage(Map map, ImageTemplate templateDef);
+
+        /// <summary>
+        /// Gets a value indicating whether an image with the specified ID exists in the map's sprite collection.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        ValueTask<bool> HasImage(Map map, string id);
+
+        /// <summary>
+        /// Removes an image with the specified ID from the map's sprite collection, effectively deleting it from the map.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        ValueTask Remove(Map map, string id);
+    }
+
+    internal class AzImageSprite(Lazy<Task<IJSObjectReference>> moduleTask) : IAtlasImageSprite
+    {
+        private readonly Lazy<Task<IJSObjectReference>> moduleTask = moduleTask;
+
+        public async ValueTask<bool> CreateFromTemplate(Map map, ImageTemplate templateDef)
+        {
+            return await moduleTask.InvokeAsyncTC<bool>(GetJsInteropMethod(), map.MapReference, templateDef);
+        }
+
+        public async ValueTask<bool> HasImage(Map map, ImageTemplate templateDef)
+        {
+            return await moduleTask.InvokeAsyncTC<bool>(GetJsInteropMethod(), map.MapReference, templateDef.Id);
+        }
+
+        public async ValueTask<bool> HasImage(Map map, string id)
+        {
+            return await moduleTask.InvokeAsyncTC<bool>(GetJsInteropMethod(), map.MapReference, id);
+        }
+
+        public async ValueTask Add(Map map, string id, string icon, StyleImageMetadata? meta)
+        {
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, id, icon, meta);
+        }
+
+        public async ValueTask<bool> Add(Map map, string id, ImageData icon, StyleImageMetadata? meta)
+        {
+            return await moduleTask.InvokeAsyncTC<bool>(GetJsInteropMethod(), map.MapReference, id, icon, meta);
+        }
+
+        public async ValueTask Clear(Map map)
+        {
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference);
+        }
+
+        public async ValueTask<List<string>> GetImageIds(Map map)
+        {
+            return await moduleTask.InvokeAsyncTC<List<string>>(GetJsInteropMethod(), map.MapReference);
+        }
+
+        public async ValueTask Remove(Map map, string id)
+        {
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, id);
+        }
+
+        private static string GetJsInteropMethod([CallerMemberName] string name = "")
+            => JsModule.ImageSprite.GetJsModuleMethod(name);
+    }
+}

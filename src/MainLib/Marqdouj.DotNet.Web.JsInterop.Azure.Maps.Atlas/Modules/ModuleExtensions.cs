@@ -11,6 +11,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         DataSource,
         Factory,
         Features,
+        ImageSprite,
         LayerEvents,
         Layers,
         MarkerEvents,

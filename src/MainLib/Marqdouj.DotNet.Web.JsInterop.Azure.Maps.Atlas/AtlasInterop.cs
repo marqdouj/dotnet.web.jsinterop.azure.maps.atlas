@@ -37,6 +37,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         IAtlasFeatures Features { get; }
 
         /// <summary>
+        /// <inheritdoc cref="IAtlasImageSprite"/>
+        /// </summary>
+        IAtlasImageSprite ImageSprite { get; }
+
+        /// <summary>
         /// <inheritdoc cref="IAtlasLayers"/>
         /// </summary>
         IAtlasLayers Layers { get; }
@@ -95,6 +100,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
             Events = new AzEvents(moduleTask);
             Factory = new AzFactory(moduleTask);
             Features = new AzFeatures(moduleTask);
+            ImageSprite = new AzImageSprite(moduleTask);
             Layers = new AzLayers(moduleTask);
             Map = new AzMap(moduleTask);
             Markers = new AzMarkers(moduleTask);
@@ -128,6 +134,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         /// <inheritdoc cref="IAtlasFeatures"/>
         /// </summary>
         public IAtlasFeatures Features { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasImageSprite"/>
+        /// </summary>
+        public IAtlasImageSprite ImageSprite { get; }
 
         /// <summary>
         /// <inheritdoc cref="IAtlasLayers"/>
