@@ -45,8 +45,9 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// </summary>
         /// <param name="map"></param>
         /// <param name="templateDef"></param>
+        /// <param name="removeExisting">If true, if an image with the same id is found it will be replaced with the new image</param>
         /// <returns></returns>
-        ValueTask<bool> CreateFromTemplate(Map map, ImageTemplate templateDef);
+        ValueTask<bool> CreateFromTemplate(Map map, ImageTemplate templateDef, bool removeExisting = false);
 
         /// <summary>
         /// Gets a list of all image IDs currently present in the map's sprite collection.
@@ -84,9 +85,9 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = moduleTask;
 
-        public async ValueTask<bool> CreateFromTemplate(Map map, ImageTemplate templateDef)
+        public async ValueTask<bool> CreateFromTemplate(Map map, ImageTemplate templateDef, bool removeExisting = false)
         {
-            return await moduleTask.InvokeAsyncTC<bool>(GetJsInteropMethod(), map.MapReference, templateDef);
+            return await moduleTask.InvokeAsyncTC<bool>(GetJsInteropMethod(), map.MapReference, templateDef, removeExisting);
         }
 
         public async ValueTask<bool> HasImage(Map map, ImageTemplate templateDef)

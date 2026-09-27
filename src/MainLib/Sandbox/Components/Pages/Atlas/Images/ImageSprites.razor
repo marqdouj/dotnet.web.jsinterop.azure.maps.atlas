@@ -11,12 +11,21 @@
     <SummaryContent>
         <FluentText As="TextTag.Paragraph">
             This page demonstrates working with image sprites.
+            <br />
+            Try changing the map style to see how the image, with its default settings (no custom colors, etc.), displays on the map.
         </FluentText>
     </SummaryContent>
 
     <ChildContent>
         <Toolbar>
             <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
+            <FluentSelect Label="Template"
+                          LabelPosition="LabelPosition.Before"
+                          Placeholder="Select a Template"
+                          Items="@templates"
+                          @bind-Value:get="@selectedTemplate"
+                          @bind-Value:set="@SelectedTemplateChanged"
+                          OptionText="@(item => item?.DisplayName)" />
         </Toolbar>
 
         <MapContainer MapId="@mapId" />
@@ -29,10 +38,28 @@
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
     private MapConfiguration config = default!;
-    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
+    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions(zoomLevel:4.5);
     private Map? map;
     private bool mapNotReady => map == null;
-    private readonly List<ImageTemplateName> sprites = Enum.GetValues<ImageTemplateName>().OrderBy(e => e.ToString()).ToList();
+    private readonly List<TemplateName> templates = Enum.GetValues<ImageTemplateName>().OrderBy(e => e.ToString()).Select(e => new TemplateName(e)).ToList();
+    private TemplateName? selectedTemplate;
+    private ImageTemplate? image;
+    private Feature<Point, GeoJsonProperties?>? pinFeature;
+    private const string imageId = "sprite-demo";
+    private readonly DataSource pinSource = new();
+    private readonly SymbolLayer pinLayer = new()
+    {
+        Options = new()
+        {
+            IconOptions = new()
+            {
+                ImageId = imageId,
+                Anchor = "center",
+                Rotation = new List<object> { "+", 180, new List<string> { "get", "heading" } },
+                RotationAlignment = SymbolItemAlignment.Map,
+            }
+        }
+    };
 
     protected override void OnInitialized()
     {
@@ -63,6 +90,65 @@
         {
         }
     }
+
+    #region Templates
+
+    private async Task SelectedTemplateChanged(TemplateName? value)
+    {
+        await CreateTemplate(value);
+    }
+
+    private async Task CreateTemplate(TemplateName? value)
+    {
+        try
+        {
+            if (value?.Name == selectedTemplate?.Name)
+                return;
+
+            selectedTemplate = value;
+
+            if (selectedTemplate == null)
+            {
+                await DeleteTemplate();
+                return;
+            }
+
+            image = new ImageTemplate(imageId, selectedTemplate!.Name);
+            await atlasInterop.ImageSprite.CreateFromTemplate(map!, image, true);
+
+            if (pinFeature == null)
+            {
+                pinFeature = new Feature<Point, GeoJsonProperties?>(new Point(mapOptions.Camera!.Center!));
+                await atlasInterop.Features.Add(map!, pinSource, [pinFeature]);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task DeleteTemplate()
+    {
+        try
+        {
+            if (image != null)
+            {
+                await atlasInterop.ImageSprite.Remove(map!, imageId);
+                image = null;
+            }
+
+            await atlasInterop.Sources.DataSource.Clear(map!, [pinSource]);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    #endregion
 
     #region Map
 
@@ -107,7 +193,24 @@
     public async Task NotifyMapEvent(MapEventArgs e)
     {
         await e.ErrorEventProcessed(Logger, ToastService);
+
+        if (e.IsReadyEvent)
+        {
+            pinLayer.Source = pinSource.Id;
+            await atlasInterop.Sources.Add(map!, pinSource);
+            await atlasInterop.Layers.Add(map!, [pinLayer]);
+            await SelectedTemplateChanged(templates.FirstOrDefault(e => e.Name == ImageTemplateName.Marker_Circle));
+            StateHasChanged();
+        }
     }
 
     #endregion
+
+    private class TemplateName(ImageTemplateName name)
+    {
+        public ImageTemplateName Name { get; } = name;
+        public string DisplayName { get; } = name.ToDisplayName();
+
+        public override string ToString() => DisplayName;
+    }
 }

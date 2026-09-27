@@ -67,6 +67,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.ImageSprite
         /// <returns></returns>
         public static string ToDisplayName(this ImageTemplateName value) => value.ToString().Replace('_', ' ');
 
-        internal static string ToJsonName(this ImageTemplateName value) => value.ToString().Replace('_', '-');
+        /// <summary>
+        /// Converts the value to it's map sdk name.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string ToJsonName(this ImageTemplateName value) => value.ToString().Replace('_', '-').ToLower();
     }
 }

@@ -3,7 +3,7 @@ import { Helpers } from "./common/Helpers";
 import { Logger, LogLevel } from "./common/Logger";
 
 export class ImageSprite {
-    public static async createFromTemplate(map: atlas.Map, templateDef: ImageTemplateDef): Promise<boolean> {
+    public static async createFromTemplate(map: atlas.Map, templateDef: ImageTemplateDef, removeExisting: boolean = false): Promise<boolean> {
         const mapId = Helpers.getMapId(map);
 
         if (Helpers.isEmptyOrNull(templateDef.id)) {
@@ -17,8 +17,13 @@ export class ImageSprite {
         }
 
         if (map.imageSprite.hasImage(templateDef.id)) {
-            Logger.logMessage(mapId, LogLevel.Warn, "Image template already exists.", templateDef);
-            return false;
+            if (removeExisting) {
+                map.imageSprite.remove(templateDef.id);
+            }
+            else {
+                Logger.logMessage(mapId, LogLevel.Error, "Image template already exists.", templateDef);
+                return false;
+            }
         }
 
         await map.imageSprite.createFromTemplate(templateDef.id, templateDef.templateName, templateDef.color, templateDef.secondaryColor);
