@@ -27,13 +27,7 @@ In the source code, see the `Sandbox` web app for examples on using this library
 ## [Build Solution](Documents/BuildSolution.md)
 
 ## Release Notes (Current)
-- `11.0.0-Preview-3.7`
-  - `IAtlasMap`. New methods.
-	- `GetVersion`. Gets the current API version number based on build number.
-	- `GetLanguage/SetLanguage`. Gets/Sets the default language used by the map and service modules.
-	- `GetView/SetView`. Gets/Sets which set of geopolitically disputed borders and labels are displayed on the map.
-  - `Sandbox`: Add new demo pages.
-	- `NotifyEvents`. Demonstrates using custom events for notifications.
-	- `AtlasGlobal`. Demonstrates getting the map version, and setting the language and/or view.
+- `11.0.0-Preview-4.0`
+  - `Placeholder...`.
 
 ## [Release Notes (All)](Documents/ReleaseNotes.md)

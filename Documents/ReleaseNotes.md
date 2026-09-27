@@ -1,6 +1,8 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-4.0`
+  - `Placeholder...`.
 - `11.0.0-Preview-3.7`
   - `IAtlasMap`. New methods.
 	- `GetVersion`. Gets the current API version number based on build number.
