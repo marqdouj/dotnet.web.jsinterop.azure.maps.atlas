@@ -2,7 +2,7 @@
 
 ### [<- Go Back](../README.md)
 - `11.0.0-Preview-4.0`
-  - `IAtlasImageSprite`. New module has been added for image sprite support
+  - `IAtlasImageSprite`. New module has been added for image sprite support.
 - `11.0.0-Preview-3.7`
   - `IAtlasMap`. New methods.
 	- `GetVersion`. Gets the current API version number based on build number.

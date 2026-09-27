@@ -28,6 +28,6 @@ In the source code, see the `Sandbox` web app for examples on using this library
 
 ## Release Notes (Current)
 - `11.0.0-Preview-4.0`
-  - `Placeholder...`.
+  - `IAtlasImageSprite`. New module has been added for image sprite support.
 
 ## [Release Notes (All)](Documents/ReleaseNotes.md)
