@@ -1,6 +1,7 @@
 ﻿@page "/maps-options"
 @using System.Reflection
 @rendermode InteractiveServer
+@implements IAsyncDisposable
 @inject IOptions<MapConfiguration> Configuration
 @inject IJSRuntime JSRuntime
 @inject ILogger<Design> Logger

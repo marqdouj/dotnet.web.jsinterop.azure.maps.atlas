@@ -1,5 +1,6 @@
 ﻿@page "/events-stylecontrol"
 @rendermode InteractiveServer
+@implements IAsyncDisposable
 @inject IOptions<MapConfiguration> Configuration
 @inject IJSRuntime JSRuntime
 @inject ILogger<StyleControlEvents> Logger

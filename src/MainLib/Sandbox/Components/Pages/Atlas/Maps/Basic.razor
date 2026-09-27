@@ -1,5 +1,6 @@
 ﻿@page "/maps-basic"
 @rendermode InteractiveServer
+@implements IAsyncDisposable
 @inject IOptions<MapConfiguration> Configuration
 @inject IJSRuntime JSRuntime
 @inject ILogger<Basic> Logger

@@ -1,5 +1,6 @@
 ﻿@page "/maps-multiple"
 @rendermode InteractiveServer
+@implements IAsyncDisposable
 @inject IOptions<MapConfiguration> Configuration
 @inject IJSRuntime JSRuntime
 @inject ILogger<Multiple> Logger
