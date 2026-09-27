@@ -32,6 +32,7 @@
     private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
     private Map? map;
     private bool mapNotReady => map == null;
+    private readonly List<ImageTemplateName> sprites = Enum.GetValues<ImageTemplateName>().OrderBy(e => e.ToString()).ToList();
 
     protected override void OnInitialized()
     {

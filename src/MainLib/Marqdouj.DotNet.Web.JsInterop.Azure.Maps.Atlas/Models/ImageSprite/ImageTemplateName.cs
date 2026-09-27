@@ -10,48 +10,63 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.ImageSprite
     public enum ImageTemplateName
     {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-        marker,
-        marker_thick,
-        marker_circle,
-        pin,
-        pin_round,
-        marker_flat,
-        marker_arrow,
-        marker_ball_pin,
-        marker_square,
-        marker_square_cluster,
-        marker_square_rounded,
-        marker_square_rounded_cluster,
-        flag,
-        flag_triangle,
-        rounded_square,
-        rounded_square_thick,
-        triangle,
-        triangle_thick,
-        hexagon,
-        hexagon_thick,
-        hexagon_rounded,
-        hexagon_rounded_thick,
-        triangle_arrow_up,
-        triangle_arrow_left,
-        arrow_up,
-        arrow_up_thin,
-        car,
-        checker,
-        checker_rotated,
-        zig_zag,
-        zig_zag_vertical,
-        circles_spaced,
-        circles,
-        diagonal_lines_up,
-        diagonal_lines_down,
-        diagonal_stripes_up,
-        diagonal_stripes_down,
-        grid_lines,
-        rotated_grid_lines,
-        rotated_grid_stripes,
-        x_fill,
-        dots,
+        Arrow_Up,
+        Arrow_Up_Thin,
+        Car,
+        Checker,
+        Checker_Rotated,
+        Circles,
+        Circles_Spaced,
+        Diagonal_Lines_Down,
+        Diagonal_Lines_Up,
+        Diagonal_Stripes_Down,
+        Diagonal_Stripes_Up,
+        Dots,
+        Flag,
+        Flag_Triangle,
+        Grid_Lines,
+        Hexagon,
+        Hexagon_Rounded,
+        Hexagon_Rounded_Thick,
+        Hexagon_Thick,
+        Marker,
+        Marker_Arrow,
+        Marker_Ball_Pin,
+        Marker_Circle,
+        Marker_Flat,
+        Marker_Square,
+        Marker_Square_Cluster,
+        Marker_Square_Rounded,
+        Marker_Square_Rounded_Cluster,
+        Marker_Thick,
+        Pin,
+        Pin_Round,
+        Rotated_Grid_Lines,
+        Rotated_Grid_Stripes,
+        Rounded_Square,
+        Rounded_Square_Thick,
+        Triangle,
+        Triangle_Arrow_Left,
+        Triangle_Arrow_Up,
+        Triangle_Thick,
+        X_Fill,
+        Zig_Zag,
+        Zig_Zag_Vertical,
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+    }
+
+    /// <summary>
+    /// Extension methods for <see cref="ImageTemplateName"/>
+    /// </summary>
+    public static class ImageTemplateNameExtensions
+    {
+        /// <summary>
+        /// Replaces the '_' with a space.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string ToDisplayName(this ImageTemplateName value) => value.ToString().Replace('_', ' ');
+
+        internal static string ToJsonName(this ImageTemplateName value) => value.ToString().Replace('_', '-');
     }
 }

@@ -31,7 +31,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.ImageSprite
         /// <param name="id">The image's id. If the specified id matches the id of a previously added image the new image will be ignored.</param>
         /// <param name="templateName"><see cref="TemplateName"/></param>
         public ImageTemplate(string id, ImageTemplateName templateName)
-            : this(id, templateName.ToString().Replace("_", "-")) { }
+            : this(id, templateName.ToJsonName()) { }
 
         /// <summary>
         /// Specifies which image template to use.
