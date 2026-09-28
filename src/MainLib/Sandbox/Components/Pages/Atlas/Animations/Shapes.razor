@@ -1,0 +1,112 @@
+﻿@page "/anims-shapes"
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@inject IOptions<MapConfiguration> Configuration
+@inject IJSRuntime JSRuntime
+@inject ILogger<Design> Logger
+@inject INotificationService ToastService
+@inject IMapDataService DataService
+
+<MapPage Title="@title">
+    <SummaryContent>
+        <FluentText As="TextTag.Paragraph">
+            This page demonstrates how to animate moving a shape on the map.
+        </FluentText>
+    </SummaryContent>
+
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
+        </Toolbar>
+
+        <MapContainer MapId="@mapId" />
+    </ChildContent>
+</MapPage>
+
+@code {
+    private const string mapId = "mapAnimsShapes";
+    private const string title = "Animations - Shapes";
+    private DotNetObjectReference<ComponentBase>? dotNetRef;
+    private AtlasInterop atlasInterop = default!;
+    private MapConfiguration config = default!;
+    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
+    private Map? map;
+    private bool mapNotReady => map == null;
+
+    protected override void OnInitialized()
+    {
+        config = Configuration.GetValue(LogLevel.Trace);
+        atlasInterop = new(JSRuntime);
+        dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await CreateMap();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            dotNetRef?.Dispose();
+
+            if (map != null)
+                await map.DisposeAsync();
+
+            if (atlasInterop != null)
+                await atlasInterop.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+
+    #region Map
+
+    private async Task CreateMap()
+    {
+        try
+        {
+            if (map != null)
+                return;
+
+            config.MapOptions = mapOptions;
+            map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config!, MapExtensions.GetDefaultControls());
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task ResetMap()
+    {
+        try
+        {
+            if (map == null)
+                return;
+
+            await atlasInterop.Map.SetCamera(map, mapOptions.Camera);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    [JSInvokable]
+    public async Task NotifyMapEvent(MapEventArgs e)
+    {
+        await e.ErrorEventProcessed(Logger, ToastService);
+    }
+
+    #endregion
+}

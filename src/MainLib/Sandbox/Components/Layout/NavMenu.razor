@@ -46,6 +46,12 @@
         <FluentNavSectionHeader Title="General" />
         <FluentNavItem Href="tests-math" IconRest="@(new Icons.Regular.Size20.DesignIdeas())">Math</FluentNavItem>
     </FluentNavCategory>
+
+    <FluentNavCategory Title="Scripts (Optional)" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
+        <FluentNavSectionHeader Title="Animations" />
+        <FluentNavItem Href="anims-summary" IconRest="@((new Icons.Regular.Size20.Map()))">Summary</FluentNavItem>
+        <FluentNavItem Href="anims-shapes" IconRest="@((new Icons.Regular.Size20.Map()))">Shapes</FluentNavItem>
+    </FluentNavCategory>
 </FluentNav>
 
 @code {
