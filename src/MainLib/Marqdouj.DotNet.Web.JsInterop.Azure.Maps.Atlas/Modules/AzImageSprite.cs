@@ -15,17 +15,6 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// </summary>
         /// <param name="map"></param>
         /// <param name="id"></param>
-        /// <param name="icon"><see cref="ImageData"/></param>
-        /// <param name="meta"><see cref="StyleImageMetadata"/></param>
-        /// <param name="removeExisting">If true, if an image with the same id is found it will be replaced with the new image.</param>
-        /// <returns></returns>
-        ValueTask<bool> Add(Map map, string id, ImageData icon, StyleImageMetadata? meta = null, bool removeExisting = false);
-
-        /// <summary>
-        /// Add an icon image to the map's image sprite for use with symbols and patterns.
-        /// </summary>
-        /// <param name="map"></param>
-        /// <param name="id"></param>
         /// <param name="icon">The image to add to the map's sprite. Can be a data URI, inline SVG, or image URL.</param>
         /// <param name="meta"><see cref="StyleImageMetadata"/></param>
         /// <param name="removeExisting">If true, if an image with the same id is found it will be replaced with the new image.</param>
@@ -103,11 +92,6 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         public async ValueTask Add(Map map, string id, string icon, StyleImageMetadata? meta = null, bool removeExisting = false)
         {
             await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, id, icon, meta, removeExisting);
-        }
-
-        public async ValueTask<bool> Add(Map map, string id, ImageData icon, StyleImageMetadata? meta = null, bool removeExisting = false)
-        {
-            return await moduleTask.InvokeAsyncTC<bool>(GetJsInteropMethod(), map.MapReference, id, icon, meta, removeExisting);
         }
 
         public async ValueTask Clear(Map map)
