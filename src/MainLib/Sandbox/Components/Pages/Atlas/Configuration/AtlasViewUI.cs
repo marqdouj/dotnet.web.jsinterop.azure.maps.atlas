@@ -1,4 +1,4 @@
-﻿namespace Sandbox.Components.Pages.Atlas.Maps
+﻿namespace Sandbox.Components.Pages.Atlas.Configuration
 {
     /// <summary>
     /// Represents global lookups for Azure Maps.
