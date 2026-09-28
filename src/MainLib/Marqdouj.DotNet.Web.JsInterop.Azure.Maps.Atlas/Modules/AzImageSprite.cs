@@ -11,26 +11,26 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
     public interface IAtlasImageSprite
     {
         /// <summary>
-        /// adds an image to the map's sprite collection. The image can be provided either as raw image data or as a base64-encoded string. 
-        /// Optional metadata can also be supplied to define properties of the image.
+        /// Add an icon image to the map's image sprite for use with symbols and patterns.
         /// </summary>
         /// <param name="map"></param>
         /// <param name="id"></param>
-        /// <param name="icon"></param>
-        /// <param name="meta"></param>
+        /// <param name="icon"><see cref="ImageData"/></param>
+        /// <param name="meta"><see cref="StyleImageMetadata"/></param>
+        /// <param name="removeExisting">If true, if an image with the same id is found it will be replaced with the new image.</param>
         /// <returns></returns>
-        ValueTask<bool> Add(Map map, string id, ImageData icon, StyleImageMetadata? meta);
+        ValueTask<bool> Add(Map map, string id, ImageData icon, StyleImageMetadata? meta = null, bool removeExisting = false);
 
         /// <summary>
-        /// Adds an image to the map's sprite collection. The image is provided as a base64-encoded string. 
-        /// Optional metadata can also be supplied to define properties of the image.
+        /// Add an icon image to the map's image sprite for use with symbols and patterns.
         /// </summary>
         /// <param name="map"></param>
         /// <param name="id"></param>
-        /// <param name="icon"></param>
-        /// <param name="meta"></param>
+        /// <param name="icon">The image to add to the map's sprite. Can be a data URI, inline SVG, or image URL.</param>
+        /// <param name="meta"><see cref="StyleImageMetadata"/></param>
+        /// <param name="removeExisting">If true, if an image with the same id is found it will be replaced with the new image.</param>
         /// <returns></returns>
-        ValueTask Add(Map map, string id, string icon, StyleImageMetadata? meta);
+        ValueTask Add(Map map, string id, string icon, StyleImageMetadata? meta =  null, bool removeExisting = false);
 
         /// <summary>
         /// Clears all images from the map's sprite collection, effectively removing all custom images that have been added.
@@ -45,7 +45,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// </summary>
         /// <param name="map"></param>
         /// <param name="templateDef"></param>
-        /// <param name="removeExisting">If true, if an image with the same id is found it will be replaced with the new image</param>
+        /// <param name="removeExisting">If true, if an image with the same id is found it will be replaced with the new image.</param>
         /// <returns></returns>
         ValueTask<bool> CreateFromTemplate(Map map, ImageTemplate templateDef, bool removeExisting = false);
 
@@ -100,14 +100,14 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
             return await moduleTask.InvokeAsyncTC<bool>(GetJsInteropMethod(), map.MapReference, id);
         }
 
-        public async ValueTask Add(Map map, string id, string icon, StyleImageMetadata? meta)
+        public async ValueTask Add(Map map, string id, string icon, StyleImageMetadata? meta = null, bool removeExisting = false)
         {
-            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, id, icon, meta);
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, id, icon, meta, removeExisting);
         }
 
-        public async ValueTask<bool> Add(Map map, string id, ImageData icon, StyleImageMetadata? meta)
+        public async ValueTask<bool> Add(Map map, string id, ImageData icon, StyleImageMetadata? meta = null, bool removeExisting = false)
         {
-            return await moduleTask.InvokeAsyncTC<bool>(GetJsInteropMethod(), map.MapReference, id, icon, meta);
+            return await moduleTask.InvokeAsyncTC<bool>(GetJsInteropMethod(), map.MapReference, id, icon, meta, removeExisting);
         }
 
         public async ValueTask Clear(Map map)

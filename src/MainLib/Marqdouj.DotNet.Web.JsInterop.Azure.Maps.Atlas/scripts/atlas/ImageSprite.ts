@@ -16,11 +16,11 @@ export class ImageSprite {
             return false;
         }
 
-        if (map.imageSprite.hasImage(templateDef.id)) {
-            if (removeExisting) {
-                map.imageSprite.remove(templateDef.id);
-            }
-            else {
+        if (removeExisting) {
+            this.remove(map, templateDef.id);
+        }
+        else {
+            if (this.hasImage(map, templateDef.id)) {
                 Logger.logMessage(mapId, LogLevel.Error, "Image template already exists.", templateDef);
                 return false;
             }
@@ -34,7 +34,15 @@ export class ImageSprite {
         return map.imageSprite.hasImage(id);
     }
 
-    static async add(map: atlas.Map, id: string, icon: string | ImageData, meta?: atlas.StyleImageMetadata): Promise<void> {
+    static async add(map: atlas.Map, id: string, icon: any, meta?: any, removeExisting: boolean = false): Promise<void> {
+        if (removeExisting) {
+            this.remove(map, id);
+        }
+        else if (this.hasImage(map, id)) {
+            Logger.logMessage(Helpers.getMapId(map), LogLevel.Error, `ImageSprint.add: template already exists where id = '${id}'.`);
+        }
+
+        meta = Helpers.nullToUndefined(meta);
         await map.imageSprite.add(id, icon, meta);
     }
 
@@ -47,7 +55,9 @@ export class ImageSprite {
     }
 
     static remove(map: atlas.Map, id: string) {
-        map.imageSprite.remove(id);
+        if (map.imageSprite.hasImage(id)) {
+            map.imageSprite.remove(id);
+        }
     }
 }
 

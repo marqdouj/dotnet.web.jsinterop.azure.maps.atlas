@@ -12,6 +12,9 @@
         <FluentText As="TextTag.Paragraph">
             This page demonstrates working with image sprites.
             <br />
+            You can create an image based on an existing map template, 
+            or load a custom image (which is a copy of the NuGet package icon placed in the wwwroot/img folder).
+            <br />
             Try changing the map style to see how the image, with its default settings (no custom colors, etc.), displays on the map.
         </FluentText>
     </SummaryContent>
@@ -19,13 +22,15 @@
     <ChildContent>
         <Toolbar>
             <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
-            <FluentSelect Label="Template"
+            <FluentSelect Label="Use Template"
+                          Disabled="@useCustomImage"
                           LabelPosition="LabelPosition.Before"
                           Placeholder="Select a Template"
                           Items="@templates"
                           @bind-Value:get="@selectedTemplate"
                           @bind-Value:set="@SelectedTemplateChanged"
                           OptionText="@(item => item?.DisplayName)" />
+            <FluentCheckbox Label="Use Custom Image" @bind-Value:get="@useCustomImage" @bind-Value:set="@UseCustomImageChanged" />
         </Toolbar>
 
         <MapContainer MapId="@mapId" />
@@ -45,6 +50,8 @@
     private TemplateName? selectedTemplate;
     private ImageTemplate? image;
     private Feature<Point, GeoJsonProperties?>? pinFeature;
+    private bool useCustomImage;
+    private bool useTemplateImage => !useCustomImage;
     private const string imageId = "sprite-demo";
     private readonly DataSource pinSource = new();
     private readonly SymbolLayer pinLayer = new()
@@ -91,30 +98,37 @@
         }
     }
 
-    #region Templates
+    #region Images
+
+    private async Task UseCustomImageChanged(bool value)
+    {
+        useCustomImage = value;
+        await CreateTemplate();
+    }
 
     private async Task SelectedTemplateChanged(TemplateName? value)
     {
-        await CreateTemplate(value);
+        selectedTemplate = value;
+        await CreateTemplate();
     }
 
-    private async Task CreateTemplate(TemplateName? value)
+    private async Task CreateTemplate()
     {
         try
         {
-            if (value?.Name == selectedTemplate?.Name)
-                return;
+            await DeleteTemplate();
 
-            selectedTemplate = value;
-
-            if (selectedTemplate == null)
+            if (useCustomImage)
             {
-                await DeleteTemplate();
-                return;
+                await atlasInterop.ImageSprite.Add(map!, imageId, "/img/DMNuGet.png");
             }
-
-            image = new ImageTemplate(imageId, selectedTemplate!.Name);
-            await atlasInterop.ImageSprite.CreateFromTemplate(map!, image, true);
+            else
+            {
+                if (selectedTemplate == null)
+                    return;
+                image = new ImageTemplate(imageId, selectedTemplate!.Name);
+                await atlasInterop.ImageSprite.CreateFromTemplate(map!, image);
+            }
 
             if (pinFeature == null)
             {
@@ -127,19 +141,20 @@
             Logger.LogMapError(ex);
             await ToastService.ShowError(ex.Message);
         }
+        finally
+        {
+            StateHasChanged();
+        }
     }
 
     private async Task DeleteTemplate()
     {
         try
         {
-            if (image != null)
-            {
-                await atlasInterop.ImageSprite.Remove(map!, imageId);
-                image = null;
-            }
+            await atlasInterop.ImageSprite.Remove(map!, imageId);
+            image = null;
 
-            await atlasInterop.Sources.DataSource.Clear(map!, [pinSource]);
+            //await atlasInterop.Sources.DataSource.Clear(map!, [pinSource]);
         }
         catch (Exception ex)
         {
