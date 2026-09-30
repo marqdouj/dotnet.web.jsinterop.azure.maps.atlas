@@ -12,6 +12,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
     public interface IAtlasInterop : IAsyncDisposable
     {
         /// <summary>
+        /// <inheritdoc cref="IAtlasAnimations"/>
+        /// </summary>
+        IAtlasAnimations Animations { get; }
+
+        /// <summary>
         /// <inheritdoc cref="IAtlasControls"/>
         /// </summary>
         IAtlasControls Controls { get; }
@@ -95,6 +100,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
                "import", "./_content/Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas/atlas.js").AsTask());
 #pragma warning restore BL0016 // Unguarded JS interop call
 
+            Animations = new AzAnimations(moduleTask);
             Controls = new AzControls(moduleTask);
             Data = new AzData(moduleTask);
             Events = new AzEvents(moduleTask);
@@ -109,6 +115,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
             Sources = new AzSources(moduleTask);
             Popups = new AzPopups(moduleTask);
         }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasAnimations"/>
+        /// </summary>
+        public IAtlasAnimations Animations { get; }
 
         /// <summary>
         /// <inheritdoc cref="IAtlasControls"/>

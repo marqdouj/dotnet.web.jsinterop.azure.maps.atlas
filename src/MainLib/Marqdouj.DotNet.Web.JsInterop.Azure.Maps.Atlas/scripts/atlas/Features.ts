@@ -28,10 +28,24 @@ export class Features {
                 }
                 else {
                     Logger.logMapMessage(mapId, LogLevel.Warn, `${eventName}: Feature already exists where id = '${id}'.`);
-}
+                }
             });
         }
 
         return results;
+    }
+
+    public static setProperties(map: atlas.Map, source: any, shapeId: string, properties: any) {
+        const eventName = "Features.setProperties";
+        const mapId = Helpers.getMapId(map);
+        const shape = DataSource.getShapeById(map, source, shapeId, false);
+
+        if (shape instanceof atlas.Shape) {
+            shape.setProperties(properties);
+        }
+        else {
+            Logger.logMapMessage(mapId, LogLevel.Error, `${eventName}: shape not found where id = '${shapeId}'`, source);
+            return;
+        }
     }
 }

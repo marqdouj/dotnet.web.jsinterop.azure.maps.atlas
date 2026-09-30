@@ -16,6 +16,14 @@ export class DataSource {
         });
     }
 
+    public static getShapeById(map: atlas.Map, source: any, shapeId: string, getReference: boolean = true) {
+        const eventName = "DataSource.getShapeById";
+        const mapId = Helpers.getMapId(map);
+        const ds = this.getDataSourceFromSource(map, mapId, source, eventName, true);
+        const shape = ds?.getShapeById(shapeId);
+        return getReference ? Helpers.createMapObjectReference(mapId, "Shape", shape, shapeId) : shape;
+    }
+
     public static async importDataFromUrl(map: atlas.Map, source: any, url: string) {
         const eventName = "DataSource.importDataFromUrl";
         const mapId = Helpers.getMapId(map);

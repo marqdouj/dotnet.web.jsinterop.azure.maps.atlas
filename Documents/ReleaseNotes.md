@@ -3,6 +3,13 @@
 ### [<- Go Back](../README.md)
 - `11.0.0-Preview-4.0`
   - `IAtlasImageSprite`. New module has been added for image sprite support.
+  - `IAtlasAnimations`. New module has been added for animation support.
+  - `Sandbox`: Added new demos, and rename/re-organize the nav menu and change some of the page names.
+	- `Images`.
+	  - `Sprites`. Demonstrates working with image sprites.
+	- `Scripts (Optional)`:
+	   - `Animations`. 
+	      - `Shapes`. Demonstrates how to animate moving a shape on the map.
 - `11.0.0-Preview-3.7`
   - `IAtlasMap`. New methods.
 	- `GetVersion`. Gets the current API version number based on build number.

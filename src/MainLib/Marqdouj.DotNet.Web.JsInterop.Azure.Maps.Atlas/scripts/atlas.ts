@@ -1,3 +1,4 @@
+export { Animations } from "./atlas/Animations"
 export { BoundingBox } from "./atlas/data/BoundingBox"
 export { Controls } from "./atlas/Controls"
 export { DataSource } from "./atlas/DataSource"

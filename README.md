@@ -29,5 +29,12 @@ In the source code, see the `Sandbox` web app for examples on using this library
 ## Release Notes (Current)
 - `11.0.0-Preview-4.0`
   - `IAtlasImageSprite`. New module has been added for image sprite support.
+  - `IAtlasAnimations`. New module has been added for animation support.
+  - `Sandbox`: Added new demos, and rename/re-organize the nav menu and change some of the page names.
+	- `Images`.
+	  - `Sprites`. Demonstrates working with image sprites.
+	- `Scripts (Optional)`:
+	   - `Animations`. 
+	      - `Shapes`. Demonstrates how to animate moving a shape on the map.
 
 ## [Release Notes (All)](Documents/ReleaseNotes.md)
