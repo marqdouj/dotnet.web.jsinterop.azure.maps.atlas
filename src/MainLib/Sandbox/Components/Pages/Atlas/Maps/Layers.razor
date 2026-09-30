@@ -1,5 +1,6 @@
 ﻿@page "/maps-layers"
 @rendermode InteractiveServer
+@implements IAsyncDisposable
 @inject IOptions<MapConfiguration> Configuration
 @inject IJSRuntime JSRuntime
 @inject ILogger<Layers> Logger

@@ -6,11 +6,13 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
 {
     internal enum JsModule
     {
+        Animations,
         BoundingBox,
         Controls,
         DataSource,
         Factory,
         Features,
+        ImageSprite,
         LayerEvents,
         Layers,
         MarkerEvents,

@@ -52,6 +52,33 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         ValueTask Clear(Map map, string id);
 
         /// <summary>
+        /// Gets an <see cref="IMapObjectReference"/> to a Shape.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="dataSource"><see cref="IMapObjectReference"/> to a DataSource.</param>
+        /// <param name="shapeId"></param>
+        /// <returns></returns>
+        ValueTask<IMapObjectReference> GetShapeById(Map map, IMapObjectReference dataSource, string shapeId);
+
+        /// <summary>
+        /// Gets an <see cref="IMapObjectReference"/> to a Shape.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="dataSource"><see cref="DataSource"/></param>
+        /// <param name="shapeId"></param>
+        /// <returns></returns>
+        ValueTask<IMapObjectReference> GetShapeById(Map map, DataSource dataSource, string shapeId);
+
+        /// <summary>
+        /// Gets an <see cref="IMapObjectReference"/> to a Shape.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="dataSourceId"></param>
+        /// <param name="shapeId"></param>
+        /// <returns></returns>
+        ValueTask<IMapObjectReference> GetShapeById(Map map, string dataSourceId, string shapeId);
+
+        /// <summary>
         /// Downloads a GeoJSON document and imports its data into the data source.
         /// The GeoJSON document must be on the same domain or accessible using CORS.
         /// </summary>
@@ -101,6 +128,22 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         public async ValueTask Clear(Map map, string id)
         {
             await Clear(map, [id]);
+        }
+
+        public async ValueTask<IMapObjectReference> GetShapeById(Map map, IMapObjectReference dataSource, string shapeId)
+        {
+            dataSource.ValidateReferenceType<SourceType>();
+            return await moduleTask.InvokeAsyncTC<MapObjectReference>(GetJsInteropMethod(), map.MapReference, dataSource.JsReference, shapeId);
+        }
+
+        public async ValueTask<IMapObjectReference> GetShapeById(Map map, DataSource dataSource, string shapeId)
+        {
+            return await moduleTask.InvokeAsyncTC<MapObjectReference>(GetJsInteropMethod(), map.MapReference, dataSource, shapeId);
+        }
+
+        public async ValueTask<IMapObjectReference> GetShapeById(Map map, string dataSourceId, string shapeId)
+        {
+            return await moduleTask.InvokeAsyncTC<MapObjectReference>(GetJsInteropMethod(), map.MapReference, dataSourceId, shapeId);
         }
 
         public async ValueTask ImportDataFromUrl(Map map, IMapObjectReference source, string url)

@@ -1,8 +1,9 @@
-﻿@page "/maps-basic"
+﻿@page "/maps-create"
 @rendermode InteractiveServer
+@implements IAsyncDisposable
 @inject IOptions<MapConfiguration> Configuration
 @inject IJSRuntime JSRuntime
-@inject ILogger<Basic> Logger
+@inject ILogger<Create> Logger
 @inject INotificationService ToastService
 
 <MapPage Title="@title">
@@ -28,8 +29,8 @@
 </MapPage>
 
 @code {
-    private const string mapId = "mapBasic";
-    private const string title = "Maps - Basic";
+    private const string mapId = "mapCreate";
+    private const string title = "Maps - Create";
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
     private MapConfiguration config = default!;

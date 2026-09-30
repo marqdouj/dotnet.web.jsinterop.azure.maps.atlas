@@ -1,6 +1,15 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-4.0`
+  - `IAtlasImageSprite`. New module has been added for image sprite support.
+  - `IAtlasAnimations`. New module has been added for animation support.
+  - `Sandbox`: Added new demos, and rename/re-organize the nav menu and change some of the page names.
+	- `Images`.
+	  - `Sprites`. Demonstrates working with image sprites.
+	- `Scripts (Optional)`:
+	   - `Animations`. 
+	      - `Shapes`. Demonstrates how to animate moving a shape on the map.
 - `11.0.0-Preview-3.7`
   - `IAtlasMap`. New methods.
 	- `GetVersion`. Gets the current API version number based on build number.
@@ -27,7 +36,7 @@
 	- `Sandbox.CustomJs` library has been added that contains a custom script.
 	- `Controls`. New demo page that uses the custom script.
 - `11.0.0-Preview-3.4`
-  - `IAtlasInterop.Popups`. New module has been added for popup support:
+  - `IAtlasInterop.Popups`. New module has been added for popup support.
 - `11.0.0-Preview-3.3`
   - `IAtlasInterop.Events`. New modules have been added for event support:
 	- Layer, Map, Marker, and StyleControl.

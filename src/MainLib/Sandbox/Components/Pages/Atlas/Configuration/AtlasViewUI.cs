@@ -1,9 +1,9 @@
-﻿namespace Sandbox.Components.Pages.Atlas.Maps
+﻿namespace Sandbox.Components.Pages.Atlas.Configuration
 {
     /// <summary>
     /// Represents global lookups for Azure Maps.
     /// </summary>
-    internal static class AtlasGlobalUI
+    internal static class AtlasViewUI
     {
         /// <summary>
         /// Gets a dictionary of supported languages for Azure Maps, where the key is the language code and the value is the language name.

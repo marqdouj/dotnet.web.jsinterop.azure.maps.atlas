@@ -1,5 +1,6 @@
 ﻿@page "/maps-custom-controls"
 @rendermode InteractiveServer
+@implements IAsyncDisposable
 @inject IOptions<MapConfiguration> Configuration
 @inject IJSRuntime JSRuntime
 @inject ILogger<MapControls> Logger

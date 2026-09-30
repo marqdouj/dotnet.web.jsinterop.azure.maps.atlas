@@ -1,8 +1,9 @@
-﻿@page "/maps-atlas-global"
+﻿@page "/maps-atlas-view"
 @rendermode InteractiveServer
+@implements IAsyncDisposable
 @inject IOptions<MapConfiguration> Configuration
 @inject IJSRuntime JSRuntime
-@inject ILogger<AtlasGlobal> Logger
+@inject ILogger<AtlasView> Logger
 @inject INotificationService ToastService
 
 <MapPage Title="@title">
@@ -61,16 +62,16 @@
 </MapPage>
 
 @code {
-    private const string mapId = "mapAtlasGlobal";
-    private const string title = "Maps - Atlas Global";
+    private const string mapId = "mapAtlasView";
+    private const string title = "Maps - Atlas View";
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
     private MapConfiguration config = default!;
     private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions(new Position(0, 0), 0);
     private Map? map;
     private bool mapNotReady => map == null;
-    private readonly Dictionary<string, string> languages = AtlasGlobalUI.Languages;
-    private readonly Dictionary<string, string> views = AtlasGlobalUI.Views;
+    private readonly Dictionary<string, string> languages = AtlasViewUI.Languages;
+    private readonly Dictionary<string, string> views = AtlasViewUI.Views;
     private string? selectedLanguage;
     private string? selectedView;
     private string? apiVersion;
@@ -92,7 +93,7 @@
             {
                 apiVersion = await atlasInterop.Map.GetVersion();
                 selectedLanguage = await atlasInterop.Map.GetLanguage();
-                selectedView = await atlasInterop.Map.GetView() ?? AtlasGlobalUI.DefaultView;
+                selectedView = await atlasInterop.Map.GetView() ?? AtlasViewUI.DefaultView;
             }
             catch (Exception ex)
             {
@@ -172,9 +173,9 @@
 
             await atlasInterop.Map.SetCamera(map, mapOptions.Camera);
 
-            selectedLanguage = AtlasGlobalUI.DefaultLanguage;
+            selectedLanguage = AtlasViewUI.DefaultLanguage;
             await atlasInterop.Map.SetLanguage(selectedLanguage);
-            selectedView = AtlasGlobalUI.DefaultView;
+            selectedView = AtlasViewUI.DefaultView;
             await atlasInterop.Map.SetView(selectedView);
             await RemoveAndCreateMap();
 

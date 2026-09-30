@@ -9,13 +9,20 @@
 
     <FluentNavItem Href="/" Match="NavLinkMatch.All" IconRest="@(new Icons.Regular.Size20.Home())" IconActive="@(new Icons.Filled.Size20.Home())">Home</FluentNavItem>
 
-    <FluentNavCategory Id="maps" Title="Maps" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
-        <FluentNavItem Href="maps-atlas-global" IconRest="@((new Icons.Regular.Size20.Globe()))">Atlas Global</FluentNavItem>
-        <FluentNavItem Href="maps-basic" IconRest="@((new Icons.Regular.Size20.Map()))">Basic</FluentNavItem>
+    <FluentNavCategory Id="maps" Title="Basic" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
+        <FluentNavItem Href="maps-create" IconRest="@((new Icons.Regular.Size20.Map()))">Create</FluentNavItem>
         <FluentNavItem Href="maps-layers" IconRest="@((new Icons.Regular.Size20.LayerDiagonal()))">Layers</FluentNavItem>
         <FluentNavItem Href="maps-multiple" IconRest="@((new Icons.Regular.Size20.Map()))">Multiple</FluentNavItem>
-        <FluentNavItem Href="maps-options" IconRest="@((new Icons.Regular.Size20.Map()))">Options</FluentNavItem>
         <FluentNavItem Href="maps-popups" IconRest="@((new Icons.Regular.Size20.Map()))">Popups</FluentNavItem>
+    </FluentNavCategory>
+
+    <FluentNavCategory Title="Configuration" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
+        <FluentNavItem Href="maps-options" IconRest="@((new Icons.Regular.Size20.Map()))">Options</FluentNavItem>
+        <FluentNavItem Href="maps-atlas-view" IconRest="@((new Icons.Regular.Size20.Globe()))">View</FluentNavItem>
+    </FluentNavCategory>
+
+    <FluentNavCategory Title="Custom (JS Interop)" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
+        <FluentNavItem Href="maps-custom-controls" IconRest="@(new Icons.Regular.Size20.DesignIdeas())">Controls</FluentNavItem>
     </FluentNavCategory>
 
     <FluentNavCategory Title="Events" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
@@ -26,8 +33,8 @@
         <FluentNavItem Href="events-stylecontrol" IconRest="@((new Icons.Regular.Size20.MapPin()))">Style Control</FluentNavItem>
     </FluentNavCategory>
 
-    <FluentNavCategory Title="Custom (JS Interop)" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
-        <FluentNavItem Href="maps-custom-controls" IconRest="@(new Icons.Regular.Size20.DesignIdeas())">Controls</FluentNavItem>
+    <FluentNavCategory Title="Images" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
+        <FluentNavItem Href="maps-image-sprites" IconRest="@((new Icons.Regular.Size20.LayerDiagonal()))">Sprites</FluentNavItem>
     </FluentNavCategory>
 
     <FluentNavCategory Title="Modules" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
@@ -38,6 +45,12 @@
 
         <FluentNavSectionHeader Title="General" />
         <FluentNavItem Href="tests-math" IconRest="@(new Icons.Regular.Size20.DesignIdeas())">Math</FluentNavItem>
+    </FluentNavCategory>
+
+    <FluentNavCategory Title="Scripts (Optional)" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
+        <FluentNavSectionHeader Title="Animations" />
+        <FluentNavItem Href="anims-summary" IconRest="@((new Icons.Regular.Size20.Map()))">Summary</FluentNavItem>
+        <FluentNavItem Href="anims-shapes" IconRest="@((new Icons.Regular.Size20.Map()))">Shapes</FluentNavItem>
     </FluentNavCategory>
 </FluentNav>
 

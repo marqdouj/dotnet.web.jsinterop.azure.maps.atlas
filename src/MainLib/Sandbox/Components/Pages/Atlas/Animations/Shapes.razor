@@ -1,0 +1,216 @@
+﻿@page "/anims-shapes"
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@inject IOptions<MapConfiguration> Configuration
+@inject IJSRuntime JSRuntime
+@inject ILogger<Design> Logger
+@inject INotificationService ToastService
+@inject IMapDataService DataService
+
+<MapPage Title="@title">
+    <SummaryContent>
+        <FluentText As="TextTag.Paragraph">
+            This page demonstrates how to animate moving a shape on the map.
+            <br />
+            Use the toolbar buttons to animate moving a 'car' along a route.
+        </FluentText>
+    </SummaryContent>
+
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
+            <FluentSpacer Width="10px" />
+            <FluentButton Disabled="@movePrevNotReady" IconStart="@(new Icons.Regular.Size20.PreviousFrame())" Title="Prev" OnClick="@(() => MoveCar(-1))" />
+            <FluentButton Disabled="@moveNextNotReady" IconStart="@(new Icons.Regular.Size20.NextFrame())" Title="Next" OnClick="@(() => MoveCar(1))" />
+            <FluentLabel>@carIndex</FluentLabel>
+        </Toolbar>
+
+        <MapContainer MapId="@mapId" />
+    </ChildContent>
+</MapPage>
+
+@code {
+    private const string mapId = "mapAnimsShapes";
+    private const string title = "Animations - Shapes";
+    private DotNetObjectReference<ComponentBase>? dotNetRef;
+    private AtlasInterop atlasInterop = default!;
+    private MapConfiguration config = default!;
+    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
+    private Map? map;
+    private bool mapNotReady => map == null;
+    private const string imageId = "pin-image";
+    private const string featureId = "car";
+    private int carIndex = 0;
+    private int carMax;
+    private bool movePrevNotReady => mapNotReady || carIndex <= 0;
+    private bool moveNextNotReady => mapNotReady || carIndex >= carMax;
+    private readonly PlayableAnimationOptions animationOptions = new() { AutoPlay = true, Duration = 1500, EasingName = EasingName.EaseInOutSine };
+    private readonly GeoJsonProperties featureProperties = new GeoJsonProperties { { "heading", 90.0 } };
+    private List<Position> lineData = default!;
+    private readonly DataSource pinSource = new();
+    private readonly SymbolLayer pinLayer = new()
+    {
+        Options = new()
+        {
+            IconOptions = new()
+            {
+                ImageId = imageId,
+                Anchor = "center",
+                Rotation = new List<object> { "+", 180, new List<string> { "get", "heading" } },
+                RotationAlignment = SymbolItemAlignment.Map,
+                IgnorePlacement = true,
+                AllowOverlap = true
+            },
+            TextOptions = new()
+            {
+                IgnorePlacement = true,
+                AllowOverlap = true
+            }
+        }
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        config = Configuration.GetValue(LogLevel.Trace);
+        atlasInterop = new(JSRuntime);
+        dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
+        lineData = await DataService.GetLineLayerData();
+        carMax = lineData.Count - 1;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await CreateMap();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            dotNetRef?.Dispose();
+
+            if (map != null)
+                await map.DisposeAsync();
+
+            if (atlasInterop != null)
+                await atlasInterop.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+
+    #region Animation
+
+    private async Task MoveCar(int increment)
+    {
+        try
+        {
+            var newIndex = carIndex + increment;
+
+            if (newIndex < 0)
+                newIndex = 0;
+
+            if (newIndex > carMax)
+                newIndex = carMax;
+
+            if (carIndex == newIndex)
+                return;
+
+
+            var pointFrom = lineData[carIndex];
+            var pointTo = lineData[newIndex];
+            var heading = await atlasInterop.Math.GetHeading(pointFrom, pointTo);
+
+            featureProperties["heading"] = heading;
+
+            await atlasInterop.Features.SetProperties(map!, pinSource, featureId, featureProperties);
+            await atlasInterop.Animations.SetCoordinates(map!, pinSource, featureId, pointTo, animationOptions);
+
+            carIndex = newIndex;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    #endregion
+
+    #region Map
+
+    private async Task CreateMap()
+    {
+        try
+        {
+            if (map != null)
+                return;
+
+            config.MapOptions = mapOptions;
+            map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config!, MapExtensions.GetDefaultControls());
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task ResetMap()
+    {
+        try
+        {
+            if (map == null)
+                return;
+
+            await atlasInterop.Map.SetCamera(map, mapOptions.Camera);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    [JSInvokable]
+    public async Task NotifyMapEvent(MapEventArgs e)
+    {
+        await e.ErrorEventProcessed(Logger, ToastService);
+
+        if (e.IsReadyEvent)
+        {
+            try
+            {
+                pinLayer.Source = pinSource.Id;
+                await atlasInterop.Sources.Add(map!, [pinSource]);
+                await atlasInterop.Layers.Add(map!, [pinLayer]);
+
+                var image = new ImageTemplate(imageId, ImageTemplateName.Car);
+                await atlasInterop.ImageSprite.CreateFromTemplate(map!, image);
+
+                var heading = await atlasInterop.Math.GetHeading(lineData[0], lineData[1]);
+                featureProperties["heading"] = heading;
+                var pinFeature = new Feature<Point, GeoJsonProperties?>(new Point(lineData[0]), featureProperties) { Id = featureId };
+                await atlasInterop.Features.Add(map!, pinSource, [pinFeature]);
+
+                var camera = mapOptions.Camera!;
+                camera.Center = lineData[8];
+                camera.Zoom = 11;
+                await ResetMap();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogMapError(ex);
+                await ToastService.ShowError(ex.Message);
+            }
+        }
+    }
+
+    #endregion
+}

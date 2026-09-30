@@ -1,0 +1,12 @@
+﻿@page "/anims-summary"
+
+<MapPage Title="Animations - Summary">
+    <FluentText As="TextTag.H6">
+        To use animations you must download the <a href="@href" target="_blank">azure-maps-animations.min.js</a>
+        script, add it to your wwwroot folder, and then reference it using a script tag in App.Razor:
+    </FluentText>
+</MapPage>
+
+@code {
+    const string href = "https://github.com/Azure-Samples/AzureMapsCodeSamples/tree/main/Static/lib/azure-maps";
+}

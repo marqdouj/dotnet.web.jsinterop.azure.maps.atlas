@@ -1,0 +1,231 @@
+﻿@page "/maps-image-sprites"
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@inject IOptions<MapConfiguration> Configuration
+@inject IJSRuntime JSRuntime
+@inject ILogger<Design> Logger
+@inject INotificationService ToastService
+@inject IMapDataService DataService
+
+<MapPage Title="@title">
+    <SummaryContent>
+        <FluentText As="TextTag.Paragraph">
+            This page demonstrates working with image sprites.
+            <br />
+            You can create an image based on an existing map template, 
+            or load a custom image (which is a copy of the NuGet package icon placed in the wwwroot/img folder).
+            <br />
+            Try changing the map style to see how the image, with its default settings (no custom colors, etc.), displays on the map.
+        </FluentText>
+    </SummaryContent>
+
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
+            <FluentSelect Label="Use Template"
+                          Disabled="@useCustomImage"
+                          LabelPosition="LabelPosition.Before"
+                          Placeholder="Select a Template"
+                          Items="@templates"
+                          @bind-Value:get="@selectedTemplate"
+                          @bind-Value:set="@SelectedTemplateChanged"
+                          OptionText="@(item => item?.DisplayName)" />
+            <FluentCheckbox Label="Use Custom Image" @bind-Value:get="@useCustomImage" @bind-Value:set="@UseCustomImageChanged" />
+        </Toolbar>
+
+        <MapContainer MapId="@mapId" />
+    </ChildContent>
+</MapPage>
+
+@code {
+    private const string mapId = "mapImageSprites";
+    private const string title = "Maps - Image Sprites";
+    private DotNetObjectReference<ComponentBase>? dotNetRef;
+    private AtlasInterop atlasInterop = default!;
+    private MapConfiguration config = default!;
+    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions(zoomLevel:4.5);
+    private Map? map;
+    private bool mapNotReady => map == null;
+    private readonly List<TemplateName> templates = Enum.GetValues<ImageTemplateName>().OrderBy(e => e.ToString()).Select(e => new TemplateName(e)).ToList();
+    private TemplateName? selectedTemplate;
+    private ImageTemplate? image;
+    private Feature<Point, GeoJsonProperties?>? pinFeature;
+    private bool useCustomImage;
+    private bool useTemplateImage => !useCustomImage;
+    private const string imageId = "sprite-demo";
+    private readonly DataSource pinSource = new();
+    private readonly SymbolLayer pinLayer = new()
+    {
+        Options = new()
+        {
+            IconOptions = new()
+            {
+                ImageId = imageId,
+                Anchor = "center",
+                Rotation = new List<object> { "+", 180, new List<string> { "get", "heading" } },
+                RotationAlignment = SymbolItemAlignment.Map,
+            }
+        }
+    };
+
+    protected override void OnInitialized()
+    {
+        config = Configuration.GetValue(LogLevel.Trace);
+        atlasInterop = new(JSRuntime);
+        dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await CreateMap();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            dotNetRef?.Dispose();
+
+            if (map != null)
+                await map.DisposeAsync();
+
+            if (atlasInterop != null)
+                await atlasInterop.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+
+    #region Images
+
+    private async Task UseCustomImageChanged(bool value)
+    {
+        useCustomImage = value;
+        await CreateTemplate();
+    }
+
+    private async Task SelectedTemplateChanged(TemplateName? value)
+    {
+        selectedTemplate = value;
+        await CreateTemplate();
+    }
+
+    private async Task CreateTemplate()
+    {
+        try
+        {
+            await DeleteTemplate();
+
+            if (useCustomImage)
+            {
+                await atlasInterop.ImageSprite.Add(map!, imageId, "/img/DMNuGet.png");
+            }
+            else
+            {
+                if (selectedTemplate == null)
+                    return;
+                image = new ImageTemplate(imageId, selectedTemplate!.Name);
+                await atlasInterop.ImageSprite.CreateFromTemplate(map!, image);
+            }
+
+            if (pinFeature == null)
+            {
+                pinFeature = new Feature<Point, GeoJsonProperties?>(new Point(mapOptions.Camera!.Center!));
+                await atlasInterop.Features.Add(map!, pinSource, [pinFeature]);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task DeleteTemplate()
+    {
+        try
+        {
+            await atlasInterop.ImageSprite.Remove(map!, imageId);
+            image = null;
+
+            //await atlasInterop.Sources.DataSource.Clear(map!, [pinSource]);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    #endregion
+
+    #region Map
+
+    private async Task CreateMap()
+    {
+        try
+        {
+            if (map != null)
+                return;
+
+            config.MapOptions = mapOptions;
+            map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config!, MapExtensions.GetDefaultControls());
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task ResetMap()
+    {
+        try
+        {
+            if (map == null)
+                return;
+
+            await atlasInterop.Map.SetCamera(map, mapOptions.Camera);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    [JSInvokable]
+    public async Task NotifyMapEvent(MapEventArgs e)
+    {
+        await e.ErrorEventProcessed(Logger, ToastService);
+
+        if (e.IsReadyEvent)
+        {
+            pinLayer.Source = pinSource.Id;
+            await atlasInterop.Sources.Add(map!, pinSource);
+            await atlasInterop.Layers.Add(map!, [pinLayer]);
+            await SelectedTemplateChanged(templates.FirstOrDefault(e => e.Name == ImageTemplateName.Marker_Circle));
+            StateHasChanged();
+        }
+    }
+
+    #endregion
+
+    private class TemplateName(ImageTemplateName name)
+    {
+        public ImageTemplateName Name { get; } = name;
+        public string DisplayName { get; } = name.ToDisplayName();
+
+        public override string ToString() => DisplayName;
+    }
+}

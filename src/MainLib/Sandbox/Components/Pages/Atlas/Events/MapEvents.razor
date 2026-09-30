@@ -1,5 +1,6 @@
 ﻿@page "/events-map"
 @rendermode InteractiveServer
+@implements IAsyncDisposable
 @inject IOptions<MapConfiguration> Configuration
 @inject IJSRuntime JSRuntime
 @inject ILogger<MapEvents> Logger
