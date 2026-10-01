@@ -31,7 +31,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.DataDrivenStyles
         /// <param name="defaultValue">The default value to use if none of the expressions evaluate to a truthy value.</param>
         /// <param name="returnJson">Indicates whether to return the result as JSON.</param>
         /// <returns></returns>
-        public static object CoalesceGet(List<DDSPropertyAction> expressions, string defaultValue = "", bool returnJson = false)
+        public static object CoalesceGet(List<PropertyActionStyleBuilder> expressions, string defaultValue = "", bool returnJson = false)
         {
             var builder = new CoalesceGetStyleBuilder(expressions, defaultValue);
             return returnJson ? builder.ToString() : builder.Build();
@@ -85,7 +85,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.DataDrivenStyles
         /// <returns></returns>
         public static object PropertyAction(string value, string action = "get", bool returnJson = false)
         {
-            var builder = new DDSPropertyAction(value, action);
+            var builder = new PropertyActionStyleBuilder(value, action);
             return returnJson ? builder.ToString() : builder.Build();
         }
 

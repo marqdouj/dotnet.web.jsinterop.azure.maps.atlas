@@ -7,7 +7,7 @@
 	- `CaseGetStyleBuilder`. A builder class for constructing case style expressions in Azure Maps.
 	- `CoalesceGetStyleBuilder`. A builder class for constructing coalesce style expressions in Azure Maps.
 	- `ConcatGetStyleBuilder`. A builder class for constructing concat get style expressions in Azure Maps.
-	- `DDSPropertyAction`. A builder class for creating an action to get a property value in Azure Maps.
+	- `PropertyActionStyleBuilder`. A builder class for creating an action to get a property value in Azure Maps.
 	- `GeometryFilterStyleBuilder`. A builder class for constructing geometry filter style expressions in Azure Maps.
 	- `LinearInterpolateStyleBuilder`. A builder class for constructing linear interpolate style expressions in Azure Maps.
 	- `MatchStyleBuilder`. A builder class for constructing match style expressions in Azure Maps.

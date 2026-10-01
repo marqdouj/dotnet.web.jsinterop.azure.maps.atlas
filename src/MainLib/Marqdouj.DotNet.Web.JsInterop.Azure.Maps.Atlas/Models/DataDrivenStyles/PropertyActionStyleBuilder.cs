@@ -3,14 +3,14 @@
     /// <summary>
     /// A builder class for creating an action to get a property value in Azure Maps Data Driven Styles.
     /// </summary>
-    public class DDSPropertyAction
+    public class PropertyActionStyleBuilder
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DDSPropertyAction"/> class with the specified property name and action type.
+        /// Initializes a new instance of the <see cref="PropertyActionStyleBuilder"/> class with the specified property name and action type.
         /// </summary>
         /// <param name="name">The name of the property to retrieve.</param>
         /// <param name="action">The action type. Default is "get".</param>
-        public DDSPropertyAction(string name, string action = "get")
+        public PropertyActionStyleBuilder(string name, string action = "get")
         {
             Name = name;
             Action = action;

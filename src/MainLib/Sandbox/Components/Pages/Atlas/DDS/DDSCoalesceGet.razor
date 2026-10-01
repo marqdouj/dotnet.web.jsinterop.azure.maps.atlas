@@ -1,0 +1,179 @@
+﻿@page "/dds-coalesceget"
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@inject IOptions<MapConfiguration> Configuration
+@inject IJSRuntime JSRuntime
+@inject ILogger<Design> Logger
+@inject INotificationService ToastService
+@inject IMapDataService DataService
+
+<MapPage Title="@title">
+    <SummaryContent>
+        <FluentText As="TextTag.Paragraph">
+            This page demonstrates the data-driven style builder for '@subject'.
+            <br /><br />
+            The bubbles on the map represent different zones, and the color of each bubble is determined by checking for 
+            the presence of specific properties ("zone1", "zone2", "zone3"). All bubbles could have all of these properties, but only the first property found will be used to determine the color.
+            If none of these properties are present, a default color of <code>blue</code> is applied.
+            <br /><br />
+            Code: <code>layer.Options.Color = DDSBuilder.CoalesceGet([new("zone1"), new("zone2"), new("zone3")], "blue");</code>
+            <br />
+            JSON: <code>@ddsJSON</code>
+        </FluentText>
+        <DDSLink />
+    </SummaryContent>
+
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
+        </Toolbar>
+
+        <MapContainer MapId="@mapId" />
+    </ChildContent>
+</MapPage>
+
+@code {
+    private const string mapId = "mapDDS";
+    private const string subject = nameof(DDSBuilder.CoalesceGet);
+    private string title = $"DDS - {subject}";
+    private DotNetObjectReference<ComponentBase>? dotNetRef;
+    private AtlasInterop atlasInterop = default!;
+    private MapConfiguration config = default!;
+    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions(zoomLevel: 11.5);
+    private Map? map;
+    private bool mapNotReady => map == null;
+    private readonly DataSource bubbleSource = LayerType.Bubble.GetDefaultSource();
+    private BubbleLayer bubbleLayer = default!;
+    private string? ddsJSON = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        config = Configuration.GetValue(LogLevel.Trace);
+        atlasInterop = new(JSRuntime);
+        dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
+        bubbleLayer = (BubbleLayer)(await LayerType.Bubble.GetDefaultLayer(DataService));
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await CreateMap();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            dotNetRef?.Dispose();
+
+            if (map != null)
+                await map.DisposeAsync();
+
+            if (atlasInterop != null)
+                await atlasInterop.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+
+    #region Map
+
+    private async Task CreateMap()
+    {
+        try
+        {
+            if (map != null)
+                return;
+
+            config.MapOptions = mapOptions;
+            map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config!, MapExtensions.GetDefaultControls());
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task ResetMap()
+    {
+        try
+        {
+            if (map == null)
+                return;
+
+            await atlasInterop.Map.SetCamera(map, mapOptions.Camera);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    [JSInvokable]
+    public async Task NotifyMapEvent(MapEventArgs e)
+    {
+        await e.ErrorEventProcessed(Logger, ToastService);
+
+        if (e.IsReadyEvent)
+        {
+            try
+            {
+                ddsJSON = DDSBuilder.CoalesceGet([new("zone1"), new("zone2"), new("zone3")], "blue", true).ToString();
+                bubbleLayer.Options = new() { Blur = 0.25, Color = DDSBuilder.CoalesceGet([new("zone1"), new("zone2"), new("zone3")], "blue"), Radius = 20, StrokeColor = "LightSteelBlue", StrokeWidth = 3 };
+
+                var data = await DataService.GetBubbleLayerData();
+                var points = data.Select(e => new Feature<Point, GeoJsonProperties>(new Point(e.Longitude, e.Latitude))).ToList();
+
+                for (int i = 0; i < points.Count; i++)
+                {
+                    var point = points[i];
+                    point.Properties = new GeoJsonProperties();
+
+                    switch (i)
+                    {
+                        case 0:
+                            point.Properties["zone1"] = "red";
+                            point.Properties["zone3"] = "orange";
+                            break;
+                        case 1:
+                            point.Properties["zone2"] = "yellow";
+                            point.Properties["zone3"] = "orange";
+                            break;
+                        case 2:
+                            point.Properties["zone3"] = "green";
+                            break;
+                        default:
+                            point.Properties["zone4"] = "Purple"; //Never gets used; defaults to 'blue' in the DDSBuilder.CoalesceGet() call above
+                            break;
+                    }
+                }
+
+                bubbleLayer.Source = bubbleSource.Id;
+                await atlasInterop.Sources.Add(map!, bubbleSource);
+                await atlasInterop.Layers.Add(map!, [bubbleLayer]);
+                await atlasInterop.Features.Add(map!, bubbleSource, points);
+
+                mapOptions.Camera!.Center = data[1];
+                await ResetMap();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogMapError(ex);
+                await ToastService.ShowError(ex.Message);
+            }
+            finally
+            {
+                StateHasChanged();
+            }
+        }
+    }
+
+    #endregion
+}
