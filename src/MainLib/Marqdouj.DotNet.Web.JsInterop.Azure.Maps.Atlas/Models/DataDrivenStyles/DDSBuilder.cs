@@ -1,4 +1,6 @@
-﻿namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.DataDrivenStyles
+﻿using System.Threading.Tasks.Sources;
+
+namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.DataDrivenStyles
 {
     /// <summary>
     /// A builder class for creating data-driven style expressions for Azure Maps. 
@@ -78,12 +80,13 @@
         /// Creates a literal expression for retrieving the value of a specified property from a map feature.
         /// </summary>
         /// <param name="value">The property value to retrieve.</param>
+        /// <param name="action">The action to perform on the property.</param>
         /// <param name="returnJson">Indicates whether to return the result as JSON.</param>
         /// <returns></returns>
-        public static object LiteralGet(string value, bool returnJson = false)
+        public static object PropertyAction(string value, string action = "get", bool returnJson = false)
         {
-            var result = new List<string> { "get", value };
-            return returnJson ? System.Text.Json.JsonSerializer.Serialize(result) : result;
+            var builder = new DDSPropertyAction(value, action);
+            return returnJson ? builder.ToString() : builder.Build();
         }
 
         /// <summary>

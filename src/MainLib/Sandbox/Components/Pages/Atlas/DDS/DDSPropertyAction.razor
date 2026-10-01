@@ -1,4 +1,4 @@
-﻿@page "/dds-caseget"
+﻿@page "/dds-propertyaction"
 @rendermode InteractiveServer
 @implements IAsyncDisposable
 @inject IOptions<MapConfiguration> Configuration
@@ -12,16 +12,16 @@
         <FluentText As="TextTag.Paragraph">
             This page demonstrates the data-driven style builder for '@subject'.
             <br /><br />
-            Each bubble on the map represents a different zone, and the color of the bubble indicates the zone's status (red, yellow, or green).
-            The 'case' is the check for the 'zone' property. If found, it uses the corresponding value from the 'zoneColor' property. 
-            If the bubble does not have a 'zone' or a 'zoneColor' property, it will use the default color of <code>blue</code>.
+            Each bubble on the map represents a different zone, and the color of the bubble indicates the zone's status (red, yellow, green, or blue).
+            The corresponding value from the 'zoneColor' property will be used.
+            All bubbles must have a 'zoneColor' property. If the bubble does not have a 'zoneColor' property the map will throw an error.
             <br />
             <br />
-            Code: <code>layer.Options.Color = DDSBuilder.CaseGet("zone", "zoneColor", "blue");</code>
+            Code: <code>layer.Options.Color = DDSBuilder.PropertyAction("zoneColor");</code>
             <br />
             JSON: <code>@ddsJSON</code>
         </FluentText>
-        <DDSLink/>
+        <DDSLink />
     </SummaryContent>
 
     <ChildContent>
@@ -35,7 +35,7 @@
 
 @code {
     private const string mapId = "mapDDS";
-    private const string subject = nameof(DDSBuilder.CaseGet);
+    private const string subject = nameof(DDSBuilder.PropertyAction);
     private string title = $"DDS - {subject}";
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
@@ -52,7 +52,7 @@
         config = Configuration.GetValue(LogLevel.Trace);
         atlasInterop = new(JSRuntime);
         dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
-        bubbleLayer = (BubbleLayer) (await LayerType.Bubble.GetDefaultLayer(DataService));
+        bubbleLayer = (BubbleLayer)(await LayerType.Bubble.GetDefaultLayer(DataService));
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -126,8 +126,8 @@
         {
             try
             {
-                ddsJSON = DDSBuilder.CaseGet("zone", "zoneColor", "blue", true).ToString();
-                bubbleLayer.Options = new() { Blur = 0.25, Color = DDSBuilder.CaseGet("zone", "zoneColor", "blue"), Radius = 20, StrokeColor = "LightSteelBlue", StrokeWidth = 3 };
+                ddsJSON = DDSBuilder.PropertyAction("zoneColor", returnJson: true).ToString();
+                bubbleLayer.Options = new() { Blur = 0.25, Color = DDSBuilder.PropertyAction("zoneColor"), Radius = 20, StrokeColor = "LightSteelBlue", StrokeWidth = 3 };
 
                 var data = await DataService.GetBubbleLayerData();
                 var points = data.Select(e => new Feature<Point, GeoJsonProperties>(new Point(e.Longitude, e.Latitude))).ToList();
@@ -149,15 +149,11 @@
                             color = "green";
                             break;
                         default:
-                            color = "";
+                            color = "blue";
                             break;
                     }
 
-                    if (!string.IsNullOrEmpty(color))
-                    {
-                        point.Properties.Add("zone", i);
-                        point.Properties.Add("zoneColor", color);
-                    }
+                    point.Properties.Add("zoneColor", color);
                 }
 
                 bubbleLayer.Source = bubbleSource.Id;

@@ -56,7 +56,7 @@
             {
                 ImageId = imageId,
                 Anchor = "center",
-                Rotation = DDSBuilder.LiteralGet("heading"), // could have used: new List<string> { "get", "heading" },
+                Rotation = DDSBuilder.PropertyAction("heading"), // could have used: new List<string> { "get", "heading" },
                 RotationAlignment = SymbolItemAlignment.Map,
                 IgnorePlacement = true,
                 AllowOverlap = true
