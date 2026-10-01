@@ -2,6 +2,9 @@
 
 ### [<- Go Back](../README.md)
 - `11.0.0-Preview-4.0`
+  - `SymbolIconOptions`.
+	- `RotationSpecification`. Removed `RotationSpecification` property. Use `Rotation` instead.
+- `11.0.0-Preview-4.0`
   - `IAtlasImageSprite`. New module has been added for image sprite support.
   - `IAtlasAnimations`. New module has been added for animation support.
   - `Sandbox`: Added new demos, and rename/re-organize the nav menu and change some of the page names.
