@@ -169,12 +169,18 @@ namespace Sandbox.Components.Pages.Atlas
 
         #region GetDefaultSource
 
+        public static DataSource GetDefaultSource(this LayerType layerType)
+        {
+            LayerType? type = layerType;
+            return type.GetDefaultSource()!;
+        }
+
         /// <summary>
         /// Get the default source for a layer.
         /// </summary>
         /// <param name="layerType"></param>
         /// <returns></returns>
-        private static DataSource? GetDefaultSource(this LayerType? layerType)
+        public static DataSource? GetDefaultSource(this LayerType? layerType)
         {
             if (layerType == null)
                 return null;
@@ -190,7 +196,13 @@ namespace Sandbox.Components.Pages.Atlas
 
         #region GetDefaultLayer
 
-        private static async Task<ILayer> GetDefaultLayer(this LayerType? layerType, IMapDataService dataService)
+        public static async Task<ILayer> GetDefaultLayer(this LayerType layerType, IMapDataService dataService)
+        {
+            LayerType? type = layerType;
+            return await type.GetDefaultLayer(dataService);
+        }
+
+        public static async Task<ILayer> GetDefaultLayer(this LayerType? layerType, IMapDataService dataService)
         {
             return layerType switch
             {
