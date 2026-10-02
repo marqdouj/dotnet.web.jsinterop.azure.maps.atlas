@@ -88,17 +88,5 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
                 throw new JS2CSharpException(ex);
             }
         }
-
-        private static string ParseMessage(this JSException ex)
-        {
-            var message = ex.Message;
-            var index = message.IndexOf("Error:", StringComparison.OrdinalIgnoreCase);
-            if (index > -1) 
-            {
-                message = message.Substring(0, index);
-            }
-            Console.WriteLine(ex.Message);
-            return message;
-        }
     }
 }
