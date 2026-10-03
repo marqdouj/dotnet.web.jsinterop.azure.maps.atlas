@@ -1,6 +1,6 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration;
 
-namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Events
+namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Payloads
 {
     /// <summary>
     /// Gets or sets the style applied to the map.

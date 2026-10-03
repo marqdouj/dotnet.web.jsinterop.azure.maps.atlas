@@ -1,0 +1,182 @@
+﻿@page "/dds-concatget"
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@inject IOptions<MapConfiguration> Configuration
+@inject IJSRuntime JSRuntime
+@inject ILogger<DDSConcatGet> Logger
+@inject INotificationService ToastService
+@inject IMapDataService DataService
+
+<MapPage Title="@title">
+    <SummaryContent>
+        <FluentText As="TextTag.Paragraph">
+            This page demonstrates the data-driven style builder for '@subject'.
+            <br /><br />
+            Each symbol on the map displays a label based on its 'temperature' property, which is concatenated with the unit '°C'.
+            <br /><br />
+            Code: <code>layer.Options.Color = DDSBuilder.ConcatGet("temperature", "°C");</code>
+            <br />
+            JSON: <code>@ddsJSON</code>
+            <br /><br />
+            We could have also added a 'zoneColor' property and used the 
+            <FluentLink Href="/dds-propertyaction">Property Action</FluentLink> method to provide some colorization.
+        </FluentText>
+        <DDSLink />
+    </SummaryContent>
+
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
+        </Toolbar>
+
+        <MapContainer MapId="@mapId" />
+    </ChildContent>
+</MapPage>
+
+@code {
+    private const string mapId = "mapDDS";
+    private const string subject = nameof(DDSBuilder.ConcatGet);
+    private string title = $"DDS - {subject}";
+    private DotNetObjectReference<ComponentBase>? dotNetRef;
+    private AtlasInterop atlasInterop = default!;
+    private MapConfiguration config = default!;
+    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions(zoomLevel: 11.5);
+    private Map? map;
+    private bool mapNotReady => map == null;
+    private readonly DataSource symbolSource = LayerType.Bubble.GetDefaultSource();
+    private SymbolLayer symbolLayer = default!;
+    private string? ddsJSON = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        config = Configuration.GetValue(LogLevel.Trace);
+        atlasInterop = new(JSRuntime);
+        dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
+        symbolLayer = (SymbolLayer)(await LayerType.Symbol.GetDefaultLayer(DataService));
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await CreateMap();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            dotNetRef?.Dispose();
+
+            if (map != null)
+                await map.DisposeAsync();
+
+            if (atlasInterop != null)
+                await atlasInterop.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+
+    #region Map
+
+    private async Task CreateMap()
+    {
+        try
+        {
+            if (map != null)
+                return;
+
+            config.MapOptions = mapOptions;
+            map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config!, MapExtensions.GetDefaultControls());
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task ResetMap()
+    {
+        try
+        {
+            if (map == null)
+                return;
+
+            await atlasInterop.Map.SetCamera(map, mapOptions.Camera);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    [JSInvokable]
+    public async Task NotifyMapEvent(MapEventArgs e)
+    {
+        await e.ErrorEventProcessed(Logger, ToastService);
+
+        if (e.IsReadyEvent)
+        {
+            try
+            {
+                ddsJSON = DDSBuilder.ConcatGet("temperature", "°C", true).ToString();
+                symbolLayer.Options = new() { IconOptions = new SymbolIconOptions { AllowOverlap = true, ImageEnum = SymbolIconImage.Pin_Red }, TextOptions = new SymbolTextOptions { AllowOverlap = true, AnchorEnum = SymbolPositionAnchor.Top, Color = "red", IgnorePlacement = true, HaloColor = "white", HaloWidth = 2, Offset = new[] { 0, 0.25 }, TextField = DDSBuilder.ConcatGet("temperature", "°C") } };
+
+                //For this demo, we will use the same data we use for the bubble layer, but you can use any data you want.
+                var data = await DataService.GetBubbleLayerData();
+                var points = data.Select(e => new Feature<Point, GeoJsonProperties>(new Point(e.Longitude, e.Latitude))).ToList();
+
+                for (int i = 0; i < points.Count; i++)
+                {
+                    var point = points[i];
+                    point.Properties ??= new GeoJsonProperties();
+                    var value = "";
+
+                    switch (i)
+                    {
+                        case 0:
+                            value = "24";
+                            break;
+                        case 1:
+                            value = "22";
+                            break;
+                        case 2:
+                            value = "20";
+                            break;
+                        default:
+                            value = "18";
+                            break;
+                    }
+
+                    point.Properties.Add("temperature", value);
+                }
+
+                symbolLayer.Source = symbolSource.Id;
+                await atlasInterop.Sources.Add(map!, symbolSource);
+                await atlasInterop.Layers.Add(map!, [symbolLayer]);
+                await atlasInterop.Features.Add(map!, symbolSource, points);
+
+                mapOptions.Camera!.Center = data[1];
+                await ResetMap();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogMapError(ex);
+                await ToastService.ShowError(ex.Message);
+            }
+            finally
+            {
+                StateHasChanged();
+            }
+        }
+    }
+
+    #endregion
+}

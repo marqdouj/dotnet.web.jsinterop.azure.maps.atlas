@@ -219,6 +219,18 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
         public object? Anchor { get; set; }
 
         /// <summary>
+        /// <see cref="SymbolPositionAnchor"/>
+        /// When set, this updates the value of <see cref="Anchor"/> with expected json value.
+        /// Get attempts to parse the value of <see cref="Anchor"/> to a <see cref="SymbolPositionAnchor"/> enum value.
+        /// </summary>
+        [JsonIgnore]
+        public SymbolPositionAnchor? AnchorEnum
+        {
+            get => Anchor is string anchorStr && Enum.TryParse<SymbolPositionAnchor>(anchorStr.Replace("-", "_"), true, out var result) ? result : null;
+            set => Anchor = value?.ToString()?.Replace("_", "-").ToLower();
+        }
+
+        /// <summary>
         /// Specifies if other symbols can overlap this symbol.
         /// If true, other symbols can be visible even if they collide with the icon.
         /// Default 'false'.
@@ -227,10 +239,21 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
 
         /// <summary>
         /// The name of the image in the map's image sprite to use for drawing the icon.
-        /// SymbolIconImage/String or DataDrivenPropertyValueSpecification.
+        /// string or DataDrivenPropertyValueSpecification.
         /// Default 'marker-blue'.
         /// </summary>
         public object? Image { get; set; }
+
+        /// <summary>
+        /// Specifies the name of a symbol icon from the built-in set of icons.
+        /// When set, this updates the value of <see cref="Image"/> with expected json value.
+        /// Get attempts to parse the value of <see cref="Image"/> to a <see cref="SymbolIconImage"/> enum value.
+        /// </summary>
+        [JsonIgnore]
+        public SymbolIconImage? ImageEnum {
+            get => Image is string imageStr && Enum.TryParse<SymbolIconImage>(imageStr.Replace("-", "_"), true, out var result) ? result : null;
+            set => Image = value?.ToString()?.Replace("_", "-").ToLower();
+        }
 
         /// <summary>
         /// Override <see cref="Image"/> and use an id associated with a custom image template.
@@ -277,13 +300,6 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
         /// Default '0'.
         /// </summary>
         public object? Rotation { get; set; }
-
-        /// <summary>
-        /// Rotation specification applied to the object.
-        /// Represents DataDrivenPropertyValueSpecification[number].
-        /// Overrides <see cref="Rotation"/>
-        /// </summary>
-        public object? RotationSpecification { get; set; }
 
         /// <summary>
         /// In combination with the placement property of a SymbolLayerOptions
@@ -344,6 +360,18 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
         /// Default 'center'.
         /// </summary>
         public object? Anchor { get; set; }
+
+        /// <summary>
+        /// <see cref="SymbolPositionAnchor"/>
+        /// When set, this updates the value of <see cref="Anchor"/> with expected json value.
+        /// Get attempts to parse the value of <see cref="Anchor"/> to a <see cref="SymbolPositionAnchor"/> enum value.
+        /// </summary>
+        [JsonIgnore]
+        public SymbolPositionAnchor? AnchorEnum
+        {
+            get => Anchor is string anchorStr && Enum.TryParse<SymbolPositionAnchor>(anchorStr.Replace("-", "_"), true, out var result) ? result : null;
+            set => Anchor = value?.ToString()?.Replace("_", "-").ToLower();
+        }
 
         /// <summary>
         /// Specifies the name of a property on the features to use for a text label.

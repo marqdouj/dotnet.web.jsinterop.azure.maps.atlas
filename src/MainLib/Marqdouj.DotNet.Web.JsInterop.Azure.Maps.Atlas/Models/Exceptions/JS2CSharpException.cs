@@ -7,17 +7,12 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Exceptions
     /// When a <see cref="JSException"/> is caught by this library, 
     /// it converts it to this exception and throws it.
     /// </summary>
-    public class JS2CSharpException : Exception
+    /// <remarks>
+    /// 
+    /// </remarks>
+    /// <param name="ex"><see cref="JSException"/></param>
+    public class JS2CSharpException(JSException ex) : Exception(ParseMessage(ex))
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="ex"><see cref="JSException"/></param>
-        public JS2CSharpException(JSException ex) : base(ParseMessage(ex))
-        {
-            FullMessage = ex.Message;
-        }
-
         private static string ParseMessage(JSException ex)
         {
             var message = ex.Message;
@@ -32,7 +27,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Exceptions
         /// <summary>
         /// The full message returned in the <see cref="JSException"/>. Normally includes message and stack combined.
         /// </summary>
-        public string FullMessage { get; }
+        public string FullMessage { get; } = ex.Message;
 
         /// <summary>
         /// Logs the <see cref="FullMessage"/>.
