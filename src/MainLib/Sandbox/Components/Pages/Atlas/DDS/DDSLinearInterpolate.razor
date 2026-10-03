@@ -1,0 +1,177 @@
+﻿@page "/dds-linear-interpolate"
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@inject IOptions<MapConfiguration> Configuration
+@inject IJSRuntime JSRuntime
+@inject ILogger<DDSLinearInterpolate> Logger
+@inject INotificationService ToastService
+@inject IMapDataService DataService
+
+<MapPage Title="@title">
+    <SummaryContent>
+        <FluentText As="TextTag.Paragraph">
+            This page demonstrates the data-driven style builder for '@subject'.
+            <br /><br />
+            Each bubble on the map represents a temperature reading, and the color of the bubble indicates the temperature range (cool, mild, warm, hot).
+            <br />
+            <br />
+            Code: <code>layer.Options.Color = DDSBuilder.LinearInterpolate("temperature", [(20, coolColor), (21, mildColor), (22, warmColor), (23, hotColor)]);</code>
+            <br />
+            JSON: <code>@ddsJSON</code>
+        </FluentText>
+        <DDSLink />
+    </SummaryContent>
+
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
+        </Toolbar>
+
+        <MapContainer MapId="@mapId" />
+    </ChildContent>
+</MapPage>
+
+@code {
+    private const string mapId = "mapDDS";
+    private const string subject = nameof(DDSBuilder.LinearInterpolate);
+    private string title = $"DDS - {subject}";
+    private DotNetObjectReference<ComponentBase>? dotNetRef;
+    private AtlasInterop atlasInterop = default!;
+    private MapConfiguration config = default!;
+    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions(zoomLevel: 11.5);
+    private Map? map;
+    private bool mapNotReady => map == null;
+    private readonly DataSource bubbleSource = LayerType.Bubble.GetDefaultSource();
+    private BubbleLayer bubbleLayer = default!;
+    private SymbolLayer symbolLayer = default!;
+    private string? ddsJSON = "";
+    private const string coolColor = "blue";
+    private const string mildColor = "yellow";
+    private const string warmColor = "orange";
+    private const string hotColor = "red";
+
+    protected override async Task OnInitializedAsync()
+    {
+        config = Configuration.GetValue(LogLevel.Trace);
+        atlasInterop = new(JSRuntime);
+        dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
+        bubbleLayer = (BubbleLayer)(await LayerType.Bubble.GetDefaultLayer(DataService));
+        bubbleLayer.Source = bubbleSource.Id;
+        symbolLayer = (SymbolLayer)(await LayerType.Symbol.GetDefaultLayer(DataService));
+        symbolLayer.Source = bubbleSource.Id; // Use the same source for both layers
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await CreateMap();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            dotNetRef?.Dispose();
+
+            if (map != null)
+                await map.DisposeAsync();
+
+            if (atlasInterop != null)
+                await atlasInterop.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+
+    #region Map
+
+    private async Task CreateMap()
+    {
+        try
+        {
+            if (map != null)
+                return;
+
+            config.MapOptions = mapOptions;
+            map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config!, MapExtensions.GetDefaultControls());
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task ResetMap()
+    {
+        try
+        {
+            if (map == null)
+                return;
+
+            await atlasInterop.Map.SetCamera(map, mapOptions.Camera);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    [JSInvokable]
+    public async Task NotifyMapEvent(MapEventArgs e)
+    {
+        await e.ErrorEventProcessed(Logger, ToastService);
+
+        if (e.IsReadyEvent)
+        {
+            try
+            {
+                ddsJSON = DDSBuilder.LinearInterpolate("temperature", [(20, coolColor), (21, mildColor), (22, warmColor), (23, hotColor)], true).ToString();
+                var bubbleColor = DDSBuilder.LinearInterpolate("temperature", [(20, coolColor), (21, mildColor), (22, warmColor), (23, hotColor)]);
+                bubbleLayer.Options = new() { Blur = 0.25, Color = bubbleColor, Radius = 20, StrokeColor = "LightSteelBlue", StrokeWidth = 3 };
+                symbolLayer.Options = new() { IconOptions = new SymbolIconOptions { AllowOverlap = true, Image = "none" }, TextOptions = new SymbolTextOptions { Color = "black", HaloColor = "white", HaloWidth = 2, Offset = new[] { 0, 0.25 }, TextField = DDSBuilder.ConcatGet("temperature", "°C") } };
+
+                var temperatures = await DataService.GetTemperatureLayerData();
+                
+
+                var features = temperatures.Select(temp => new Feature<Point, GeoJsonProperties>(new Point(temp.Position))
+                {
+                    Properties = new GeoJsonProperties
+                    {
+                        { "temperature", temp.Temperature },
+
+                        //optional, not required if using tooltip property
+                        { "description", temp.Description },
+                    }
+                }).ToList();
+
+                await atlasInterop.Sources.Add(map!, bubbleSource);
+                await atlasInterop.Layers.Add(map!, [bubbleLayer, symbolLayer]);
+                await atlasInterop.Features.Add(map!, bubbleSource, features);
+
+                var popup = new Popup { Options = new PopupOptions { PixelOffset = new Pixel(0, -18), CloseButton = false } };
+                _ = await atlasInterop.Popups.AddHoverPopup(map!, symbolLayer!, popup, []);
+
+                mapOptions.Camera!.Center = temperatures[1].Position;
+                await ResetMap();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogMapError(ex);
+                await ToastService.ShowError(ex.Message);
+            }
+            finally
+            {
+                StateHasChanged();
+            }
+        }
+    }
+
+    #endregion
+}

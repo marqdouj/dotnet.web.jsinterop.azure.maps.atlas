@@ -1,0 +1,167 @@
+﻿@page "/dds-match"
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@inject IOptions<MapConfiguration> Configuration
+@inject IJSRuntime JSRuntime
+@inject ILogger<DDSMatch> Logger
+@inject INotificationService ToastService
+@inject IMapDataService DataService
+
+<MapPage Title="@title">
+    <SummaryContent>
+        <FluentText As="TextTag.Paragraph">
+            This page demonstrates the data-driven style builder for '@subject'.
+            <br /><br />
+            This example is of a ficticious company 'Acme Pipelines'.
+            Their pipelines are displayed on the map using GeoJSON files.
+            DDS is used to style the lines based on the type of pipeline (mainline or lateral).
+            <br /><br />
+            Code: <code>layer.Options.StrokeColor = DDSBuilder.Match("category", new List[(string Case, string Value)] { ("mainline", mainlineColor), ("lateral", lateralColor) }, "blue");</code>
+            <br />
+            JSON: <code>@ddsJSON</code>
+        </FluentText>
+        <DDSLink />
+    </SummaryContent>
+
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
+        </Toolbar>
+
+        <MapContainer MapId="@mapId" />
+    </ChildContent>
+</MapPage>
+
+@code {
+    private const string mapId = "mapDDS";
+    private const string subject = nameof(DDSBuilder.Match);
+    private string title = $"DDS - {subject}";
+    private DotNetObjectReference<ComponentBase>? dotNetRef;
+    private AtlasInterop atlasInterop = default!;
+    private MapConfiguration config = default!;
+    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions(new Position(-113.08237963, 52.32390956), 9);
+    private Map? map;
+    private bool mapNotReady => map == null;
+    private readonly DataSource pipelinesSource = LayerType.Line.GetDefaultSource();
+    private LineLayer pipelinesLayer = default!;
+    private string? ddsJSON = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        config = Configuration.GetValue(LogLevel.Trace);
+        atlasInterop = new(JSRuntime);
+        dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
+        pipelinesLayer = (LineLayer)(await LayerType.Line.GetDefaultLayer(DataService));
+        pipelinesLayer.Source = pipelinesSource.Id;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await CreateMap();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            dotNetRef?.Dispose();
+
+            if (map != null)
+                await map.DisposeAsync();
+
+            if (atlasInterop != null)
+                await atlasInterop.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+
+    #region Map
+
+    private async Task CreateMap()
+    {
+        try
+        {
+            if (map != null)
+                return;
+
+            config.MapOptions = mapOptions;
+            map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config!, MapExtensions.GetDefaultControls());
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task ResetMap()
+    {
+        try
+        {
+            if (map == null)
+                return;
+
+            await atlasInterop.Map.SetCamera(map, mapOptions.Camera);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    [JSInvokable]
+    public async Task NotifyMapEvent(MapEventArgs e)
+    {
+        await e.ErrorEventProcessed(Logger, ToastService);
+
+        if (e.IsReadyEvent)
+        {
+            try
+            {
+                string lateralColor = "MediumVioletRed";
+                string mainlineColor = "DarkViolet";
+                ddsJSON = DDSBuilder.Match("category", new List<(string Case, string Value)> { ("mainline", mainlineColor), ("lateral", lateralColor) }, "blue", true).ToString();
+                pipelinesLayer.Options ??= new();
+
+                var colorBuilder = DDSBuilder.Match("category", new List<(string Case, string Value)> { ("mainline", mainlineColor), ("lateral", lateralColor) }, "blue");
+
+                pipelinesLayer.Options.StrokeColor = colorBuilder;
+                pipelinesLayer.Options.StrokeWidth = 5;
+
+                var pipelines = await DataService.GetAcmePipelines();
+
+                await atlasInterop.Sources.Add(map!, [pipelinesSource]);
+                await atlasInterop.Layers.Add(map!, [pipelinesLayer]);
+
+                foreach (var vpm in pipelines)
+                {
+                    foreach (var part in vpm.Parts)
+                    {
+                        await atlasInterop.Sources.DataSource.ImportDataFromUrl(map!, pipelinesSource.Id, part);
+                    }
+                }
+
+                await ResetMap();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogMapError(ex);
+                await ToastService.ShowError(ex.Message);
+            }
+            finally
+            {
+                StateHasChanged();
+            }
+        }
+    }
+
+    #endregion
+}

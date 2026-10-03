@@ -30,7 +30,6 @@ namespace Sandbox.Components.Pages.Atlas
             var source = layerType.GetDefaultSource();
             var layer =  await layerType.GetDefaultLayer(dataService);
             var results = new AddDefaultLayerResults(source, layer);
-            List<IMapObjectReference> references = [];
 
             if (source != null)
             {
