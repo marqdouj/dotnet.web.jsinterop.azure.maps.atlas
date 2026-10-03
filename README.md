@@ -29,7 +29,7 @@ In the source code, see the `Sandbox` web app for examples on using this library
 ## Release Notes (Current)
 - `11.0.0-Preview-4.1`
   - `Data-Driven Styles`. New modules have been added for data-driven style support.
-	- `DDSBuilder`. A static class for creating data-driven style expressions. Wraps all the data-driven style modules.
+	- `DDSBuilder`. A static class for creating data-driven style expressions. Wraps the data-driven style modules.
 	- `CaseGetStyleBuilder`. A builder class for constructing case style expressions in Azure Maps.
 	- `CoalesceGetStyleBuilder`. A builder class for constructing coalesce style expressions in Azure Maps.
 	- `ConcatGetStyleBuilder`. A builder class for constructing concat get style expressions in Azure Maps.
@@ -40,5 +40,6 @@ In the source code, see the `Sandbox` web app for examples on using this library
 	- `StepStyleBuilder`. A builder class for constructing step style expressions in Azure Maps.
   - `SymbolIconOptions`.
 	- `RotationSpecification`. Removed `RotationSpecification` property. Use `Rotation` instead.
+  - `Sandbox`: Added new demo pages for data-driven styles.
 
 ## [Release Notes (All)](Documents/ReleaseNotes.md)
