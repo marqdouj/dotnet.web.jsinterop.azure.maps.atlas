@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks.Sources;
-
-namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.DataDrivenStyles
+﻿namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.DataDrivenStyles
 {
     /// <summary>
     /// A builder class for creating data-driven style expressions for Azure Maps. 
