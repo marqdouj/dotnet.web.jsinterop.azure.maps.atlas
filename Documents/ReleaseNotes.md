@@ -1,6 +1,8 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-4.2`
+  - `Sandbox`. Added new demo pages.
 - `11.0.0-Preview-4.1`
   - `Data-Driven Styles`. New modules have been added for data-driven style support.
 	- `DDSBuilder`. A static class for creating data-driven style expressions. Wraps the data-driven style modules.
