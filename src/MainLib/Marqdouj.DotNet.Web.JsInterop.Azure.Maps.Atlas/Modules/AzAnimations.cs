@@ -2,6 +2,7 @@
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Animations;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Sources;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Animations;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
 
@@ -12,6 +13,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
     /// </summary>
     public interface IAtlasAnimations
     {
+        /// <summary>
+        /// <inheritdoc cref="IAtlasPlayableAnimation"/>
+        /// </summary>
+        IAtlasPlayableAnimation PlayableAnimation { get; }
+
         /// <summary>
         /// Retrieves the name of all the built-in easing functions.
         /// </summary>
@@ -35,6 +41,8 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
     internal class AzAnimations(Lazy<Task<IJSObjectReference>> moduleTask) : IAtlasAnimations
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = moduleTask;
+
+        public IAtlasPlayableAnimation  PlayableAnimation { get; } = new AzPlayableAnimation(moduleTask);
 
         public async ValueTask<List<string>> GetEasingNames()
         {

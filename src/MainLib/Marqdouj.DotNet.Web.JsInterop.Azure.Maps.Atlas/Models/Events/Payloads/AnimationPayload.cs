@@ -1,4 +1,5 @@
-﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Payloads.Animations;
+﻿using Marqdouj.DotNet.EnumConverters;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Payloads.Animations;
 using System.Text.Json.Serialization;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Payloads
@@ -6,22 +7,23 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Payloads
     /// <summary>
     /// The type of animation event payload.
     /// </summary>
+    [JsonConverter(typeof(CamelCaseEnumConverter<AnimationPayloadType>))]
     public enum AnimationPayloadType
     {
-        /// <summary>
-        /// A frame-based animation event.
-        /// </summary>
-        FrameBased,
-
         /// <summary>
         /// A playable animation event.
         /// </summary>
         Playable,
 
         /// <summary>
+        /// A frame-based animation event.
+        /// </summary>
+        FrameBased,
+
+        /// <summary>
         /// A route path animation event.
         /// </summary>
-        RoutPath,
+        RoutePath,
     }
 
     /// <summary>

@@ -12,7 +12,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Payloads.
         /// If requested when creating the event, the PlayableAnimation will be included.
         /// Ensure that if the <see cref="IJSObjectReference"/> is included, it is properly disposed of when no longer needed.
         /// </summary>
-        [JsonIgnore]
+        [JsonInclude]
         public IJSObjectReference? Animation { get; internal set; }
 
         /// <summary>

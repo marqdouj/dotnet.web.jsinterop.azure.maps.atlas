@@ -65,8 +65,12 @@ export class Helpers {
         return items?.length > 0;
     }
 
-    static hasNoElements(items?: any[]): boolean {
-        return !this.hasElements(items);
+    static hasNoElements(items?: any[], logMessage?: string): boolean {
+        const result = !this.hasElements(items);
+        if (result && Helpers.isNotEmptyOrNull(logMessage)) {
+            Logger.logMessage("Checking for elements", LogLevel.Warn, logMessage!, items);
+        }
+        return result;
     }
 
     static getSourceId(source: any) {

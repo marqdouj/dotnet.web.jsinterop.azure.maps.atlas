@@ -1,4 +1,5 @@
-﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Types;
+﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Payloads;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Types;
 using Microsoft.JSInterop;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Definitions
@@ -6,7 +7,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Definitio
     /// <summary>
     /// Animation event definition.
     /// </summary>
-    public class AnimationEvent(AnimationEventType type) : Event
+    public class AnimationEvent(AnimationEventType type, AnimationPayloadType payloadType = AnimationPayloadType.Playable) : Event
     {
         /// <summary>
         /// <see cref="AnimationEventType"/>
@@ -22,6 +23,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Definitio
         /// If true, the <see cref="IJSObjectReference"/> for the event will be included.
         /// </summary>
         public bool IncludeJsReference { get; set; }
+
+        /// <summary>
+        /// The type of payload to return. <inheritdoc cref="AnimationPayloadType"/>
+        /// </summary>
+        public AnimationPayloadType PayloadType { get; } = payloadType;
 
         /// <summary>
         /// <inheritdoc/>

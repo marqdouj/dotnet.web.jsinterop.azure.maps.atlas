@@ -14,6 +14,7 @@ export { MapEvents } from "./atlas/events/MapEvents"
 export { Math } from "./atlas/Math";
 export { MercatorPoint } from "./atlas/data/MercatorPoint"
 export { Navigator } from "./atlas/common/Navigator"
+export { PlayableAnimation } from "./atlas/animations/PlayableAnimation"
 export { Popups } from "./atlas/Popups"
 export { Position } from "./atlas/data/Position"
 export { Sources } from "./atlas/Sources"
