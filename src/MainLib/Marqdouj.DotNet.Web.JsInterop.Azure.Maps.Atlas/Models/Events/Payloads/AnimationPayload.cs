@@ -21,7 +21,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Payloads
         /// <summary>
         /// A route path animation event.
         /// </summary>
-        RoutPath, // TODO: Implement RoutPath payload
+        RoutPath,
     }
 
     /// <summary>
