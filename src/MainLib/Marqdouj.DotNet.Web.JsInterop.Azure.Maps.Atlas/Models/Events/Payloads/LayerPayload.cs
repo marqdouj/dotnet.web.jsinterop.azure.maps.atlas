@@ -1,4 +1,6 @@
-﻿namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Payloads
+﻿using System.Text.Json.Serialization;
+
+namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Payloads
 {
     /// <summary>
     /// Payload for a map/layer event.
@@ -8,21 +10,21 @@
         /// <summary>
         /// The ID of the layer.
         /// </summary>
-        public string? Id { get; set; }
+        [JsonInclude] public string? Id { get; internal set; }
 
         /// <summary>
         /// <inheritdoc cref="MousePayload"/>
         /// </summary>
-        public MousePayload? Mouse { get; set; }
+        [JsonInclude] public MousePayload? Mouse { get; internal set; }
 
         /// <summary>
         /// <inheritdoc cref="TouchPayload"/>
         /// </summary>
-        public TouchPayload? Touch { get; set; }
+        [JsonInclude] public TouchPayload? Touch { get; internal set; }
 
         /// <summary>
         /// <inheritdoc cref="WheelPayload"/>
         /// </summary>
-        public WheelPayload? Wheel { get; set; }
+        [JsonInclude] public WheelPayload? Wheel { get; internal set; }
     }
 }

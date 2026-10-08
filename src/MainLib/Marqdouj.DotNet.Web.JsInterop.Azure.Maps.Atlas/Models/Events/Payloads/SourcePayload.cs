@@ -1,4 +1,6 @@
-﻿namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Payloads
+﻿using System.Text.Json.Serialization;
+
+namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Payloads
 {
     /// <summary>
     /// Represents the payload for a map source event.
@@ -8,6 +10,6 @@
         /// <summary>
         /// Gets or sets the ID of the source that triggered the event.
         /// </summary>
-        public string? Id { get; set; }
+        [JsonInclude] public string? Id { get; internal set; }
     }
 }
