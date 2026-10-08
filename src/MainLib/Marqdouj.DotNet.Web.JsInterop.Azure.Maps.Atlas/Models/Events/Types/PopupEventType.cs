@@ -6,7 +6,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Types
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
     /// <summary>
-    /// Subset of MapEventType that applies to MapEventTarget.popup. Castable to MapEventType.
+    /// Event Type that applies to a Popup.
     /// </summary>
     [JsonConverter(typeof(LowerCaseEnumConverter<PopupEventType>))]
     public enum PopupEventType
