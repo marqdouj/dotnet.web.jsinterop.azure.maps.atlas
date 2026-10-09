@@ -127,7 +127,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Intl
         public DateTimeFormatOptionsLocaleMatcher? LocaleMatcherT 
         {
             get => Enum.TryParse<DateTimeFormatOptionsLocaleMatcher>(LocaleMatcher?.Replace(" ", "_"), true, out var result) ? result : null;
-            set => LocaleMatcher = value?.ToString();
+            set => LocaleMatcher = value?.ToString().Replace("_", " ");
         }
 
         /// <summary>

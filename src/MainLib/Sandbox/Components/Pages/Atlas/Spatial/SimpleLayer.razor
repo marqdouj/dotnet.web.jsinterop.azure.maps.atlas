@@ -38,9 +38,6 @@
         config = Configuration.GetValue(LogLevel.Trace);
         atlasInterop = new(JSRuntime);
         dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
-
-        var test = new NumberFormatOptions { LocaleMatcherT = NumberFormatOptionsLocaleMatcher.best_fit };
-        Console.WriteLine($"{test.LocaleMatcher} : {test.LocaleMatcherT}");
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
