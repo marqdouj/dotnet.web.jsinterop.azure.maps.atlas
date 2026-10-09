@@ -11,8 +11,8 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Intl
     [JsonConverter(typeof(UnderscoreSpaceEnumConverter<NumberFormatOptionsLocaleMatcher>))]
     public enum NumberFormatOptionsLocaleMatcher
     {
-        lookup,
         best_fit,
+        lookup,
     }
 
     /// <summary>
@@ -122,44 +122,12 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Intl
         accounting,
     }
 
-    /// <summary>
-    /// Some of the <see cref="NumberFormatOptions"/> string properties have an associated Enum.
-    /// This interface allows you to get/set the string values using the associated Enum.
-    /// If the Enum is missing a newer value that is required (the Enum has not yet been updated) 
-    /// then you can set the <see cref="NumberFormatOptions"/> string property directly without using this interface.
-    /// </summary>
-    public interface INumberFormatOptionsT
-    {
-        NumberFormatOptionsCompactDisplay? CompactDisplay { get; set; }
-        string? Currency { get; set; }
-        NumberFormatOptionsCurrencyDisplay? CurrencyDisplay { get; set; }
-        NumberFormatOptionsCurrencySign? CurrencySign { get; set; }
-        NumberFormatOptionsLocaleMatcher? LocaleMatcher { get; set; }
-        int? MaximumFractionDigits { get; set; }
-        int? MaximumSignificantDigits { get; set; }
-        int? MinimumFractionDigits { get; set; }
-        int? MinimumIntegerDigits { get; set; }
-        int? MinimumSignificantDigits { get; set; }
-        NumberFormatOptionsNotation? Notation { get; set; }
-        string? NumberingSystem { get; set; }
-        int? RoundingIncrement { get; set; }
-        NumberFormatOptionsRoundingMode? RoundingMode { get; set; }
-        NumberFormatOptionsRoundingPriority? RoundingPriority { get; set; }
-        NumberFormatOptionsSignDisplay? SignDisplay { get; set; }
-        NumberFormatOptionsStyle? Style { get; set; }
-        NumberFormatOptionsTrailingZeroDisplay? TrailingZeroDisplay { get; set; }
-        string? Unit { get; set; }
-        NumberFormatOptionsUnitDisplay? UnitDisplay { get; set; }
-        bool? UseGrouping { get; set; }
-
-        object Clone();
-    }
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
     /// <summary>
     /// Represents the options for formatting a number, analogous to JavaScript's Intl.NumberFormatOptions.
     /// </summary>
-    public class NumberFormatOptions : ICloneable, INumberFormatOptionsT
+    public class NumberFormatOptions : ICloneable
     {
         /// <summary>
         /// <inheritdoc cref="NumberFormatOptionsLocaleMatcher"/>
@@ -266,70 +234,114 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Intl
         /// </summary>
         public string? CurrencySign { get; set; }
 
-        NumberFormatOptionsLocaleMatcher? INumberFormatOptionsT.LocaleMatcher
+        /// <summary>
+        /// Tries to get/set the <see cref="LocaleMatcher"/> using <see cref="NumberFormatOptionsLocaleMatcher"/>
+        /// </summary>
+        [JsonIgnore]
+        public NumberFormatOptionsLocaleMatcher? LocaleMatcherT
         {
             get => Enum.TryParse<NumberFormatOptionsLocaleMatcher>(LocaleMatcher?.Replace(" ", "_"), true, out var result) ? result : null;
             set => LocaleMatcher = value?.ToString();
         }
 
-        NumberFormatOptionsCompactDisplay? INumberFormatOptionsT.CompactDisplay 
-        { 
-            get => Enum.TryParse<NumberFormatOptionsCompactDisplay>(CompactDisplay, true, out var result) ? result : null; 
+        /// <summary>
+        /// Tries to get/set the <see cref="CompactDisplay"/> using <see cref="NumberFormatOptionsCompactDisplay"/>.
+        /// </summary>
+        [JsonIgnore]
+        public NumberFormatOptionsCompactDisplay? CompactDisplayT
+        {
+            get => Enum.TryParse<NumberFormatOptionsCompactDisplay>(CompactDisplay, true, out var result) ? result : null;
             set => CompactDisplay = value?.ToString();
         }
 
-        NumberFormatOptionsCurrencyDisplay? INumberFormatOptionsT.CurrencyDisplay 
-        { 
-            get => Enum.TryParse<NumberFormatOptionsCurrencyDisplay>(CurrencyDisplay, true, out var result) ? result : null; 
+        /// <summary>
+        /// Tries to get/set the <see cref="CurrencyDisplay"/> using <see cref="NumberFormatOptionsCurrencyDisplay"/>.
+        /// </summary>
+        [JsonIgnore]
+        public NumberFormatOptionsCurrencyDisplay? CurrencyDisplayT
+        {
+            get => Enum.TryParse<NumberFormatOptionsCurrencyDisplay>(CurrencyDisplay, true, out var result) ? result : null;
             set => CurrencyDisplay = value?.ToString();
         }
 
-        NumberFormatOptionsCurrencySign? INumberFormatOptionsT.CurrencySign 
-        { 
+        /// <summary>
+        /// Tries to get/set the <see cref="CurrencySign"/> using <see cref="NumberFormatOptionsCurrencySign"/>.
+        /// </summary>
+        [JsonIgnore]
+        public NumberFormatOptionsCurrencySign? CurrencySignT
+        {
             get => Enum.TryParse<NumberFormatOptionsCurrencySign>(CurrencySign, true, out var result) ? result : null;
-            set => CurrencySign = value?.ToString(); 
+            set => CurrencySign = value?.ToString();
         }
 
-        NumberFormatOptionsNotation? INumberFormatOptionsT.Notation 
-        { 
+        /// <summary>
+        /// Tries to get/set the <see cref="Notation"/> using <see cref="NumberFormatOptionsNotation"/>.
+        /// </summary>
+        [JsonIgnore]
+        public NumberFormatOptionsNotation? NotationT
+        {
             get => Enum.TryParse<NumberFormatOptionsNotation>(Notation, true, out var result) ? result : null;
-            set => Notation = value?.ToString(); 
+            set => Notation = value?.ToString();
         }
 
-        NumberFormatOptionsRoundingMode? INumberFormatOptionsT.RoundingMode 
-        { 
+        /// <summary>
+        /// Tries to get/set the <see cref="RoundingMode"/> using <see cref="NumberFormatOptionsRoundingMode"/>.
+        /// </summary>
+        [JsonIgnore]
+        public NumberFormatOptionsRoundingMode? RoundingModeT
+        {
             get => Enum.TryParse<NumberFormatOptionsRoundingMode>(RoundingMode, true, out var result) ? result : null;
-            set => RoundingMode = value?.ToString(); 
+            set => RoundingMode = value?.ToString();
         }
 
-        NumberFormatOptionsRoundingPriority? INumberFormatOptionsT.RoundingPriority 
-        { 
+        /// <summary>
+        /// Tries to get/set the <see cref="RoundingPriority"/> using <see cref="NumberFormatOptionsRoundingPriority"/>.
+        /// </summary>
+        [JsonIgnore]
+        public NumberFormatOptionsRoundingPriority? RoundingPriorityT
+        {
             get => Enum.TryParse<NumberFormatOptionsRoundingPriority>(RoundingPriority, true, out var result) ? result : null;
-            set => RoundingPriority = value?.ToString(); 
+            set => RoundingPriority = value?.ToString();
         }
 
-        NumberFormatOptionsSignDisplay? INumberFormatOptionsT.SignDisplay 
-        { 
+        /// <summary>
+        /// Tries to get/set the <see cref="SignDisplay"/> using <see cref="NumberFormatOptionsSignDisplay"/>.
+        /// </summary>
+        [JsonIgnore]
+        public NumberFormatOptionsSignDisplay? SignDisplayT
+        {
             get => Enum.TryParse<NumberFormatOptionsSignDisplay>(SignDisplay, true, out var result) ? result : null;
-            set => SignDisplay = value?.ToString(); 
+            set => SignDisplay = value?.ToString();
         }
 
-        NumberFormatOptionsStyle? INumberFormatOptionsT.Style 
-        { 
+        /// <summary>
+        /// Tries to get/set the <see cref="Style"/> using <see cref="NumberFormatOptionsStyle"/>.
+        /// </summary>
+        [JsonIgnore]
+        public NumberFormatOptionsStyle? StyleT
+        {
             get => Enum.TryParse<NumberFormatOptionsStyle>(Style, true, out var result) ? result : null;
-            set => Style = value?.ToString(); 
+            set => Style = value?.ToString();
         }
 
-        NumberFormatOptionsTrailingZeroDisplay? INumberFormatOptionsT.TrailingZeroDisplay 
-        { 
+        /// <summary>
+        /// Tries to get/set the <see cref="TrailingZeroDisplay"/> using <see cref="NumberFormatOptionsTrailingZeroDisplay"/>.
+        /// </summary>
+        [JsonIgnore]
+        public NumberFormatOptionsTrailingZeroDisplay? TrailingZeroDisplayT
+        {
             get => Enum.TryParse<NumberFormatOptionsTrailingZeroDisplay>(TrailingZeroDisplay, true, out var result) ? result : null;
-            set => TrailingZeroDisplay = value?.ToString(); 
+            set => TrailingZeroDisplay = value?.ToString();
         }
 
-        NumberFormatOptionsUnitDisplay? INumberFormatOptionsT.UnitDisplay 
-        { 
+        /// <summary>
+        /// Tries to get/set the <see cref="UnitDisplay"/> using <see cref="NumberFormatOptionsUnitDisplay"/>.
+        /// </summary>
+        [JsonIgnore]
+        public NumberFormatOptionsUnitDisplay? UnitDisplayT
+        {
             get => Enum.TryParse<NumberFormatOptionsUnitDisplay>(UnitDisplay, true, out var result) ? result : null;
-            set => UnitDisplay = value?.ToString(); 
+            set => UnitDisplay = value?.ToString();
         }
 
         /// <summary>
