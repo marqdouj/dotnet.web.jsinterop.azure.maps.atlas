@@ -162,7 +162,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Intl
     public class NumberFormatOptions : ICloneable, INumberFormatOptionsT
     {
         /// <summary>
-        /// "lookup" | "best fit" | undefined;
+        /// <inheritdoc cref="NumberFormatOptionsLocaleMatcher"/>
         /// </summary>
         public string? LocaleMatcher { get; set; }
 
@@ -268,7 +268,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Intl
 
         NumberFormatOptionsLocaleMatcher? INumberFormatOptionsT.LocaleMatcher
         {
-            get => Enum.TryParse<NumberFormatOptionsLocaleMatcher>(LocaleMatcher, true, out var result) ? result : null;
+            get => Enum.TryParse<NumberFormatOptionsLocaleMatcher>(LocaleMatcher?.Replace(" ", "_"), true, out var result) ? result : null;
             set => LocaleMatcher = value?.ToString();
         }
 
