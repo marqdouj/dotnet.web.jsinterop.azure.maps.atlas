@@ -6,7 +6,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Animations
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
     /// <summary>
-    /// EasingName functions supported at the time this library was built.
+    /// EasingT functions supported at the time this library was built.
     /// </summary>
     [JsonConverter(typeof(CamelCaseEnumConverter<EasingName>))]
     public enum EasingName
