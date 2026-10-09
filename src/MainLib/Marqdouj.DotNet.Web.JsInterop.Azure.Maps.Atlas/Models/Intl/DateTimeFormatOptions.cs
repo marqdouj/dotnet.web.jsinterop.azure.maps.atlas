@@ -217,7 +217,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Intl
         public DateTimeFormatOptionsFormatMatcher? FormatMatcherT
         {
             get => Enum.TryParse<DateTimeFormatOptionsFormatMatcher>(FormatMatcher?.Replace(" ", "_"), true, out var result) ? result : null;
-            set => FormatMatcher = value?.ToString();
+            set => FormatMatcher = value?.ToString().Replace("_", " ");
         }
 
         /// <summary>

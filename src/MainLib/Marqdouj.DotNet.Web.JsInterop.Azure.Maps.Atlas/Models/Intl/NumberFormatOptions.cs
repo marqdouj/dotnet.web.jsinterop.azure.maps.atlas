@@ -241,7 +241,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Intl
         public NumberFormatOptionsLocaleMatcher? LocaleMatcherT
         {
             get => Enum.TryParse<NumberFormatOptionsLocaleMatcher>(LocaleMatcher?.Replace(" ", "_"), true, out var result) ? result : null;
-            set => LocaleMatcher = value?.ToString();
+            set => LocaleMatcher = value?.ToString().Replace("_", " ");
         }
 
         /// <summary>
