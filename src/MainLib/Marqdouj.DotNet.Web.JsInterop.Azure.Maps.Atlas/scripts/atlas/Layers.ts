@@ -2,6 +2,7 @@ import * as atlas from "azure-maps-control"
 import { MapObjectReference } from "./common"
 import { Helpers } from "./common/Helpers";
 import { LayerEvents } from "../atlas";
+import { Logger, LogLevel } from "./common/Logger";
 
 export class Layers {
     public static add(map: atlas.Map, mapLayers: MapLayer[], getReferences: boolean = false) {
@@ -43,9 +44,10 @@ export class Layers {
             }
 
             if (lyr) {
+                lyr.metadata = ml.metadata;
                 map.layers.add(lyr, ml.before);
                 if (getReferences)
-                    results.push(this.#getReference(mapId, lyr, ml.id));
+                    results.push(this.getReference(mapId, lyr, ml.id));
             }
         });
 
@@ -65,7 +67,7 @@ export class Layers {
         const layers = map.layers.getLayers();
 
         layers.forEach((lyr) => {
-            results.push(this.#getReference(mapId, lyr));
+            results.push(this.getReference(mapId, lyr));
         });
 
         return results;
@@ -79,7 +81,7 @@ export class Layers {
             return;
 
         ids.forEach((id) => {
-            results.push(this.#getReference(mapId, map.layers.getLayerById(id), id));
+            results.push(this.getReference(mapId, map.layers.getLayerById(id), id));
         });
 
         return results;
@@ -130,7 +132,7 @@ export class Layers {
         return result;
     }
 
-    static #getReference(mapId: string, layer?: atlas.layer.Layer, layerId?: string | undefined) {
+    public static getReference(mapId: string, layer?: atlas.layer.Layer, layerId?: string | undefined) {
         const type = this.#getLayerType(layer);
         return Helpers.createMapObjectReference(mapId, type, layer, layerId);
     }
@@ -181,4 +183,5 @@ interface MapLayer {
     type: LayerType;
     before?: string;
     options?: any;
+    metadata?: any;
 }

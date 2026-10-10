@@ -27,6 +27,9 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         Popups,
         Position,
         Sources,
+        Spatial,
+        SpatialLayers,
+        SpatialIO,
         StyleControlEvents,
     }
 

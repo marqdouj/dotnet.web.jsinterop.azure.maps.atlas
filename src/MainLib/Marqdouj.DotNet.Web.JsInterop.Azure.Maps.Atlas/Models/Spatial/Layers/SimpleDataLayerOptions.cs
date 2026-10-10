@@ -1,6 +1,6 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common;
 
-namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Spatial
+namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Spatial.Layers
 {
     /// <summary>
     /// Options for the simple data layer.

@@ -17,6 +17,9 @@
     <ChildContent>
         <Toolbar>
             <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
+            <FluentSpacer Width="10px" />
+            <FluentButton Disabled="@addLayerDisabled" IconStart="@(new Icons.Regular.Size20.Add())" Title="Add Layer" OnClick="@AddLayer" />
+            <FluentButton Disabled="@removeLayerDisabled" IconStart="@(new Icons.Regular.Size20.Delete())" Title="Delete Layer" OnClick="@RemoveLayer" />
         </Toolbar>
 
         <MapContainer MapId="@mapId" />
@@ -32,6 +35,10 @@
     private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
     private Map? map;
     private bool mapNotReady => map == null;
+    private DataSource? dataSource;
+    private SimpleDataLayer? layer;
+    private bool addLayerDisabled => mapNotReady || layer != null;
+    private bool removeLayerDisabled => mapNotReady || layer == null;
 
     protected override void OnInitialized()
     {
@@ -60,6 +67,62 @@
         }
         catch (JSDisconnectedException)
         {
+        }
+    }
+
+    private async Task AddLayer()
+    {
+        try
+        {
+            if (dataSource == null)
+            {
+                dataSource = new();
+                await atlasInterop.Sources.Add(map!, dataSource);
+                var url = await DataService.Examples.Spatial.GetReadUrl(SpatialGetReadUrl.Route66Attractions);
+                await atlasInterop.Spatial.IO.Read(map!, dataSource.Id, url);
+            }
+            if (layer == null)
+            {
+                layer = new() { Source = dataSource.Id };
+                await atlasInterop.Spatial.Layers.Add(map!, [layer]);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task RemoveLayer()
+    {
+        try
+        {
+            if (layer != null)
+            {
+                await atlasInterop.Layers.Remove(map!, [layer.Id]);
+                layer = null;
+            }
+
+            if (dataSource != null)
+            {
+                await atlasInterop.Sources.DataSource.Clear(map!, [dataSource]);
+                await atlasInterop.Sources.Remove(map!, dataSource);
+                dataSource = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
         }
     }
 
