@@ -19,18 +19,19 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Spatial
         /// <param name="dataSource">DataSource.Id or an <see cref="IJSObjectReference"/> to a <see cref="DataSource"/></param>
         /// <param name="spatialData">The spatial data string or URL to a file to read.</param>
         /// <param name="options"></param>
+        /// <param name="dsReadAction"><see cref="DataSourceReadAction"/></param>
         /// <param name="zoomToBBox">If true, zooms the map to the bounding box of the loaded data (if it exists).</param>
         /// <returns></returns>
-        ValueTask Read(Map map, object dataSource, string spatialData, SpatialDataReadOptions? options = null, bool zoomToBBox = true);
+        ValueTask Read(Map map, object dataSource, string spatialData, SpatialDataReadOptions? options = null, DataSourceReadAction dsReadAction = DataSourceReadAction.add, bool zoomToBBox = true);
     }
 
     internal class AzSpatialIO(Lazy<Task<IJSObjectReference>> moduleTask) : IAtlasSpatialIO
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = moduleTask;
 
-        public async ValueTask Read(Map map, object dataSource, string spatialData, SpatialDataReadOptions? options = null, bool zoomToBBox = true)
+        public async ValueTask Read(Map map, object dataSource, string spatialData, SpatialDataReadOptions? options = null, DataSourceReadAction dsReadAction = DataSourceReadAction.add, bool zoomToBBox = true)
         {
-            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, dataSource, spatialData, options, zoomToBBox);
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, dataSource, spatialData, options, dsReadAction, zoomToBBox);
         }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")
