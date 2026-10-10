@@ -28,6 +28,11 @@ In the source code, see the `Sandbox` web app for examples on using this library
 
 ## Release Notes (Current)
 - `11.0.0-Preview-4.2`
-  - `Sandbox`. Added new demo pages.
+  - `Layers`.
+	- `Metadata`. New property for layer metadata.
+  - `Animations`. Refactor animations; add support for events.
+  - `IAtlasSpatial`. New interface/modules in support of [spatial](https://learn.microsoft.com/en-us/azure/azure-maps/how-to-use-spatial-io-module) interactions.
+  - `Sandbox`.
+	- `Scripts (Optional)/Spatial IO`. Added new demo pages in support of spatial interactions.
 
 ## [Release Notes (All)](Documents/ReleaseNotes.md)
