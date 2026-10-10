@@ -9,12 +9,12 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Spatial.Read
     public enum DataSourceReadAction
     {
         /// <summary>
-        /// Add the data to the datasource with 'add' method.
+        /// Add the data to the datasource with the 'add' method.
         /// </summary>
         add,
 
         /// <summary>
-        /// Add the data to the datasource with 'Add' setShapes.
+        /// Add the data to the datasource with the 'setShapes' method.
         /// </summary>
         setShapes,
     }
