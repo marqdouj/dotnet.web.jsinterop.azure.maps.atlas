@@ -121,7 +121,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
 
         public async ValueTask<List<IMapObjectReference>> Add(Map map, IEnumerable<MapSource> sources, bool getReferences = false)
         {
-            var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, sources, getReferences);
+            var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, sources.Cast<object>().ToList(), getReferences);
             return [.. items.Cast<IMapObjectReference>()];
         }
 

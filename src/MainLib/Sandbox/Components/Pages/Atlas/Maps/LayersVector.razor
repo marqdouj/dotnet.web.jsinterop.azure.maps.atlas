@@ -1,0 +1,185 @@
+﻿@page "/maps-layers-vector"
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@inject IOptions<MapConfiguration> Configuration
+@inject IJSRuntime JSRuntime
+@inject ILogger<LayersVector> Logger
+@inject INotificationService ToastService
+@inject IMapDataService DataService
+
+<MapPage Title="@title">
+    <SummaryContent>
+        <FluentText As="TextTag.Paragraph">
+            This page demonstrates how to use a vector tile service to render line data on the map.
+            <br />
+            Based on this <a href="https://github.com/Azure-Samples/AzureMapsCodeSamples/blob/main/Samples/Vector%20tiles/Vector%20tile%20line%20layer/Vector%20tile%20line%20layer.html" target="_blank">example</a>
+        </FluentText>
+    </SummaryContent>
+
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
+            <FluentLabel>Layer:</FluentLabel>
+            <FluentButton Disabled="@addLayerDisabled" IconStart="@(new Icons.Regular.Size20.Add())" Title="Add Layer" OnClick="@AddLayer" />
+            <FluentButton Disabled="@removeLayerDisabled" IconStart="@(new Icons.Regular.Size20.Delete())" Title="Remove Layer" OnClick="@RemoveLayer" />
+       
+        </Toolbar>
+
+        <MapContainer MapId="@mapId" />
+    </ChildContent>
+</MapPage>
+
+@code {
+    private const string mapId = "mapLayersVectorTS";
+    private const string title = "Maps - Layers (Vector Tile Service)";
+    private DotNetObjectReference<ComponentBase>? dotNetRef;
+    private AtlasInterop atlasInterop = default!;
+    private MapConfiguration config = default!;
+    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions(new Position(-74, 40.723));
+    private Map? map;
+    private bool mapNotReady => map == null;
+    private bool addLayerDisabled => mapNotReady || layer != null;
+    private bool removeLayerDisabled => mapNotReady || layer == null;
+    private LineLayer? layer;
+    private VectorTileSource? source;
+
+    protected override void OnInitialized()
+    {
+        config = Configuration.GetValue(LogLevel.Trace);
+        atlasInterop = new(JSRuntime);
+        dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await CreateMap();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            dotNetRef?.Dispose();
+
+            if (map != null)
+                await map.DisposeAsync();
+
+            if (atlasInterop != null)
+                await atlasInterop.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+
+    #region Layers
+
+    private async Task AddLayer()
+    {
+        try
+        {
+            if (layer != null)
+                return;
+
+            if (source == null)
+            {
+                source = new VectorTileSource
+                {
+                    Options = new VectorTileSourceOptions
+                    {
+                        Tiles = new List<string> { "https://{azMapsDomain}/traffic/flow/tile/pbf?api-version=1.0&style=relative&zoom={z}&x={x}&y={y}" },
+                        MaxZoom = 22,
+                    }
+                };
+
+                await atlasInterop.Sources.Add(map!, source);
+            }
+
+            layer = new LineLayer()
+            {
+                Before = "labels",
+                Source = source.Id,
+                Options = new LineLayerOptions
+                {
+                    SourceLayer = "Traffic flow",
+                    StrokeColor = DDSBuilder.Step("traffic_level", new List<(double Case, object Value)> { (0.01, "#EE2F53"), (0.8, "orange"), (1, "#66CC99") }, defaultValue: "#6B0512"),
+                    StrokeWidth = DDSBuilder.LinearInterpolate("traffic_level", new List<(double Case, object Value)> { (0, 6), (1, 1) }),
+                }
+            };
+            
+            await atlasInterop.Layers.Add(map!, [layer]);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task RemoveLayer()
+    {
+        try
+        {
+            if (layer == null)
+                return;
+
+            await atlasInterop.Layers.Remove(map!, layer);
+            layer = null;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    #endregion
+
+    #region Map
+
+    private async Task CreateMap()
+    {
+        try
+        {
+            if (map != null)
+                return;
+
+            config.MapOptions = mapOptions;
+            map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config!, MapExtensions.GetDefaultControls());
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task ResetMap()
+    {
+        try
+        {
+            if (map == null)
+                return;
+
+            await atlasInterop.Map.SetCamera(map, mapOptions.Camera);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    [JSInvokable]
+    public async Task NotifyMapEvent(MapEventArgs e)
+    {
+        await e.ErrorEventProcessed(Logger, ToastService);
+    }
+
+    #endregion
+}
