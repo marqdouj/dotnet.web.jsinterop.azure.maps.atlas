@@ -1,9 +1,9 @@
 ﻿@inherits LayoutComponentBase
 
 <FluentLayout>
-    <FluentLayoutItem Area="LayoutArea.Header" Sticky="true">
+    <FluentLayoutItem Area="LayoutArea.Header">
         <FluentLayoutHamburger />
-        Sandbox
+        <FluentText Weight="TextWeight.Bold" Size="TextSize.Size600">Sandbox</FluentText>
     </FluentLayoutItem>
     <FluentLayoutItem Area="LayoutArea.Navigation">
         <NavMenu />
@@ -14,8 +14,8 @@
         </div>
     </FluentLayoutItem>
 
-    <FluentLayoutItem Area="LayoutArea.Footer" Sticky="true">
-        <FluentStack>
+    <FluentLayoutItem Area="LayoutArea.Footer">
+        <div style="display: flex">
             <FluentLink Href="https://www.fluentui-blazor.net" Target="LinkTarget.Blank" IconEnd="@(new Icons.Regular.Size16.ArrowExit())">
                 Fluent UI Blazor
             </FluentLink>
@@ -27,7 +27,7 @@
             <FluentLink Href="https://learn.microsoft.com/en-us/aspnet/core/blazor" Target="LinkTarget.Blank" IconEnd="@(new Icons.Regular.Size16.ArrowExit())">
                 About Blazor
             </FluentLink>
-        </FluentStack>
+        </div>
     </FluentLayoutItem>
 </FluentLayout>
 
