@@ -6,7 +6,7 @@
 	- `IJSObjectReference? Map`. New property to assign the map reference that the animation will follow.
   - `Spatial`.
 	- `GPSTraceRouteParameters`. Removed the `follow` property. Assign the map to the `RoutePathAnimationOptions.Map` property instead.
-  - `Sandbox`. Spatial demo updates in support of changes.
+  - `Sandbox`. Animation/Spatial demo updates in support of changes.
 - `11.0.0-Preview-4.2`
   - `Layers`.
 	- `Metadata`. New property for layers.

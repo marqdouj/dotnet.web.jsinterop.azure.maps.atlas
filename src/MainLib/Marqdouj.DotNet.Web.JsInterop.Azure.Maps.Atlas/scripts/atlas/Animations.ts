@@ -30,7 +30,6 @@ export class Animations {
         const mapId = Helpers.getMapId(map);
         const shape = DataSource.getShapeById(map, source, shapeId, false);
         if (shape instanceof atlas.Shape) {
-            options = Helpers.removeNullish(options);
             const result = anims.animations.setCoordinates(shape as any, newCoordinates, options);
             return getReference ? Helpers.createMapObjectReference(mapId, "PlayableAnimation", result, "") : undefined;
         }
