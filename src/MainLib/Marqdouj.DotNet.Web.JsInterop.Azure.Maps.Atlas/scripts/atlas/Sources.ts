@@ -68,6 +68,11 @@ export class Sources {
         map.sources.remove(sources);
     }
 
+    public static getSourceInstance(map: atlas.Map, source: any) : atlas.source.Source | undefined {
+        const existing = map.sources.getSources();
+        return this.#getInstance(map, source, existing);
+    }
+
     static #getReference(mapId: string, ds?: atlas.source.Source, id?: string) {
         const type = this.#getSourceType(ds);
         return Helpers.createMapObjectReference(mapId, type, ds, id ?? ds?.getId());

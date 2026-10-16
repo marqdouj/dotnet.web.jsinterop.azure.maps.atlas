@@ -44,7 +44,7 @@
     private int carMax;
     private bool movePrevNotReady => mapNotReady || carIndex <= 0;
     private bool moveNextNotReady => mapNotReady || carIndex >= carMax;
-    private readonly PlayableAnimationOptions animationOptions = new() { AutoPlay = true, Duration = 1500, EasingName = EasingName.EaseInOutSine };
+    private readonly PlayableAnimationOptions animationOptions = new() { AutoPlay = true, Duration = 1500, EasingT = EasingName.EaseInOutSine };
     private readonly GeoJsonProperties featureProperties = new GeoJsonProperties { { "heading", 90.0 } };
     private List<Position> lineData = default!;
     private readonly DataSource pinSource = new();

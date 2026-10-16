@@ -27,19 +27,14 @@ In the source code, see the `Sandbox` web app for examples on using this library
 ## [Build Solution](Documents/BuildSolution.md)
 
 ## Release Notes (Current)
-- `11.0.0-Preview-4.1`
-  - `Data-Driven Styles`. New modules have been added for data-driven style support.
-	- `DDSBuilder`. A static class for creating data-driven style expressions. Wraps the data-driven style modules.
-	- `CaseGetStyleBuilder`. A builder class for constructing case style expressions in Azure Maps.
-	- `CoalesceGetStyleBuilder`. A builder class for constructing coalesce style expressions in Azure Maps.
-	- `ConcatGetStyleBuilder`. A builder class for constructing concat get style expressions in Azure Maps.
-	- `PropertyActionStyleBuilder`. A builder class for creating an action to get a property value in Azure Maps.
-	- `GeometryFilterStyleBuilder`. A builder class for constructing geometry filter style expressions in Azure Maps.
-	- `LinearInterpolateStyleBuilder`. A builder class for constructing linear interpolate style expressions in Azure Maps.
-	- `MatchStyleBuilder`. A builder class for constructing match style expressions in Azure Maps.
-	- `StepStyleBuilder`. A builder class for constructing step style expressions in Azure Maps.
-  - `SymbolIconOptions`.
-	- `RotationSpecification`. Removed `RotationSpecification` property. Use `Rotation` instead.
-  - `Sandbox`: Added new demo pages for data-driven styles.
+- `11.0.0-Preview-4.2`
+  - `Layers`.
+	- `Metadata`. New property for layers.
+  - `Animations`. Refactor animations; add support for events.
+  - `IAtlasSpatial`. New interface/modules in support of [spatial](https://learn.microsoft.com/en-us/azure/azure-maps/how-to-use-spatial-io-module) interactions.
+  - `Sandbox`.
+	- `Scripts (Optional)/Spatial IO`. Added new demo pages in support of spatial interactions.
+	  - `GPS Trace (Animation)`.
+	  - `SimpleDataLayer`.
 
 ## [Release Notes (All)](Documents/ReleaseNotes.md)

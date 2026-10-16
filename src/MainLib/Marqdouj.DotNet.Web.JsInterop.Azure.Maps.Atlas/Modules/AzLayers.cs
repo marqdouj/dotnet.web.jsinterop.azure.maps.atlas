@@ -66,7 +66,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// IMPORTANT! If you have an <see cref="IMapObjectReference"/> to the layer it must be disposed.
         /// </summary>
         /// <param name="map"></param>
-        /// <param name="layers">List of layer ids.</param>
+        /// <param name="layers">List of layer layerIds.</param>
         /// <returns></returns>
         ValueTask Remove(Map map, IEnumerable<ILayer> layers);
 
@@ -141,9 +141,9 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
             await Remove(map, [layer]);
         }
 
-        public async ValueTask Remove(Map map, IEnumerable<string> sourceIds)
+        public async ValueTask Remove(Map map, IEnumerable<string> layerIds)
         {
-            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, sourceIds);
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, layerIds);
         }
 
         public async ValueTask Remove(Map map, string id)

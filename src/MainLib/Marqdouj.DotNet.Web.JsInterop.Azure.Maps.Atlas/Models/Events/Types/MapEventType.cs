@@ -6,7 +6,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Types
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
     /// <summary>
-    /// Type of map event.
+    /// Event Type that applies to the map.
     /// </summary>
     [JsonConverter(typeof(LowerCaseEnumConverter<MapEventType>))]
     public enum MapEventType

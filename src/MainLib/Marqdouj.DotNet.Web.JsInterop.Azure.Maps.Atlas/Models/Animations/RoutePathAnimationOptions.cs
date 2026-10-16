@@ -18,11 +18,6 @@
         public bool? CaptureMetadata { get; set; }
 
         /// <summary>
-        /// Map to animate along a path.
-        /// </summary>
-        public string? MapId { get; set; }
-
-        /// <summary>
         /// A fixed zoom level to snap the map to on each animation frame.
         /// By default the map's current zoom level is used.
         /// </summary>

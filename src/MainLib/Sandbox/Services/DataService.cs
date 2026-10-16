@@ -26,9 +26,9 @@ namespace Sandbox.Services
 
     public enum SpatialGetReadUrl
     {
-        Choropleth_3D,
+        Choropleth3D,
         SampleGeoRSS,
-        SimpleRead,
+        Route66Attractions,
     }
 
     public interface ISpatialExamples
@@ -49,11 +49,11 @@ namespace Sandbox.Services
 
             switch (url)
             {
-                case SpatialGetReadUrl.Choropleth_3D:
+                case SpatialGetReadUrl.Choropleth3D:
                     return "examples/Choropleth3D.xml";
                 case SpatialGetReadUrl.SampleGeoRSS:
                     return "examples/SampleGeoRSS.xml";
-                case SpatialGetReadUrl.SimpleRead:
+                case SpatialGetReadUrl.Route66Attractions:
                     return "examples/Route66Attractions.xml";
                 default:
                     throw new NotSupportedException();

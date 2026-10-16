@@ -1,4 +1,5 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration;
+using System.Text.Json.Serialization;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Payloads
 {
@@ -10,6 +11,6 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Payloads
         /// <summary>
         /// <inheritdoc cref="MapStyle"/>
         /// </summary>
-        public MapStyle? Style { get; set; }
+        [JsonInclude] public MapStyle? Style { get; internal set; }
     }
 }

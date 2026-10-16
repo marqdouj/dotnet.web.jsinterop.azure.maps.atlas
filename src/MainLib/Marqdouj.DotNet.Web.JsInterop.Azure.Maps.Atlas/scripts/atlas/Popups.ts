@@ -27,7 +27,7 @@ export class Popups {
                     results.push(Helpers.createMapObjectReference(mapId, MapEventTarget.Popup, popup, info.id));
             }
             else {
-                Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: Popup already exists.`, info);
+                Logger.logMapMessage(mapId, LogLevel.Warn, `${eventName}: Popup already exists.`, info);
             }
         });
 

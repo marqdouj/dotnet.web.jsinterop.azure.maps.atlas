@@ -124,10 +124,6 @@
             Logger.LogMapError(ex);
             await ToastService.ShowError(ex.Message);
         }
-        finally
-        {
-            StateHasChanged();
-        }
     }
 
     private async Task RemoveMap()

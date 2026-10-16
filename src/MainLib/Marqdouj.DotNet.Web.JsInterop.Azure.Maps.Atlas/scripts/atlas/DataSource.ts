@@ -1,6 +1,7 @@
 import * as atlas from "azure-maps-control"
 import { Helpers } from "./common/Helpers";
 import { Logger, LogLevel } from "./common/Logger";
+import { MapObjectReference } from "./common";
 
 export class DataSource {
     public static clear(map: atlas.Map, sources: any[]) {
@@ -22,6 +23,15 @@ export class DataSource {
         const ds = this.getDataSourceFromSource(map, mapId, source, eventName, true);
         const shape = ds?.getShapeById(shapeId);
         return getReference ? Helpers.createMapObjectReference(mapId, "Shape", shape, shapeId) : shape;
+    }
+
+    public static getShapes(map: atlas.Map, source: any, getReference: boolean = true) {
+        const eventName = "DataSource.getShapes";
+        const mapId = Helpers.getMapId(map);
+        const ds = this.getDataSourceFromSource(map, mapId, source, eventName, true);
+        const shapes = ds?.getShapes();
+
+        return getReference ? Helpers.createMapObjectReference(mapId, "Shapes", shapes, ds?.getId()) : shapes;
     }
 
     public static async importDataFromUrl(map: atlas.Map, source: any, url: string) {

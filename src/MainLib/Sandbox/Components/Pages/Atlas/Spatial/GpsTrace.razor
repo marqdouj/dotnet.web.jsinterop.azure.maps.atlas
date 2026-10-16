@@ -1,0 +1,445 @@
+﻿@page "/spatial-gpstrace"
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@inject IOptions<MapConfiguration> Configuration
+@inject IJSRuntime JSRuntime
+@inject ILogger<GpsTrace> Logger
+@inject INotificationService ToastService
+
+<MapPage Title="@title">
+    <SummaryContent>
+        <FluentText As="TextTag.Paragraph">
+            This page demonstrates reading a GPS data file into a SimpleDataLayer and performing an animation on the data.
+        </FluentText>
+    </SummaryContent>
+
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
+            <FluentSpacer Width="5px" />
+            <FluentCombobox Label="Dataset:" LabelPosition="LabelPosition.Before"
+                          Placeholder="Select data..."
+                          Multiple="false"
+                          Items="@datasets"
+                          OptionText="@(item => item?.DisplayName)"
+                          TOption="DatasetInfo"
+                          TValue="DatasetInfo"
+                          @bind-Value:set="OnDatasetInfoChanged"
+                          @bind-Value:get="@selectedDataset"
+                          Width="260px" />
+            <FluentSpacer Width="5px" />
+            <FluentLabel>Animation:</FluentLabel>
+            <FluentSpacer Width="3px" />
+            <FluentButton Disabled="@animationNotReady" IconStart="@(new Icons.Regular.Size20.Play())" Title="Play Animation" OnClick="@PlayAnimation" />
+            <FluentButton Disabled="@animationNotReady" IconStart="@(new Icons.Regular.Size20.Pause())" Title="Pause Animation" OnClick="@PauseAnimation" />
+            <FluentButton Disabled="@animationNotReady" IconStart="@(new Icons.Regular.Size20.Stop())" Title="Stop Animation" OnClick="@StopAnimation" />
+            <FluentButton Disabled="@animationNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Animation" OnClick="@ResetAnimation" />
+            <FluentSpacer Width="5px" />
+            <FluentCheckbox Disabled="@mapNotReady" Value="@follow" ValueChanged="OnFollowChanged" Label="Follow Trace:" LabelPosition="LabelPosition.Before" />
+            <FluentSpacer Width="5px" />
+            <FluentSelect Disabled="@mapNotReady"
+                          Label="Speed:" , LabelPosition="LabelPosition.Before"
+                          Items="@speeds"
+                          TOption="double"
+                          TValue="double"
+                          OptionText="@(e => $"{e}x")"
+                          Value="@speed"
+                          ValueChanged="OnSpeedChanged" />
+        </Toolbar>
+
+        <FluentStack Height="100%">
+            @if (panelInfo.HasPayload)
+            {
+                <div style="padding:3px;width:260px;">
+                    @if (panelInfo.HasPayload)
+                    {
+                        <b>Timestamp:</b>
+                        <br />
+                        @panelInfo.Timestamp
+                        <br /><br />
+                        <b>Event details:</b>
+                        <br />
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Property</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>type</td><td>@panelInfo.Type</td></tr>
+                                <tr><td>progress</td><td>@panelInfo.Progress</td></tr>
+                                <tr><td>easingProgress</td><td>@panelInfo.EasingProgress</td></tr>
+                                <tr><td>heading</td><td>@panelInfo.Heading</td></tr>
+                                <tr><td>speed (m/s)</td><td>@panelInfo.Speed</td></tr>
+                                <tr><td>speed (km/hr)</td><td>@panelInfo.SpeedInKph</td></tr>
+                                <tr><td>position</td><td>@panelInfo.PositionDisplay</td></tr>
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            }
+
+            <MapContainer MapId="@mapId" />
+        </FluentStack>
+    </ChildContent>
+</MapPage>
+
+@code {
+    private const string mapId = "mapGpsTrace";
+    private const string title = "Spatial - GpsTrace";
+    private DotNetObjectReference<ComponentBase>? dotNetRef;
+    private AtlasInterop atlasInterop = default!;
+    private MapConfiguration config = default!;
+    private MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
+    private Map? map;
+    private bool mapNotReady => map == null;
+    private bool animationNotReady => mapNotReady | animation == null;
+    private readonly DataSource routeSource = new();
+    private readonly SimpleDataLayer routeLayer = new();
+    private readonly DataSource pinSource = new();
+    private readonly SymbolLayer pinLayer = new();
+    private readonly ImageTemplate image = new ImageTemplate("arrow-icon", ImageTemplateName.Marker_Arrow) { Color = "teal", SecondaryColor = "#fff" };
+    private readonly PanelInfo panelInfo = new();
+    private readonly List<double> speeds = [0.5, 1, 2, 5, 15, 30, 60, 100, 3600];
+    private double speed = 15;
+    private bool follow = true;
+    private List<DatasetInfo> datasets = [];
+    private DatasetInfo? selectedDataset;
+    private IJSObjectReference? animation;
+    private readonly List<AnimationEvent> events = [new AnimationEvent(AnimationEventType.OnProgress, AnimationPayloadType.RoutePath) { EventName = nameof(NotifyAnimationEvent) }];
+
+    protected override void OnInitialized()
+    {
+        config = Configuration.GetValue(LogLevel.Trace);
+        atlasInterop = new(JSRuntime);
+        dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
+
+        datasets = [
+            new DatasetInfo("GPS Trace (GeoJSON)", "examples/GpsTrace.json"){ TimestampProperty = "time" },
+            new DatasetInfo("Bike race GPS trace (GPX)", "examples/race-gps-trace.xml"){ ValueInterpolations =  [ new PointPairValueInterpolation( "ele") ], Zoom = 18 }
+        ];
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await CreateMap();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            dotNetRef?.Dispose();
+
+            if (animation != null)
+                await animation.DisposeAsync();
+
+            if (map != null)
+                await map.DisposeAsync();
+
+            if (atlasInterop != null)
+                await atlasInterop.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+
+    private async Task AddLayers()
+    {
+        try
+        {
+            routeLayer.Source = routeSource.Id;
+            pinLayer.Source = pinSource.Id;
+            pinLayer.Options = new()
+            {
+                IconOptions = new()
+                {
+                    ImageId = image.Id,
+                    Anchor = "center",
+                    Rotation = new List<object> { "+", 180, new List<string> { "get", "heading" } },
+                    RotationAlignment = SymbolItemAlignment.Map,
+                    IgnorePlacement = true,
+                    AllowOverlap = true
+                },
+                TextOptions = new()
+                {
+                    IgnorePlacement = true,
+                    AllowOverlap = true
+                }
+            };
+
+            await atlasInterop.ImageSprite.CreateFromTemplate(map!, image);
+            await atlasInterop.Sources.Add(map!, [routeSource, pinSource]);
+
+            //The order the layers are added is important.
+            //We need the pin to display above the data so the routeLayer must be added first.
+            await atlasInterop.Spatial.Layers.Add(map!, [routeLayer]);
+            await atlasInterop.Layers.Add(map!, [pinLayer]);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnDatasetInfoChanged(DatasetInfo? info)
+    {
+        await LoadGPSTrace(info);
+    }
+
+    private async Task OnOptionsChanged()
+    {
+        try
+        {
+            if (animation == null) return;
+            await atlasInterop!.Animations.RoutePathAnimation.SetOptions(animation, new RoutePathAnimationOptions { SpeedMultiplier = speed }, follow ? map : null);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task OnSpeedChanged(double value)
+    {
+        speed = value;
+        await OnOptionsChanged();
+    }
+
+    private async Task OnFollowChanged(bool value)
+    {
+        follow = value;
+        await OnOptionsChanged();
+    }
+
+    private async Task PlayAnimation()
+    {
+        try
+        {
+            if (animation == null) return;
+            await atlasInterop!.Animations.RoutePathAnimation.Play(animation);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task PauseAnimation()
+    {
+        try
+        {
+            if (animation == null) return;
+            await atlasInterop!.Animations.RoutePathAnimation.Pause(animation);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task StopAnimation()
+    {
+        try
+        {
+            if (animation == null) return;
+            await atlasInterop!.Animations.RoutePathAnimation.Stop(animation);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task ResetAnimation()
+    {
+        try
+        {
+            if (animation == null) return;
+            await atlasInterop!.Animations.RoutePathAnimation.Reset(animation);
+            panelInfo.Update(null);
+            //await Reset();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task LoadGPSTrace(DatasetInfo? info)
+    {
+        try
+        {
+            await ClearAnimation();
+            selectedDataset = info;
+
+            if (info == null)
+                return;
+
+            var readOptions = new SpatialDataReadOptions { GpxReadOptions = new() { CapturePathWaypoints = true } };
+            var pathOptions = new RoutePathAnimationOptions() { CaptureMetadata = true, SpeedMultiplier = speed, ValueInterpolations = info!.ValueInterpolations, Pitch = 45, Zoom = info.Zoom };
+            var args = new GPSTraceRouteParameters(routeSource.Id, pinSource.Id, info.Url, follow, info.TimestampProperty, readOptions, pathOptions, events);
+            var result = await atlasInterop!.Spatial.IO.LoadGPSTraceRoute(dotNetRef!, map!, args);
+
+            if (result.Error != null)
+                throw new Exception(result.Error.BuildMessage());
+
+            if (result.Center is not null)
+            {
+                mapOptions.Camera!.Center = result.Center;
+                mapOptions.Camera!.Zoom = result.Zoom ?? mapOptions.Camera!.Zoom;
+            }
+
+            animation = result.Animation;
+            result.Animation = null; //set to null so it doesn't get disposed prematurely.
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task ClearAnimation()
+    {
+        if (animation != null)
+        {
+            await StopAnimation();
+            await atlasInterop.Events.Animations.Remove(map!, animation, events);
+            await atlasInterop.Animations.PlayableAnimation.DisposeAnimation(animation);
+            animation = null; //already disposed in DisposeAnimation above.
+            panelInfo.Update(null);
+            StateHasChanged();
+            await atlasInterop.Sources.DataSource.Clear(map!, [routeSource, pinSource]);
+            mapOptions = MapExtensions.GetDefaultMapOptions();
+        }
+    }
+
+    #region Map
+
+    private async Task CreateMap()
+    {
+        try
+        {
+            if (map != null)
+                return;
+
+            config.MapOptions = mapOptions;
+            map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config!, MapExtensions.GetDefaultControls());
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task ResetMap()
+    {
+        try
+        {
+            if (map == null)
+                return;
+
+            await OnDatasetInfoChanged(null);
+            await atlasInterop.Map.SetCamera(map, mapOptions.Camera);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    [JSInvokable]
+    public async Task NotifyAnimationEvent(MapEventArgs e)
+    {
+        try
+        {
+            var payload = e.GetPayloadItem<RoutePathAnimationPayload>(nameof(AnimationPayloadType.RoutePath));
+            panelInfo.Update(payload);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    [JSInvokable]
+    public async Task NotifyMapEvent(MapEventArgs e)
+    {
+        await e.ErrorEventProcessed(Logger, ToastService);
+
+        if (e.IsReadyEvent)
+            await AddLayers();
+    }
+
+    #endregion
+
+    private class PanelInfo
+    {
+        public void Update(RoutePathAnimationPayload? payload)
+        {
+            HasPayload = payload != null;
+
+            Type = payload?.Type ?? "";
+            Progress = Math.Round(payload?.Progress ?? 0, 8);
+            EasingProgress = Math.Round(payload?.EasingProgress ?? 0, 8);
+            Heading = Math.Round(payload?.Heading ?? 0, 6);
+            Speed = Math.Round(payload?.Speed ?? 0, 8);
+            SpeedInKph = Math.Round(payload?.SpeedInKph ?? 0, 8);
+            Position = payload?.Position;
+            PositionDisplay = Position is not null ? $"[{Position.Longitude:F6}, {Position.Latitude:F6}]" : null;
+            Timestamp = payload?.Timestamp;
+            TimestampUTC = payload?.TimestampUTC;
+        }
+
+        public double? EasingProgress { get; set; }
+        public double? Heading { get; set; }
+        public Position? Position { get; set; }
+        public string? PositionDisplay { get; set; }
+        public double? Progress { get; set; }
+        public double? Speed { get; set; }
+        public double? SpeedInKph { get; set; }
+        public double? Timestamp { get; set; }
+        public string? TimestampUTC { get; set; }
+        public string? Type { get; set; }
+
+        public bool HasPayload { get; set; }
+    }
+
+    private class DatasetInfo(string displayName, string url)
+    {
+        public string DisplayName { get; } = displayName;
+        public string Url { get; } = url;
+        public string? TimestampProperty { get; set; }
+        public List<PointPairValueInterpolation>? ValueInterpolations { get; set; }
+        public double Zoom { get; set; } = 15;
+    }
+}

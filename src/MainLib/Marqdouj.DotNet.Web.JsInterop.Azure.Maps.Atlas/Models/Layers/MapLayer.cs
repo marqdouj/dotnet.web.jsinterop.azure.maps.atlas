@@ -1,4 +1,5 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common;
+using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using Microsoft.JSInterop;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
@@ -82,7 +83,13 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
         /// <summary>
         /// The id or <see cref="IJSObjectReference"/> of a source which the layer will render.
         /// </summary>
-        Object? Source { get; set; }
+        object? Source { get; set; }
+
+        /// <summary>
+        /// A property for associating custom data with the layer.
+        /// Normally this would be <see cref="GeoJsonProperties"/>.
+        /// </summary>
+        object? Metadata { get; set; }
     }
 
     /// <summary>
@@ -121,5 +128,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers
         /// <inheritdoc cref="ILayer.Source"/>
         /// </summary>
         public object? Source { get; set; }
+
+        /// <summary>
+        /// <inheritdoc cref="ILayer.Metadata"/>
+        /// </summary>
+        public object? Metadata { get; set; }
     }
 }

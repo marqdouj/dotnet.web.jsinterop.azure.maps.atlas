@@ -2,6 +2,7 @@
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Data;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Events;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Spatial;
 using Microsoft.JSInterop;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
@@ -77,6 +78,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         IAtlasSources Sources { get; }
 
         /// <summary>
+        /// <inheritdoc cref="IAtlasSpatial"/>
+        /// </summary>
+        IAtlasSpatial Spatial { get; }
+
+        /// <summary>
         /// <inheritdoc cref="IAtlasPopups"/>
         /// </summary>
         IAtlasPopups Popups { get; }
@@ -113,6 +119,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
             Math = new AzMath(moduleTask);
             Navigator = new AzNavigator(moduleTask);
             Sources = new AzSources(moduleTask);
+            Spatial = new AzSpatial(moduleTask);
             Popups = new AzPopups(moduleTask);
         }
 
@@ -180,6 +187,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         /// <inheritdoc cref="IAtlasSources"/>
         /// </summary>
         public IAtlasSources Sources { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasSpatial"/>
+        /// </summary>
+        public IAtlasSpatial Spatial { get; }
 
         /// <summary>
         /// <inheritdoc cref="IAtlasPopups"/>

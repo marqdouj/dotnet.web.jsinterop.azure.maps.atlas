@@ -19,27 +19,18 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Animations
         public bool? AutoPlay { get; set; }
 
         /// <summary>
-        /// Easing function name.
+        /// Easing function name. <see cref="EasingName"/>.
         /// </summary>
         public string? Easing { get; set; }
 
         /// <summary>
-        /// Updates the <see cref="Easing"/> with an <inheritdoc cref="Animations.EasingName"/>.
+        /// Tries to get/set the <see cref="Easing"/> with an <see cref="EasingName"/>.
         /// </summary>
         [JsonIgnore]
-        public EasingName? EasingName 
+        public EasingName? EasingT 
         { 
-            get 
-            {
-                if (Enum.TryParse<EasingName>(Easing, true, out var name))
-                    return name;
-
-                return null;
-            }
-            set
-            {
-                Easing = value?.ToString()?.ToJsonName();
-            }
+            get => Enum.TryParse<EasingName>(Easing, true, out var name) ? name : null;
+            set => Easing = value?.ToString()?.ToJsonName();
         }
 
         /// <summary>
