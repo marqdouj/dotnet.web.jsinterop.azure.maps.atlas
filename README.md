@@ -1,6 +1,6 @@
 # dotnet.web.jsinterop.azure.maps.atlas
-
 ![](https://img.shields.io/badge/Status-Preview%20.NET%2011-yellowgreen)
+### [NuGet Package](https://www.nuget.org/packages/Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas/)
 
 # A .NET library for working with the Azure Maps SDK in JavaScript interop scenarios.
 
