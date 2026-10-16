@@ -26,6 +26,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         PlayableAnimation,
         Popups,
         Position,
+        RoutePathAnimation,
         Sources,
         Spatial,
         SpatialLayers,

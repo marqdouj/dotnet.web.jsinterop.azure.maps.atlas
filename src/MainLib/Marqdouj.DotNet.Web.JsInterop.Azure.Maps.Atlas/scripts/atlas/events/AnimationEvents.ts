@@ -194,7 +194,7 @@ export class AnimationEvents {
     // #endRegion
 }
 
-interface AnimationEventInfo extends events.EventInfo {
+export interface AnimationEventInfo extends events.EventInfo {
     includeJsReference: boolean;
     payloadType: AnimationEventPayloadType;
 }

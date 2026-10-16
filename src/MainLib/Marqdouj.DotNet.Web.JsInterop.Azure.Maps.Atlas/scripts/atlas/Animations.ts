@@ -4,8 +4,23 @@ import { MapObjectReference } from "./common";
 import { Helpers } from "./common/Helpers";
 import { DataSource } from "../atlas";
 import { Logger, LogLevel } from "./common/Logger";
+import { AnimationEventInfo, AnimationEvents } from "./events/AnimationEvents";
 
 export class Animations {
+    public static doAction(animation: any, action: string, returnsValue: boolean = false) {
+        const eventName = "Animations.doAction";
+        if (animation && animation[action]) {
+            if (returnsValue)
+                return animation[action]();
+            else {
+                animation[action]();
+            }
+        }
+        else {
+            Logger.logMessage(eventName, LogLevel.Error, "action was not found.", action);
+        }
+    }
+
     public static getEasingNames() : string[] {
         return anims.animations.getEasingNames();
     }
@@ -23,5 +38,21 @@ export class Animations {
             Logger.logMapMessage(mapId, LogLevel.Error, `${eventName}: shape not found where id = '${shapeId}'`, source);
             return;
         }
+    }
+
+    public static extractRoutePoints(shapes: any, timestampProperty?: string) {
+        return anims.animations.extractRoutePoints(shapes, timestampProperty);
+    }
+
+    public static moveAlongRoute(dotNetRef: any, map: atlas.Map, route: any, shape?: any, options?: any, mapEvents?: AnimationEventInfo[]) {
+        const eventName = "Animations.setCoordinates";
+        const mapId = Helpers.getMapId(map);
+
+        const animation = anims.animations.moveAlongRoute(route, shape, options);
+
+        if (Helpers.hasElements(mapEvents))
+            AnimationEvents.add(dotNetRef, map, animation, mapEvents!);
+
+        return animation;
     }
 }

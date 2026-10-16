@@ -92,10 +92,6 @@
             Logger.LogMapError(ex);
             await ToastService.ShowError(ex.Message);
         }
-        finally
-        {
-            StateHasChanged();
-        }
     }
 
     private async Task RemoveLayer()
@@ -119,10 +115,6 @@
         {
             Logger.LogMapError(ex);
             await ToastService.ShowError(ex.Message);
-        }
-        finally
-        {
-            StateHasChanged();
         }
     }
 
