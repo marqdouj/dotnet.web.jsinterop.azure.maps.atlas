@@ -10,7 +10,6 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Spatial
     /// <param name="routeSourceId"><see cref="GPSTraceRouteParameters.RouteSourceId"/></param>
     /// <param name="pinSourceId"><see cref="GPSTraceRouteParameters.PinSourceId"/></param>
     /// <param name="spatialData"><see cref="GPSTraceRouteParameters.SpatialData"/></param>
-    /// <param name="follow"><see cref="GPSTraceRouteParameters.Follow"/></param>
     /// <param name="timestampProperty"><see cref="GPSTraceRouteParameters.TimestampProperty"/></param>
     /// <param name="readOptions"><see cref="GPSTraceRouteParameters.ReadOptions"/></param>
     /// <param name="pathOptions"><see cref="GPSTraceRouteParameters.PathOptions"/></param>
@@ -20,7 +19,6 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Spatial
         string routeSourceId,
         string pinSourceId,
         string spatialData,
-        bool follow,
         string? timestampProperty,
         SpatialDataReadOptions? readOptions,
         RoutePathAnimationOptions? pathOptions,
@@ -41,11 +39,6 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Spatial
         /// Spatial data string or a URL to a file or zipped file that can be parsed into GeoJSON objects.
         /// </summary>
         public string SpatialData { get; } = spatialData;
-
-        /// <summary>
-        /// Assign the map to the options so the animation will follow the map.
-        /// </summary>
-        public bool Follow { get; set; } = follow;
 
         /// <summary>
         /// The route features property name that contains timestamp information.  If not specified, `_timestamp` will be used.

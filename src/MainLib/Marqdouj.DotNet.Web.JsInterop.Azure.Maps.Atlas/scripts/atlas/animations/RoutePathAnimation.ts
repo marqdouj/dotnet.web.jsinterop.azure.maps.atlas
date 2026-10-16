@@ -1,7 +1,5 @@
-import * as atlas from "azure-maps-control"
 import * as anims from "azure-maps-animations"
 import { Animations } from "../Animations";
-import { Helpers } from "../common/Helpers";
 
 export class RoutePathAnimation {
     public static getDuration(animation: anims.RoutePathAnimation): number {
@@ -20,10 +18,8 @@ export class RoutePathAnimation {
         return animation.getTimeSpan();
     }
 
-    public static setOptions(animation: anims.RoutePathAnimation, options: any, map?: atlas.Map): void {
-        const routeOptions: anims.RoutePathAnimationOptions = { ...Helpers.removeNullish(options) };
-        routeOptions.map = map as any;
-        animation.setOptions(routeOptions);
+    public static setOptions(animation: anims.RoutePathAnimation, options: any): void {
+        animation.setOptions(options);
     }
 
     public static disposeAnimation(animation: anims.RoutePathAnimation): void {

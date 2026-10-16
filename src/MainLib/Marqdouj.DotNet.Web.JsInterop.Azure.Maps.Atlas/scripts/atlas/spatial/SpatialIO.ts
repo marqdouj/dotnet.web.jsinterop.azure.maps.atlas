@@ -25,8 +25,6 @@ export class SpatialIO {
                 throw new Error(`Unable to resolve datasource where id = '${routeParams.pinSourceId}'.`);
             }
 
-            routeParams = Helpers.removeNullish(routeParams);
-
             dsRoute.clear();
             dsPin.clear();
 
@@ -52,13 +50,7 @@ export class SpatialIO {
                         const pin = new atlas.Shape(route[0]);
                         dsPin.add(pin);
 
-                        const pathOptions: anims.RoutePathAnimationOptions = { ...routeParams?.pathOptions };
-
-                        if (routeParams.follow) {
-                            pathOptions.map = map as any;
-                        }
-
-                        const animation = anims.animations.moveAlongRoute(route, pin as any, pathOptions);
+                        const animation = anims.animations.moveAlongRoute(route, pin as any, routeParams.pathOptions);
 
                         if (animation) {
                             result.animation = DotNet.createJSObjectReference(animation);
@@ -157,7 +149,6 @@ interface GPSTraceRouteParameters {
     readOptions?: ReadOptions;
     pathOptions?: anims.RoutePathAnimationOptions;
     events?: AnimationEventInfo[];
-    follow: boolean;
     zoomToBBox: boolean;
     padding?: any;
 }

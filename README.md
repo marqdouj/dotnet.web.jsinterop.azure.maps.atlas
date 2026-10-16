@@ -28,6 +28,10 @@ In the source code, see the `Sandbox` web app for examples on using this library
 
 ## Release Notes (Current)
 - `11.0.0-Preview-4.3`
-  - `Sandbox`. Demo updates.
+  - `RoutePathAnimationOptions`.
+	- `IJSObjectReference? Map`. New property to assign the map reference that the animation will follow.
+  - `Spatial`.
+	- `GPSTraceRouteParameters`. Removed the `follow` property. Assign the map to the `RoutePathAnimationOptions.Map` property instead.
+  - `Sandbox`. Spatial demo updates in support of changes.
 
 ## [Release Notes (All)](Documents/ReleaseNotes.md)
