@@ -6,7 +6,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Animations
     /// <summary>
     /// Options for playing animations.
     /// </summary>
-    public class PlayableAnimationOptions
+    public class PlayableAnimationOptions : ICloneable
     {
         /// <summary>
         /// The duration of the animation in ms. Default: 1000 ms
@@ -52,5 +52,14 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Animations
         /// Specifies if the animation should dispose itself once it has completed. Default: false
         /// </summary>
         public bool? DisposeOnComplete { get; set; }
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns></returns>
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 }

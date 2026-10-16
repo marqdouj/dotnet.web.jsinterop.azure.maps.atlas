@@ -30,9 +30,8 @@ export class Animations {
         const mapId = Helpers.getMapId(map);
         const shape = DataSource.getShapeById(map, source, shapeId, false);
         if (shape instanceof atlas.Shape) {
-            options = Helpers.removeNullish(options);
             const result = anims.animations.setCoordinates(shape as any, newCoordinates, options);
-            return getReference ? Helpers.createMapObjectReference(Helpers.getMapId(map), "PlayableAnimation", result, "") : undefined;
+            return getReference ? Helpers.createMapObjectReference(mapId, "PlayableAnimation", result, "") : undefined;
         }
         else {
             Logger.logMapMessage(mapId, LogLevel.Error, `${eventName}: shape not found where id = '${shapeId}'`, source);
@@ -45,9 +44,6 @@ export class Animations {
     }
 
     public static moveAlongRoute(dotNetRef: any, map: atlas.Map, route: any, shape?: any, options?: any, mapEvents?: AnimationEventInfo[]) {
-        const eventName = "Animations.setCoordinates";
-        const mapId = Helpers.getMapId(map);
-
         const animation = anims.animations.moveAlongRoute(route, shape, options);
 
         if (Helpers.hasElements(mapEvents))

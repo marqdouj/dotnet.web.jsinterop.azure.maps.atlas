@@ -77,9 +77,8 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Animations
         /// </summary>
         /// <param name="animation"></param>
         /// <param name="options"></param>
-        /// <param name="map"><see cref="GPSTraceRouteParameters.Follow"/></param>
         /// <returns></returns>
-        ValueTask SetOptions(IJSObjectReference animation, RoutePathAnimationOptions options, Map? map = null);
+        ValueTask SetOptions(IJSObjectReference animation, RoutePathAnimationOptions options);
 
         /// <summary>
         /// Stops the animation.
@@ -148,10 +147,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Animations
             return await moduleTask.InvokeAsyncTC<RoutePathAnimationOptions>(GetJsInteropMethod(), animation);
         }
 
-        public async ValueTask SetOptions(IJSObjectReference animation, RoutePathAnimationOptions options, Map? map = null)
+        public async ValueTask SetOptions(IJSObjectReference animation, RoutePathAnimationOptions options)
         {
             ValidateJsReference(animation);
-            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), animation, options, map?.MapReference);
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), animation, options);
         }
 
         public async ValueTask DisposeAnimation(IJSObjectReference animation)

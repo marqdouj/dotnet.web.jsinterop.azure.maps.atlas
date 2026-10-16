@@ -1,10 +1,17 @@
-﻿namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Animations
+﻿using Microsoft.JSInterop;
+
+namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Animations
 {
     /// <summary>
     /// Options for animating the map along a path.
     /// </summary>
     public class RoutePathAnimationOptions
     {
+        /// <summary>
+        /// <see cref="IJSObjectReference"/> to an atlas.Map.
+        /// </summary>
+        public IJSObjectReference? Map { get; set; }
+
         /// <summary>
         /// Interpolation calculations to perform on property values between points during the animation.
         /// Requires <see cref="CaptureMetadata"/> to be enabled.

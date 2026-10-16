@@ -201,7 +201,7 @@
         try
         {
             if (animation == null) return;
-            await atlasInterop!.Animations.RoutePathAnimation.SetOptions(animation, new RoutePathAnimationOptions { SpeedMultiplier = speed }, follow ? map : null);
+            await atlasInterop!.Animations.RoutePathAnimation.SetOptions(animation, new RoutePathAnimationOptions { SpeedMultiplier = speed, Map = follow ? map!.MapReference : null });
         }
         catch (Exception ex)
         {
@@ -291,8 +291,8 @@
                 return;
 
             var readOptions = new SpatialDataReadOptions { GpxReadOptions = new() { CapturePathWaypoints = true } };
-            var pathOptions = new RoutePathAnimationOptions() { CaptureMetadata = true, SpeedMultiplier = speed, ValueInterpolations = info!.ValueInterpolations, Pitch = 45, Zoom = info.Zoom };
-            var args = new GPSTraceRouteParameters(routeSource.Id, pinSource.Id, info.Url, follow, info.TimestampProperty, readOptions, pathOptions, events);
+            var pathOptions = new RoutePathAnimationOptions() { CaptureMetadata = true, SpeedMultiplier = speed, Map = follow ? map!.MapReference : null, ValueInterpolations = info!.ValueInterpolations, Pitch = 45, Zoom = info.Zoom };
+            var args = new GPSTraceRouteParameters(routeSource.Id, pinSource.Id, info.Url, info.TimestampProperty, readOptions, pathOptions, events);
             var result = await atlasInterop!.Spatial.IO.LoadGPSTraceRoute(dotNetRef!, map!, args);
 
             if (result.Error != null)
