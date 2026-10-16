@@ -3,7 +3,9 @@
 ### [<- Go Back](../README.md)
 - `11.0.0-Preview-4.4`
   - `IMapObjectReference`. Interface is now readonly.
-  - `Sandbox`. Demo updates.
+  - `Sandbox`.
+	- `New Demos`.
+	  - `Basic/Layers (Vector Tile Service)`. Demonstrates how to use a vector tile service to render line data on the map.
 - `11.0.0-Preview-4.3`
   - `RoutePathAnimationOptions`.
 	- `IJSObjectReference? Map`. New property to assign the map reference that the animation will follow.

@@ -29,6 +29,8 @@ In the source code, see the `Sandbox` web app for examples on using this library
 ## Release Notes (Current)
 - `11.0.0-Preview-4.4`
   - `IMapObjectReference`. Interface is now readonly.
-  - `Sandbox`. Demo updates.
+  - `Sandbox`.
+	- `New Demos`.
+	  - `Basic/Layers (Vector Tile Service)`. Demonstrates how to use a vector tile service to render line data on the map.
 
 ## [Release Notes (All)](Documents/ReleaseNotes.md)
