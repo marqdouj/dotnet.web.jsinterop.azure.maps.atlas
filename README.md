@@ -28,6 +28,7 @@ In the source code, see the `Sandbox` web app for examples on using this library
 
 ## Release Notes (Current)
 - `11.0.0-Preview-4.4`
+  - `IMapObjectReference`. Interface is now readonly.
   - `Sandbox`. Demo updates.
 
 ## [Release Notes (All)](Documents/ReleaseNotes.md)

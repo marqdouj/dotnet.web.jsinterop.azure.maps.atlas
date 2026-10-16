@@ -11,23 +11,23 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common
         /// <summary>
         /// <see cref="JsInteropIdBase.Id"/>
         /// </summary>
-        string Id { get; set; }
+        string Id { get; }
 
         /// <summary>
         /// <see cref="IJSObjectReference"/> to the atlas map object.
         /// If null, then the map object was not found.
         /// </summary>
-        IJSObjectReference? JsReference { get; set; }
+        IJSObjectReference? JsReference { get; }
 
         /// <summary>
         /// <see cref="Map.MapId"/>
         /// </summary>
-        string MapId { get; set; }
+        string MapId { get; }
 
         /// <summary>
         /// The type of map object.
         /// </summary>
-        string? Type { get; set; }
+        string? Type { get; }
     }
 
     internal sealed class MapObjectReference : IAsyncDisposable, IMapObjectReference

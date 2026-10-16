@@ -2,6 +2,7 @@
 
 ### [<- Go Back](../README.md)
 - `11.0.0-Preview-4.4`
+  - `IMapObjectReference`. Interface is now readonly.
   - `Sandbox`. Demo updates.
 - `11.0.0-Preview-4.3`
   - `RoutePathAnimationOptions`.
