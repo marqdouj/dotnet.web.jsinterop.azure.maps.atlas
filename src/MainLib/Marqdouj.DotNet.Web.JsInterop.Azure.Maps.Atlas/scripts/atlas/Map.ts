@@ -3,6 +3,14 @@ import { Helpers } from "./common/Helpers";
 import { EditAction } from "./common";
 
 export class Map {
+    public static enableElevation(map: atlas.Map, elevationSource: string | atlas.source.ElevationTileSource, exaggeration?: number): void {
+        map.enableElevation(elevationSource, exaggeration);
+    }
+
+    public static disableElevation(map: atlas.Map) {
+        map.disableElevation();
+    }
+
     // #region Camera
     public static getCamera(map: atlas.Map) {
         return map.getCamera();

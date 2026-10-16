@@ -1,7 +1,7 @@
 ﻿namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Sources
 {
     /// <summary>
-    /// <see cref="SourceType.VectorTile"/>
+    /// <inheritdoc cref="SourceType.VectorTile"/>
     /// </summary>
     public class VectorTileSource : MapSource
     {

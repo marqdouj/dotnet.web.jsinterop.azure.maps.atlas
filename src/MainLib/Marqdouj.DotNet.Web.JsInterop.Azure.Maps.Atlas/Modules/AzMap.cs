@@ -1,5 +1,6 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Sources;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
 
@@ -143,11 +144,37 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// <param name="view"></param>
         /// <returns></returns>
         ValueTask SetView(string view);
+
+        /// <summary>
+        /// Loads a 3D terrain mesh, based on a "raster-dem" source.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="source"><see cref="ElevationTileSource"/> Id or <see cref="IJSObjectReference"/>.</param>
+        /// <param name="exaggeration"></param>
+        /// <returns></returns>
+        ValueTask EnableElevation(Map map, object source, double? exaggeration);
+
+        /// <summary>
+        /// Disables the 3D terrain mesh.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <returns></returns>
+        ValueTask DisableElevation(Map map);
     }
 
     internal class AzMap(Lazy<Task<IJSObjectReference>> moduleTask) : IAtlasMap
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = moduleTask;
+
+        public async ValueTask EnableElevation(Map map, object source, double? exaggeration)
+        {
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, source, exaggeration);
+        }
+
+        public async ValueTask DisableElevation(Map map)
+        {
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference);
+        }
 
         #region Camera
 

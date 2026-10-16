@@ -1,7 +1,7 @@
 ﻿namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Sources
 {
     /// <summary>
-    /// <see cref="SourceType.ElevationTile"/>
+    /// <inheritdoc cref="SourceType.ElevationTile"/>
     /// </summary>
     public class ElevationTileSource : MapSource
     {

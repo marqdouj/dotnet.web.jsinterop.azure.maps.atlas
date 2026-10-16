@@ -1,7 +1,7 @@
 ﻿namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Sources
 {
     /// <summary>
-    /// <see cref="SourceType.Data"/>
+    /// <inheritdoc cref="SourceType.Data"/>
     /// </summary>
     public class DataSource : MapSource
     {
