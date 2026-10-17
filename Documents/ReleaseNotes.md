@@ -5,6 +5,7 @@
   - `IMapObjectReference`. Interface is now readonly.
   - `Sandbox`.
 	- `New Demos`.
+	  - `Basic/Layers (3D Elevation)`. Demonstrates how to enable/disable a 3D terrain mesh, based on a "raster-dem" source.
 	  - `Basic/Layers (Vector Tile Service)`. Demonstrates how to use a vector tile service to render line data on the map.
 - `11.0.0-Preview-4.3`
   - `RoutePathAnimationOptions`.

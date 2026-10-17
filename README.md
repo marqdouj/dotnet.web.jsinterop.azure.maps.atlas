@@ -31,6 +31,7 @@ In the source code, see the `Sandbox` web app for examples on using this library
   - `IMapObjectReference`. Interface is now readonly.
   - `Sandbox`.
 	- `New Demos`.
+	  - `Basic/Layers (3D Elevation)`. Demonstrates how to enable/disable a 3D terrain mesh, based on a "raster-dem" source.
 	  - `Basic/Layers (Vector Tile Service)`. Demonstrates how to use a vector tile service to render line data on the map.
 
 ## [Release Notes (All)](Documents/ReleaseNotes.md)
