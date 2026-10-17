@@ -152,7 +152,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// <param name="source"><see cref="ElevationTileSource"/> Id or <see cref="IJSObjectReference"/>.</param>
         /// <param name="exaggeration"></param>
         /// <returns></returns>
-        ValueTask EnableElevation(Map map, object source, double? exaggeration);
+        ValueTask EnableElevation(Map map, object source, double? exaggeration = null);
 
         /// <summary>
         /// Disables the 3D terrain mesh.
@@ -166,7 +166,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = moduleTask;
 
-        public async ValueTask EnableElevation(Map map, object source, double? exaggeration)
+        public async ValueTask EnableElevation(Map map, object source, double? exaggeration = null)
         {
             await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, source, exaggeration);
         }

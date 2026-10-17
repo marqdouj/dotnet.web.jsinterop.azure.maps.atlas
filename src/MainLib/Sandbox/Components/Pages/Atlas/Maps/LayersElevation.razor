@@ -1,0 +1,179 @@
+﻿@page "/maps-layers-elevation"
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@inject IOptions<MapConfiguration> Configuration
+@inject IJSRuntime JSRuntime
+@inject ILogger<LayersElevation> Logger
+@inject INotificationService ToastService
+@inject IMapDataService DataService
+@inject AppConfiguration AppConfig
+
+<MapPage Title="@title">
+    <SummaryContent>
+        <FluentText As="TextTag.Paragraph">
+            This page demonstrates how to enable/disable a 3D terrain mesh, based on a "raster-dem" source.
+            <br />
+            This example utilizes WebGL for rendering a 3D terrain elevation,
+            based on this <a href="https://github.com/Azure-Samples/AzureMapsCodeSamples/blob/main/Samples/3D-layer/3D%20Elevation_experimental/3D%20Elevation.html" target="_blank">example</a>
+            <br /><br />
+            NOTE: You will need to provide your own elevation data for this example.
+            I created this demo using a free <a href="https://www.maptiler.com/" target="_blank">Map Tiler</a> account.
+        </FluentText>
+    </SummaryContent>
+
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
+            <FluentSpacer Width="5px" />
+            <FluentCheckbox Disabled="@mapNotReady" Value="@elevationEnabled" ValueChanged="UpdateElevation" Label="Enable Elevation" LabelPosition="LabelPosition.Before" />
+        </Toolbar>
+
+        <MapContainer MapId="@mapId" />
+    </ChildContent>
+</MapPage>
+
+@code {
+    private const string mapId = "mapLayers3DElev";
+    private const string title = "Maps - Layers (3D Elevation)";
+    private DotNetObjectReference<ComponentBase>? dotNetRef;
+    private AtlasInterop atlasInterop = default!;
+    private MapConfiguration config = default!;
+    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
+    private Map? map;
+    private bool mapNotReady => map == null;
+    private ElevationTileSource? source;
+    private string? mapTilerAPIKey = default!;
+    private bool elevationEnabled;
+
+    protected override void OnInitialized()
+    {
+        config = Configuration.GetValue(LogLevel.Trace);
+        atlasInterop = new(JSRuntime);
+        dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
+        mapTilerAPIKey = AppConfig.MapTilerAPIKey;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await CreateMap();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            dotNetRef?.Dispose();
+
+            if (map != null)
+                await map.DisposeAsync();
+
+            if (atlasInterop != null)
+                await atlasInterop.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+
+    #region Layers
+
+    private async Task UpdateElevation(bool enabled)
+    {
+        try
+        {
+            if (source == null) return;
+
+            if (enabled)
+                await atlasInterop.Map.EnableElevation(map!, source.Id);
+            else 
+                await atlasInterop.Map.DisableElevation(map!);
+
+            elevationEnabled = enabled;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    #endregion
+
+    #region Map
+
+    private async Task CreateMap()
+    {
+        try
+        {
+            if (map != null)
+                return;
+
+            mapOptions.Camera!.Center = new Position(-121.7269, 46.8799);
+            mapOptions.Camera!.MaxPitch = 85;
+            mapOptions.Camera.Pitch = 60;
+            mapOptions.Camera.Zoom = 11;
+            mapOptions.Style!.Style = MapStyle.satellite_road_labels;
+
+            config.MapOptions = mapOptions;
+            map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config!, MapExtensions.GetDefaultControls());
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task ResetMap()
+    {
+        try
+        {
+            if (map == null)
+                return;
+
+            await atlasInterop.Map.SetCamera(map, mapOptions.Camera);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    [JSInvokable]
+    public async Task NotifyMapEvent(MapEventArgs e)
+    {
+        await e.ErrorEventProcessed(Logger, ToastService);
+
+        if (e.IsReadyEvent)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(mapTilerAPIKey))
+                    throw new Exception("Map Tiler API Key is missing.");
+
+                source = new ElevationTileSource
+                {
+                    Options = new ElevationTileSourceOptions
+                    {
+                        Url = $"https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key={mapTilerAPIKey}"
+                    }
+                };
+
+                await atlasInterop.Sources.Add(map!, source);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogMapError(ex);
+                await ToastService.ShowError(ex.Message);
+            }
+        }
+    }
+
+    #endregion
+}
