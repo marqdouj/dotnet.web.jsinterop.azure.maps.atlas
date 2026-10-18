@@ -177,8 +177,8 @@
 
             //The order the layers are added is important.
             //We need the pin to display above the data so the routeLayer must be added first.
-            await atlasInterop.Spatial.Layers.Add(map!, [routeLayer]);
-            await atlasInterop.Layers.Add(map!, [pinLayer]);
+            await atlasInterop.Spatial.Layers.Add(map!, routeLayer);
+            await atlasInterop.Layers.Add(map!, pinLayer);
         }
         catch (Exception ex)
         {

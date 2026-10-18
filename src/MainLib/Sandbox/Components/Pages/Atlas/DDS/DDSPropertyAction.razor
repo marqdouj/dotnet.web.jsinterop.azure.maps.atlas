@@ -158,7 +158,7 @@
 
                 bubbleLayer.Source = bubbleSource.Id;
                 await atlasInterop.Sources.Add(map!, bubbleSource);
-                await atlasInterop.Layers.Add(map!, [bubbleLayer]);
+                await atlasInterop.Layers.Add(map!, bubbleLayer);
                 await atlasInterop.Features.Add(map!, bubbleSource, points);
 
                 mapOptions.Camera!.Center = data[1];

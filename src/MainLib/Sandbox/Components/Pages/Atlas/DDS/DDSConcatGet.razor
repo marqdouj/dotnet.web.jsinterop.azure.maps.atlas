@@ -160,7 +160,7 @@
 
                 symbolLayer.Source = symbolSource.Id;
                 await atlasInterop.Sources.Add(map!, symbolSource);
-                await atlasInterop.Layers.Add(map!, [symbolLayer]);
+                await atlasInterop.Layers.Add(map!, symbolLayer);
                 await atlasInterop.Features.Add(map!, symbolSource, points);
 
                 mapOptions.Camera!.Center = data[1];

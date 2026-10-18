@@ -38,7 +38,7 @@ namespace Sandbox.Components.Pages.Atlas
             }
 
             _ = await layerType.AddDefaultFeatures(atlasInterop, dataService, map, source!);
-            _ = await atlasInterop.Layers.Add(map, [layer]);
+            _ = await atlasInterop.Layers.Add(map, layer);
 
             if (layerType == LayerType.HeatMap)
             {

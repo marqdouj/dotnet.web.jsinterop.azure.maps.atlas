@@ -21,6 +21,15 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Spatial
         ValueTask<List<IMapObjectReference>> Add(Map map, IEnumerable<SpatialLayer> layers, bool getReferences = false);
 
         /// <summary>
+        /// Adds the spatial layer to the map.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="layer"></param>
+        /// <param name="getReferences"></param>
+        /// <returns></returns>
+        ValueTask<IMapObjectReference?> Add(Map map, SpatialLayer layer, bool getReferences = false);
+
+        /// <summary>
         /// Gets the layer options.
         /// </summary>
         /// <param name="map"></param>

@@ -195,8 +195,8 @@
             try
             {
                 pinLayer.Source = pinSource.Id;
-                await atlasInterop.Sources.Add(map!, [pinSource]);
-                await atlasInterop.Layers.Add(map!, [pinLayer]);
+                await atlasInterop.Sources.Add(map!, pinSource);
+                await atlasInterop.Layers.Add(map!, pinLayer);
 
                 var image = new ImageTemplate(imageId, ImageTemplateName.Car);
                 await atlasInterop.ImageSprite.CreateFromTemplate(map!, image);
