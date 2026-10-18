@@ -19,6 +19,24 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Spatial
         /// <param name="getReferences"></param>
         /// <returns></returns>
         ValueTask<List<IMapObjectReference>> Add(Map map, IEnumerable<SpatialLayer> layers, bool getReferences = false);
+
+        /// <summary>
+        /// Gets the layer options.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="layerType"></param>
+        /// <param name="layer"><see cref="SpatialLayer"/>, SpatialLayer.Id, or <see cref="IJSObjectReference"/> to the layer.</param>
+        /// <returns></returns>
+        ValueTask<object?> GetOptions(Map map, SpatialLayerType layerType, object layer);
+
+        /// <summary>
+        /// Sets the layer options.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="layer"><see cref="SpatialLayer"/>, SpatialLayer.Id, or <see cref="IJSObjectReference"/> to the layer.</param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        ValueTask SetOptions(Map map, object layer, object options);
     }
 
     internal class AzSpatialLayers(Lazy<Task<IJSObjectReference>> moduleTask) : IAtlasSpatialLayers
@@ -29,6 +47,27 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Spatial
         {
             var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, layers.Cast<object>().ToList(), getReferences);
             return [.. items.Cast<IMapObjectReference>()];
+        }
+
+        public async ValueTask<IMapObjectReference?> Add(Map map, SpatialLayer layer, bool getReferences = false)
+        {
+            var result = await Add(map, [layer], getReferences);
+            return result.FirstOrDefault();
+        }
+
+        public async ValueTask<object?> GetOptions(Map map, SpatialLayerType layerType, object layer)
+        {
+            return layerType switch
+            {
+                SpatialLayerType.SimpleDataLayer => await moduleTask.InvokeAsyncTC<SimpleDataLayerOptions>(GetJsInteropMethod(), map.MapReference, layer),
+                SpatialLayerType.OgcMapLayer => await moduleTask.InvokeAsyncTC<OgcMapLayerOptions>(GetJsInteropMethod(), map.MapReference, layer),
+                _ => null,
+            };
+        }
+
+        public async ValueTask SetOptions(Map map, object layer, object options)
+        {
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, layer, options);
         }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")

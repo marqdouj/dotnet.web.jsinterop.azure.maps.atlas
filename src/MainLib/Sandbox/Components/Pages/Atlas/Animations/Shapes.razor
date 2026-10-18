@@ -3,7 +3,7 @@
 @implements IAsyncDisposable
 @inject IOptions<MapConfiguration> Configuration
 @inject IJSRuntime JSRuntime
-@inject ILogger<Design> Logger
+@inject ILogger<Shapes> Logger
 @inject INotificationService ToastService
 @inject IMapDataService DataService
 
@@ -22,7 +22,7 @@
             <FluentSpacer Width="10px" />
             <FluentButton Disabled="@movePrevNotReady" IconStart="@(new Icons.Regular.Size20.PreviousFrame())" Title="Prev" OnClick="@(() => MoveCar(-1))" />
             <FluentButton Disabled="@moveNextNotReady" IconStart="@(new Icons.Regular.Size20.NextFrame())" Title="Next" OnClick="@(() => MoveCar(1))" />
-            <FluentLabel>Car: @carIndex</FluentLabel>
+            <FluentLabel>Car Position: @carIndex</FluentLabel>
             <FluentSpacer Width="5px" />
             <FluentCheckbox Disabled="@mapNotReady" @bind-Value="@follow" Label="Follow animation with map:" LabelPosition="LabelPosition.Before" />
         </Toolbar>

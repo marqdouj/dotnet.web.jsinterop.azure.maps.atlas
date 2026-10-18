@@ -4,5 +4,6 @@
     {
         public bool IsDevelopment { get; } = builder.Environment.IsDevelopment();
         public string HeaderText { get; } = "Azure Maps Sandbox";
+        public string? MapTilerAPIKey { get; } = builder.Configuration.GetValue<string>(nameof(MapTilerAPIKey));
     }
 }

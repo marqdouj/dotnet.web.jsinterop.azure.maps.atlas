@@ -118,6 +118,7 @@
             //overrride the global map options (if any) that were set.
             config!.MapOptions = MapExtensions.GetDefaultMapOptions();
             map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config);
+            StateHasChanged();
         }
         catch (Exception ex)
         {

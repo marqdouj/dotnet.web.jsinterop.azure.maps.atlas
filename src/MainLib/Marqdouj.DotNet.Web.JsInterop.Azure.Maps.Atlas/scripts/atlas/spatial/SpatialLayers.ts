@@ -47,6 +47,14 @@ export class SpatialLayers {
 
         return results;
     }
+
+    public static getOptions(map: atlas.Map, source: any) {
+        return Layers.getOptions(map, source);
+    }
+
+    public static setOptions(map: atlas.Map, source: any, options: any) {
+        Layers.setOptions(map, source, options);
+    }
 }
 
 enum SpatialLayerType {

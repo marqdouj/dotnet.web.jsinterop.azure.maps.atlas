@@ -1,6 +1,4 @@
-﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models;
-using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Animations;
-using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Spatial;
+﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Animations;
 using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;

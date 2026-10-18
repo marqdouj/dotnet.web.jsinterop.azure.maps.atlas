@@ -1,4 +1,5 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Sources;
+using System.Text.Json.Serialization;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Spatial.Layers
 {
@@ -15,6 +16,12 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Spatial.Layers
             get; 
             set => field = value is SimpleDataLayerOptions ? value : value != null ? throw new ArgumentNullException(nameof(value), $"{nameof(SimpleDataLayer)} options expected value must be null or an instance of {nameof(SimpleDataLayerOptions)}.") : null;
         }
+
+        /// <summary>
+        /// Typed <see cref="Options"/>.
+        /// </summary>
+        [JsonIgnore]
+        public SimpleDataLayerOptions? OptionsT { get => (SimpleDataLayerOptions?)Options; set => Options = value; }
 
         /// <summary>
         /// <inheritdoc/>

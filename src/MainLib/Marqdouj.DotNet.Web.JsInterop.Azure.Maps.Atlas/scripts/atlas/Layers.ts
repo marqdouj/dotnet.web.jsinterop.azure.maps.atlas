@@ -54,6 +54,14 @@ export class Layers {
         return results;
     }
 
+    public static getOptions(map: atlas.Map, source: any) {
+        return this.getLayer(map, source)?.getOptions();
+    }
+
+    public static setOptions(map: atlas.Map, source: any, options: any) {
+        this.getLayer(map, source)?.setOptions(options);
+    }
+
     public static getReferences(map: atlas.Map, ids?: string[]) {
         if (ids) 
             return this.#getLayersById(map, ids);
@@ -85,6 +93,17 @@ export class Layers {
         });
 
         return results;
+    }
+
+    public static getLayer(map: atlas.Map, source: any) : atlas.layer.Layer | undefined {
+        const id = Helpers.getSourceId(source);
+        const layer = map.layers.getLayerById(id!);
+
+        if (!layer) {
+            Logger.logMapMessage(Helpers.getMapId(map), LogLevel.Warn, `Layer not found where id = '${id}'.`);
+        }
+
+        return layer;
     }
 
     public static remove(map: atlas.Map, layers: any[]) {

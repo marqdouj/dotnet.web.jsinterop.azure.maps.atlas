@@ -10,7 +10,7 @@
 <MapPage Title="@title">
     <SummaryContent>
         <FluentText As="TextTag.Paragraph">
-            This page demonstrates reading an XML file into a SimpleDataLayer.
+            This page demonstrates a SimpleDataLayer.
         </FluentText>
     </SummaryContent>
 
@@ -22,7 +22,17 @@
             <FluentButton Disabled="@removeLayerDisabled" IconStart="@(new Icons.Regular.Size20.Delete())" Title="Delete Layer" OnClick="@RemoveLayer" />
         </Toolbar>
 
-        <MapContainer MapId="@mapId" />
+        <FluentStack Height="100%">
+            <FluentListbox Items="options"
+                           TOption="OptionInfo"
+                           TValue="OptionInfo"
+                           OptionText="@(i => i.Name)"
+                           SelectedItems="selectedOptions"
+                           SelectedItemsChanged="OnSelectedItemsChanged"
+                           Multiple="true" />
+
+            <MapContainer MapId="@mapId" />
+        </FluentStack>
     </ChildContent>
 </MapPage>
 
@@ -39,12 +49,21 @@
     private SimpleDataLayer? layer;
     private bool addLayerDisabled => mapNotReady || layer != null;
     private bool removeLayerDisabled => mapNotReady || layer == null;
+    private readonly List<OptionInfo> options = new();
+    private List<OptionInfo> selectedOptions = new();
 
     protected override void OnInitialized()
     {
         config = Configuration.GetValue(LogLevel.Trace);
         atlasInterop = new(JSRuntime);
         dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
+
+        options.Add(new OptionInfo("Allow Extrusions", nameof(SimpleDataLayerOptions.AllowExtrusions)));
+        options.Add(new OptionInfo("Enable Popups", nameof(SimpleDataLayerOptions.EnablePopups)));
+        options.Add(new OptionInfo("Show Point Titles", nameof(SimpleDataLayerOptions.ShowPointTitles)));
+        options.Add(new OptionInfo("Visible", nameof(SimpleDataLayerOptions.Visible)));
+
+        selectedOptions = options.Where(e => e.Value != nameof(SimpleDataLayerOptions.ShowPointTitles)).ToList();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -78,12 +97,21 @@
             {
                 dataSource = new();
                 await atlasInterop.Sources.Add(map!, dataSource);
-                var url = await DataService.Examples.Spatial.GetReadUrl(SpatialGetReadUrl.Route66Attractions);
+
+                var options = new SpatialDataReadOptions { ZoomToBBox = false };
+
+                var url = await DataService.Examples.Spatial.GetReadUrl(SpatialGetReadUrl.Choropleth3D);
                 await atlasInterop.Spatial.IO.Read(map!, dataSource.Id, url);
+                url = await DataService.Examples.Spatial.GetReadUrl(SpatialGetReadUrl.Route66Attractions);
+                await atlasInterop.Spatial.IO.Read(map!, dataSource.Id, url);
+
+                var camera = await atlasInterop.Map.GetCamera(map!);
+                camera!.Zoom = 3;
+                await atlasInterop.Map.SetCamera(map!, camera.ToCameraOptions());
             }
             if (layer == null)
             {
-                layer = new() { Source = dataSource.Id };
+                layer = new() { Source = dataSource.Id, Options = new SimpleDataLayerOptions() { AllowExtrusions = true, EnablePopups = true, ShowPointTitles = false, Visible = true } };
                 await atlasInterop.Spatial.Layers.Add(map!, [layer]);
             }
         }
@@ -118,6 +146,31 @@
         }
     }
 
+    private async Task OnSelectedItemsChanged(IEnumerable<OptionInfo> options)
+    {
+        try
+        {
+            layer!.OptionsT!.AllowExtrusions = GetOptionInfoValue(options, nameof(SimpleDataLayerOptions.AllowExtrusions));
+            layer.OptionsT!.EnablePopups = GetOptionInfoValue(options, nameof(SimpleDataLayerOptions.EnablePopups));
+            layer.OptionsT!.ShowPointTitles = GetOptionInfoValue(options, nameof(SimpleDataLayerOptions.ShowPointTitles));
+            layer.OptionsT!.Visible = GetOptionInfoValue(options, nameof(SimpleDataLayerOptions.Visible));
+
+            await atlasInterop.Spatial.Layers.SetOptions(map!, layer.Id, layer.Options!);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private static bool GetOptionInfoValue(IEnumerable<OptionInfo> options, string value)
+    {
+        var info = options.FirstOrDefault(e => e.Value == value);
+
+        return info != null ? true : false;
+    }
+
     #region Map
 
     private async Task CreateMap()
@@ -148,6 +201,7 @@
             if (map == null)
                 return;
 
+            await RemoveLayer();
             await atlasInterop.Map.SetCamera(map, mapOptions.Camera);
         }
         catch (Exception ex)
@@ -164,4 +218,10 @@
     }
 
     #endregion
+
+    private class OptionInfo(string name, string value)
+    {
+        public string Name { get; } = name;
+        public string Value { get; } = value;
+    }
 }
