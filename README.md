@@ -28,6 +28,10 @@ In the source code, see the `Sandbox` web app for examples on using this library
 
 ## Release Notes (Current)
 - `11.0.0-Preview-4.5`
+  - `IAtlasLayers`.
+	- `Add(Map map, ILayer layer, bool getReference = false)`. New overloaded method that takes a single instance of `ILayer`.
+  - `IAtlasSpatialLayers`.
+	- `Add(Map map, SpatialLayer layer, bool getReferences = false)`. New overloaded method that takes a single instance of `SpatialLayer`.
   - `Sandbox`. Demo updates.
 
 ## [Release Notes (All)](Documents/ReleaseNotes.md)
