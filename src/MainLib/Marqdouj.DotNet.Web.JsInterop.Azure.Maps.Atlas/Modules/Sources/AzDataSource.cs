@@ -61,7 +61,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         ValueTask<IMapObjectReference?> GetShapeById(Map map, object source, string shapeId);
 
         /// <summary>
-        /// Gets a lost of <see cref="IMapObjectReference"/> to all shapes in the DataSource.
+        /// Gets a <see cref="IMapObjectReference"/> to a list of all shapes in the DataSource.
         /// </summary>
         /// <param name="map"></param>
         /// <param name="source">DataSource.Id or an <see cref="IJSObjectReference"/> to a DataSource.</param>
