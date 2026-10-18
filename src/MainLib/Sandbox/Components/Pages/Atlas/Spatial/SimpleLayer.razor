@@ -23,7 +23,7 @@
         </Toolbar>
 
         <FluentStack Height="100%">
-            <FluentListbox Items="options"
+            <FluentListbox Items="options" Disabled="@removeLayerDisabled"
                            TOption="OptionInfo"
                            TValue="OptionInfo"
                            OptionText="@(i => i.Name)"
