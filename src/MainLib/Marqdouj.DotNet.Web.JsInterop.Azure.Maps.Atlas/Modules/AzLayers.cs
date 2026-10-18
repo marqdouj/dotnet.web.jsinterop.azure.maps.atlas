@@ -21,6 +21,15 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         ValueTask<List<IMapObjectReference>> Add(Map map, IEnumerable<ILayer> layers, bool getReferences = false);
 
         /// <summary>
+        /// Gets the layer options.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="layerType"><see cref="LayerType"/></param>
+        /// <param name="layer"><see cref="ILayer"/> or <see cref="IJSObjectReference"/> to a layer.</param>
+        /// <returns></returns>
+        ValueTask<LayerOptions?> GetOptions(Map map, LayerType layerType, object layer);
+
+        /// <summary>
         /// Get the <see cref="IMapObjectReference"/> for all the layers.
         /// </summary>
         /// <param name="map"></param>
@@ -96,6 +105,16 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// <param name="id">layer id</param>
         /// <returns></returns>
         ValueTask Remove(Map map, string id);
+
+        /// <summary>
+        /// Sets the layer options.
+        /// </summary>
+        /// <typeparam name="TOptions"></typeparam>
+        /// <param name="map"></param>
+        /// <param name="layer"><see cref="ILayer"/> or <see cref="IJSObjectReference"/> to a layer.</param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        ValueTask SetOptions<TOptions>(Map map, object layer, TOptions options) where TOptions : LayerOptions;
     }
 
     internal class AzLayers(Lazy<Task<IJSObjectReference>> moduleTask) : IAtlasLayers
@@ -154,6 +173,27 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         public async ValueTask Remove(Map map, IEnumerable<ILayer> layers)
         {
             await Remove(map, layers.Select(e => e.Id));
+        }
+
+        public async ValueTask<LayerOptions?> GetOptions(Map map, LayerType layerType, object layer)
+        {
+            return layerType switch
+            {
+                LayerType.Bubble => await moduleTask.InvokeAsyncTC<BubbleLayerOptions>(GetJsInteropMethod(), map.MapReference, layer),
+                LayerType.HeatMap => await moduleTask.InvokeAsyncTC<HeatMapLayerOptions>(GetJsInteropMethod(), map.MapReference, layer),
+                LayerType.Image => await moduleTask.InvokeAsyncTC<ImageLayerOptions>(GetJsInteropMethod(), map.MapReference, layer),
+                LayerType.Line => await moduleTask.InvokeAsyncTC<LineLayerOptions>(GetJsInteropMethod(), map.MapReference, layer),
+                LayerType.Polygon => await moduleTask.InvokeAsyncTC<PolygonLayerOptions>(GetJsInteropMethod(), map.MapReference, layer),
+                LayerType.PolygonExtrusion => await moduleTask.InvokeAsyncTC<PolygonExtrusionLayerOptions>(GetJsInteropMethod(), map.MapReference, layer),
+                LayerType.Symbol => await moduleTask.InvokeAsyncTC<SymbolLayerOptions>(GetJsInteropMethod(), map.MapReference, layer),
+                LayerType.Tile => await moduleTask.InvokeAsyncTC<TileLayerOptions>(GetJsInteropMethod(), map.MapReference, layer),
+                _ => null,
+            };
+        }
+
+        public async ValueTask SetOptions<TOptions>(Map map, object layer, TOptions options) where TOptions : LayerOptions
+        {
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, layer, options);
         }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")
