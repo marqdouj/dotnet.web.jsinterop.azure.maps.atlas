@@ -29,9 +29,15 @@ In the source code, see the `Sandbox` web app for examples on using this library
 ## Release Notes (Current)
 - `11.0.0-Preview-4.4`
   - `IMapObjectReference`. Interface is now readonly.
+  - `IAtlasMap`.
+	- `EnableElevation/DisableElevation`. New methods to enable/disable 3D terrain mesh for elevation.
+  - `IAtlasLayers/IAtlasSpatialLayers`.
+	- `GetOptions/SetOptions`. New methods to get and set layer options.
   - `Sandbox`.
 	- `New Demos`.
 	  - `Basic/Layers (3D Elevation)`. Demonstrates how to enable/disable a 3D terrain mesh, based on a "raster-dem" source.
 	  - `Basic/Layers (Vector Tile Service)`. Demonstrates how to use a vector tile service to render line data on the map.
+	- `Updated Demos`.
+	  - `Scripts (Optional)/Spatial IO/SimpleDataLayer`. Add ability to set options.
 
 ## [Release Notes (All)](Documents/ReleaseNotes.md)

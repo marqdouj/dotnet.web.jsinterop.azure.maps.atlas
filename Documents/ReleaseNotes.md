@@ -6,11 +6,13 @@
   - `IAtlasMap`.
 	- `EnableElevation/DisableElevation`. New methods to enable/disable 3D terrain mesh for elevation.
   - `IAtlasLayers/IAtlasSpatialLayers`.
-	- `GetOptions/SetOptions`. New method to get and set layer options.
+	- `GetOptions/SetOptions`. New methods to get and set layer options.
   - `Sandbox`.
 	- `New Demos`.
 	  - `Basic/Layers (3D Elevation)`. Demonstrates how to enable/disable a 3D terrain mesh, based on a "raster-dem" source.
 	  - `Basic/Layers (Vector Tile Service)`. Demonstrates how to use a vector tile service to render line data on the map.
+	- `Updated Demos`.
+	  - `Scripts (Optional)/Spatial IO/SimpleDataLayer`. Add ability to set options.
 - `11.0.0-Preview-4.3`
   - `RoutePathAnimationOptions`.
 	- `IJSObjectReference? Map`. New property to assign the map reference that the animation will follow.
