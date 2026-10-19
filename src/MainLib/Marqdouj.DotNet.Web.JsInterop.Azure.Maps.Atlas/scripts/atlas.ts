@@ -5,6 +5,7 @@ export { Controls } from "./atlas/Controls"
 export { DataSource } from "./atlas/DataSource"
 export { Factory } from "./atlas/Factory"
 export { Features } from "./atlas/Features"
+export { Geolocation } from "./atlas/Geolocation";
 export { ImageSprite } from "./atlas/ImageSprite"
 export { Layers } from "./atlas/Layers"
 export { LayerEvents } from "./atlas/events/LayerEvents"

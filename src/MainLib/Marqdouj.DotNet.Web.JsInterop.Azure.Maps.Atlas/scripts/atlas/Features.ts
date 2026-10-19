@@ -5,7 +5,7 @@ import { DataSource } from "./DataSource";
 import { Logger, LogLevel } from "./common/Logger";
 
 export class Features {
-    public static add(map: atlas.Map, source: any, features: any[], getReferences: boolean = false): MapObjectReference[] {
+    public static add(map: atlas.Map, source: any, features: any[], replace: boolean = false, getReferences: boolean = false): MapObjectReference[] {
         const eventName = "Features.add";
         const mapId = Helpers.getMapId(map);
         const results: MapObjectReference[] = [];
@@ -18,6 +18,9 @@ export class Features {
 
                 if (Helpers.isNotEmptyOrNull(id)) {
                     item = ds.getShapeById(id!);
+                    if (replace) {
+                        ds.removeById(id as any);
+                    }
                 }
 
                 if (!item) {

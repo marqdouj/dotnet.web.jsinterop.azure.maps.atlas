@@ -14,9 +14,9 @@ export enum MapEventTarget {
 
 export interface NotifyMapEventArgs {
     mapId: string;
-    target: MapEventTarget;
+    target?: MapEventTarget;
     targetId?: string;
-    type: string;
+    type?: string;
     payload?: atlas.Properties | undefined;
 }
 
@@ -113,12 +113,12 @@ export class Helpers {
         return { wheel: payload };
     }
 
-    static buildNotifyEventArgs(mapId: string, event: EventInfo, payload?: any) {
-        const args: NotifyMapEventArgs = { mapId: mapId, target: event.target, targetId: this.getEventInfoSourceId(event), type: event.type, payload: payload };
+    static buildNotifyEventArgs(mapId: string, event?: EventInfo, payload?: any) {
+        const args: NotifyMapEventArgs = { mapId: mapId, target: event?.target, targetId: this.getEventInfoSourceId(event), type: event?.type, payload: payload };
         return args;
     }
 
-    static getEventInfoSourceId(eventInfo: EventInfo) {
-        return CHelpers.getSourceId(eventInfo.source);
+    static getEventInfoSourceId(eventInfo?: EventInfo) {
+        return CHelpers.getSourceId(eventInfo?.source);
     }
 }

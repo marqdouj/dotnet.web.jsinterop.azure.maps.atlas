@@ -106,7 +106,7 @@ namespace Sandbox.Components.Pages.Atlas
             var data = await dataService.GetBubbleLayerData();
             var p = new GeoJsonProperties { { "title", "my default bubble layer" } };
             var feature = new Feature<MultiPoint, GeoJsonProperties>(new MultiPoint(data), p);
-            var items = await atlasInterop.Features.Add(map, source.Id, [feature], getReferences);
+            var items = await atlasInterop.Features.Add(map, source.Id, [feature], false, getReferences);
 
             await atlasInterop.Map.SetCamera(map, new CameraOptions { Center = data[1], Zoom = 12, Pitch = 0, });
             return items;
@@ -117,7 +117,7 @@ namespace Sandbox.Components.Pages.Atlas
             var data = await dataService.GetLineLayerData();
             var p = new GeoJsonProperties { { "title", "my default line layer" } };
             var feature = new Feature<LineString, GeoJsonProperties>(new LineString(data), p);
-            var items = await atlasInterop.Features.Add(map, source.Id, [feature], getReferences);
+            var items = await atlasInterop.Features.Add(map, source.Id, [feature], false, getReferences);
 
             await atlasInterop.Map.SetCamera(map, new CameraOptions { Center = data[8], Zoom = 11, Pitch = 0, });
             return items;
@@ -128,7 +128,7 @@ namespace Sandbox.Components.Pages.Atlas
             var data = await dataService.GetPolygonLayerData();
             var p = new GeoJsonProperties { { "title", "my default polygon layer" } };
             var feature = new Feature<Polygon, GeoJsonProperties>(new Polygon(data), p);
-            var items = await atlasInterop.Features.Add(map, source.Id, [feature], getReferences);
+            var items = await atlasInterop.Features.Add(map, source.Id, [feature], false, getReferences);
 
             await atlasInterop.Map.SetCamera(map, new CameraOptions { Center = data[0][0], Zoom = 11, Pitch = 0, });
             return items;
@@ -139,7 +139,7 @@ namespace Sandbox.Components.Pages.Atlas
             var data = await dataService.GetPolygonExtLayerData();
             var p = new GeoJsonProperties { { "title", "my default polygon extrusion layer" } };
             var feature = new Feature<Polygon, GeoJsonProperties>(new Polygon(data), p);
-            var items = await atlasInterop.Features.Add(map, source.Id, [feature], getReferences);
+            var items = await atlasInterop.Features.Add(map, source.Id, [feature], false, getReferences);
 
             await atlasInterop.Map.SetCamera(map, new CameraOptions { Center = data[0][0], Zoom = 11, Pitch = 60, });
             return items;
@@ -159,7 +159,7 @@ namespace Sandbox.Components.Pages.Atlas
                 features.Add(feature);
             }
 
-            var items = await atlasInterop.Features.Add(map, source.Id, features, getReferences);
+            var items = await atlasInterop.Features.Add(map, source.Id, features, false, getReferences);
             await atlasInterop.Map.SetCamera(map, new CameraOptions { Center = data[8], Zoom = 11, Pitch = 0, });
             return items;
         }
