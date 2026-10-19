@@ -213,7 +213,7 @@
         {
             pinLayer.Source = pinSource.Id;
             await atlasInterop.Sources.Add(map!, pinSource);
-            await atlasInterop.Layers.Add(map!, [pinLayer]);
+            await atlasInterop.Layers.Add(map!, pinLayer);
             await SelectedTemplateChanged(templates.FirstOrDefault(e => e.Name == ImageTemplateName.Marker_Circle));
             StateHasChanged();
         }

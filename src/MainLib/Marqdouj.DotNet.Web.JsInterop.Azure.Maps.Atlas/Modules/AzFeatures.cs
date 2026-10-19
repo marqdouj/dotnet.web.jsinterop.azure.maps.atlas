@@ -18,12 +18,13 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// <param name="map"></param>
         /// <param name="source">DataSource id, <see cref="DataSource"/>, or <see cref="IJSObjectReference"/> for a DataSource</param>
         /// <param name="features"></param>
+        /// <param name="replace">If true, replaces the exiting feature with the new one.</param>
         /// <param name="getReferences">
-        /// If true, then return the <see cref="IMapObjectReference"/> for the items. Default is false.
+        /// If true, then return the <see cref="IMapObjectReference"/> for the items.
         /// IMPORTANT! Ensure the <see cref="IMapObjectReference"/> items are disposed when you are done with them.
         /// </param>
         /// <returns></returns>
-        ValueTask<List<IMapObjectReference>> Add(Map map, object source, IEnumerable<object> features, bool getReferences = false);
+        ValueTask<List<IMapObjectReference>> Add(Map map, object source, IEnumerable<object> features, bool replace = false, bool getReferences = false);
 
         /// <summary>
         /// Sets the properties for a shape.
@@ -40,11 +41,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = moduleTask;
 
-        public async ValueTask<List<IMapObjectReference>> Add(Map map, object source, IEnumerable<object> features, bool getReferences = false)
+        public async ValueTask<List<IMapObjectReference>> Add(Map map, object source, IEnumerable<object> features, bool replace = false, bool getReferences = false)
         {
             try
             {
-                var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, source, features, getReferences);
+                var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, source, features.ToList(), replace, getReferences);
                 return [.. items.Cast<IMapObjectReference>()];
             }
             catch (JSException ex)

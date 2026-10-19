@@ -3,12 +3,11 @@ using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Animations;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Definitions;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Sources;
-using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Animations;
 using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
 
-namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
+namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Animations
 {
     /// <summary>
     /// Interface for map animations.

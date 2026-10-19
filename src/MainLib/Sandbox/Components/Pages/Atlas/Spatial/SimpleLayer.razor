@@ -23,7 +23,7 @@
         </Toolbar>
 
         <FluentStack Height="100%">
-            <FluentListbox Items="options"
+            <FluentListbox Items="options" Disabled="@removeLayerDisabled"
                            TOption="OptionInfo"
                            TValue="OptionInfo"
                            OptionText="@(i => i.Name)"
@@ -112,7 +112,7 @@
             if (layer == null)
             {
                 layer = new() { Source = dataSource.Id, Options = new SimpleDataLayerOptions() { AllowExtrusions = true, EnablePopups = true, ShowPointTitles = false, Visible = true } };
-                await atlasInterop.Spatial.Layers.Add(map!, [layer]);
+                await atlasInterop.Spatial.Layers.Add(map!, layer);
             }
         }
         catch (Exception ex)

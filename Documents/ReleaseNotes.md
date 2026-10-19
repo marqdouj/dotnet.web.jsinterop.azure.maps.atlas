@@ -1,6 +1,15 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-4.5`
+  - `IAtlasLayers`.
+	- `Add(Map map, ILayer layer, bool getReference = false)`. New overloaded method that takes a single instance of `ILayer`.
+  - `IAtlasSpatialLayers`.
+	- `Add(Map map, SpatialLayer layer, bool getReferences = false)`. New overloaded method that takes a single instance of `SpatialLayer`.
+  - `IAtlasInterop.Geolocation`. New module has been added for geolocation support.
+  - `Sandbox`.
+	- `New Demos`.
+	  - `Basic/Geolocation`. Demonstrates how a user's location can be queried directly, or watched.
 - `11.0.0-Preview-4.4`
   - `IMapObjectReference`. Interface is now readonly.
   - `IAtlasMap`.

@@ -16,9 +16,18 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// </summary>
         /// <param name="map"></param>
         /// <param name="layers"></param>
-        /// <param name="getReferences">If true, then return the <see cref="IMapObjectReference"/> for the layers. Default is false.</param>
+        /// <param name="getReferences">If true, then return the <see cref="IMapObjectReference"/> for the layers.</param>
         /// <returns></returns>
         ValueTask<List<IMapObjectReference>> Add(Map map, IEnumerable<ILayer> layers, bool getReferences = false);
+
+        /// <summary>
+        /// Adds a map layer.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="layer"></param>
+        /// <param name="getReference">If true, then return the <see cref="IMapObjectReference"/> for the layer.</param>
+        /// <returns></returns>
+        ValueTask<IMapObjectReference?> Add(Map map, ILayer layer, bool getReference = false);
 
         /// <summary>
         /// Gets the layer options.
@@ -125,6 +134,12 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         {
             var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, layers.Cast<object>().ToList(), getReferences);
             return [.. items.Cast<IMapObjectReference>()];
+        }
+
+        public async ValueTask<IMapObjectReference?> Add(Map map, ILayer layer, bool getReference = false)
+        {
+            var items = await Add(map, [layer], getReference);
+            return items.FirstOrDefault();
         }
 
         public async ValueTask<List<IMapObjectReference>> GetReferences(Map map)

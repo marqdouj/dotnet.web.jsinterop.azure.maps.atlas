@@ -138,8 +138,8 @@
 
                 var pipelines = await DataService.GetAcmePipelines();
 
-                await atlasInterop.Sources.Add(map!, [pipelinesSource]);
-                await atlasInterop.Layers.Add(map!, [pipelinesLayer]);
+                await atlasInterop.Sources.Add(map!, pipelinesSource);
+                await atlasInterop.Layers.Add(map!, pipelinesLayer);
 
                 foreach (var vpm in pipelines)
                 {

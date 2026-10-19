@@ -1,4 +1,5 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Animations;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Data;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Events;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources;
@@ -41,6 +42,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         /// <inheritdoc cref="IAtlasFeatures"/>
         /// </summary>
         IAtlasFeatures Features { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasGeolocation"/>
+        /// </summary>
+        IAtlasGeolocation Geolocation { get; }
 
         /// <summary>
         /// <inheritdoc cref="IAtlasImageSprite"/>
@@ -112,6 +118,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
             Events = new AzEvents(moduleTask);
             Factory = new AzFactory(moduleTask);
             Features = new AzFeatures(moduleTask);
+            Geolocation = new AzGeolocation(moduleTask);
             ImageSprite = new AzImageSprite(moduleTask);
             Layers = new AzLayers(moduleTask);
             Map = new AzMap(moduleTask);
@@ -152,6 +159,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         /// <inheritdoc cref="IAtlasFeatures"/>
         /// </summary>
         public IAtlasFeatures Features { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasGeolocation"/>
+        /// </summary>
+        public IAtlasGeolocation Geolocation { get; }
 
         /// <summary>
         /// <inheritdoc cref="IAtlasImageSprite"/>
