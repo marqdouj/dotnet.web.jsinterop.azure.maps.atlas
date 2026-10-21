@@ -5,7 +5,7 @@
   "license": "MIT",
   "author": "Doug Marquardt",
   "scripts": {
-    "build:webpack": "webpack"
+    "build:webpack": "webpack --stats-error-details"
   },
   "devDependencies": {
     "azure-maps-control": "4.0.0-preview.2",
