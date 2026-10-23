@@ -13,17 +13,18 @@
             This page demonstrates how to use custom JSInvokable events for specific scenarios.
             <br />
             The Click/DblClick events are sent to 'NotifyMapClickEvent', while the MouseDown/MouseUp events are sent to the default 'NotifyMapEvent'.
-            <br />
-            Events are written to the Console.
         </FluentText>
     </SummaryContent>
 
     <ChildContent>
         <Toolbar>
             <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
+            <FluentSpacer Width="8px"/>
+            <FluentCheckbox Label="Multiline" @bind-Value="@multiline" />
         </Toolbar>
 
-        <MapContainer MapId="@mapId" />
+        <MapContainer MapId="@mapId" Height="250px" />
+        <EventsViewer Events="@eventArgsManager" Maps="@atlasInterop" Mulitline="@multiline" />
     </ChildContent>
 </MapPage>
 
@@ -37,6 +38,8 @@
     private Map? map;
     private bool mapNotReady => map == null;
     private List<MapEvent> mapEvents = default!;
+    private bool multiline;
+    private readonly MapEventArgsViewModelManager eventArgsManager = new();
 
     protected override void OnInitialized()
     {
@@ -47,9 +50,8 @@
         mapEvents = [
             new MapEvent(MapEventType.Click){ EventName = nameof(NotifyMapClickEvent)},
             new MapEvent(MapEventType.DblClick){ EventName = nameof(NotifyMapClickEvent)},
-            new MapEvent(MapEventType.MouseDown),
+            new MapEvent(MapEventType.MouseDown){ PreventDefault = false },//Allow user to pan map.
             new MapEvent(MapEventType.MouseUp),
-
         ];
     }
 
@@ -119,14 +121,16 @@
     public async Task NotifyMapClickEvent(MapEventArgs e)
     {
         await e.ErrorEventProcessed(Logger, ToastService);
-        Console.WriteLine($"{nameof(NotifyMapClickEvent)}: {e.MapId} {e.Type}");
+        eventArgsManager.Add(e);
+        StateHasChanged();
     }
 
     [JSInvokable]
     public async Task NotifyMapEvent(MapEventArgs e)
     {
         await e.ErrorEventProcessed(Logger, ToastService);
-        Console.WriteLine($"{nameof(NotifyMapEvent)}: {e.MapId} {e.Type}");
+        eventArgsManager.Add(e);
+        StateHasChanged();
     }
 
     #endregion

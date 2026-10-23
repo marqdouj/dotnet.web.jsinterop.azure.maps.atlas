@@ -25,7 +25,7 @@
             <FluentSelect Items="@layerTypes" TValue="LayerType?" TOption="LayerType?" @bind-Value:get="@selectedLayer" @bind-Value:set="@SelectedLayerChanged" Placeholder="Select a layer..." />
             <FluentSpacer Width="8px" />
             <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.Eraser())" Title="Clear Events" OnClick="@(() => ClearEvents(true))" />
-            <FluentCheckbox Label="Multiliine" @bind-Value="@multiline" />
+            <FluentCheckbox Label="Multiline" @bind-Value="@multiline" />
             <FluentCheckbox Label="Prevent Default" @bind-Value="@preventDefault" Tooltip="@preventDefaultText" />
         </Toolbar>
 
