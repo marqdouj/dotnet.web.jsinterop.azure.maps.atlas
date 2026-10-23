@@ -32,10 +32,15 @@ In the source code, see the `Sandbox` web app for examples on using this library
 - `11.0.0-Preview-4.6`
   - `IAtlasMap`.
 	- `New Methods`.
-	  - `AreTilesLoaded`. Indicates if all tiles in the current viewport for all sources have loaded or not.
-	  - `Clear`. Removes all sources, layers, markers, and popups from the map.
-      - `PixelsToPositions`. Converts a list of Pixel objects to a list of geographic Positions objects on the map.
-	  - `PositionsToPixels`. Converts a list of Positions to a list of Pixels relative to the map container.
-	  - `Stop`. Stops any animated transition that is currently underway.
-      - `TriggerRepaint`. Trigger the rendering of a single frame.
+	   - `AreTilesLoaded`. Indicates if all tiles in the current viewport for all sources have loaded or not.
+	   - `Clear`. Removes all sources, layers, markers, and popups from the map.
+       - `PixelsToPositions`. Converts a list of Pixel objects to a list of geographic Positions objects on the map.
+	   - `PositionsToPixels`. Converts a list of Positions to a list of Pixels relative to the map container.
+	   - `Stop`. Stops any animated transition that is currently underway.
+       - `TriggerRepaint`. Trigger the rendering of a single frame.
+  - IAtlasPopups.
+	- New Methods.
+	  - `GetOptions`. Returns the options for the popup.
+	  - `IsOpen`. Indicates if the popup is open.
+	  - `SetOptions`. Sets the options for the popup.
   - `Sandbox`: Demo updates.

@@ -50,6 +50,14 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         ValueTask<IMapObjectReference?> AddHoverPopup(Map map, ILayer layer, Popup item, IEnumerable<string> placeholders, bool getReference = false);
 
         /// <summary>
+        /// Indicates if the popup is open.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="popup"></param>
+        /// <returns></returns>
+        ValueTask<bool> IsOpen(Map map, Popup popup);
+
+        /// <summary>
         /// Gets the <see cref="IMapObjectReference"/> for the popup.
         /// IMPORTANT! Ensure the <see cref="IMapObjectReference"/> is disposed when you are done with it.
         /// </summary>
@@ -120,6 +128,25 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// <param name="show">if true, open the popup; otherwise close it.</param>
         /// <returns></returns>
         ValueTask Show(Map map, IEnumerable<Popup> items, bool show);
+
+        #region Options
+
+        /// <summary>
+        /// Returns the options for the popup.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <returns></returns>
+        ValueTask<PopupOptions?> GetOptions(Map map);
+
+        /// <summary>
+        /// Sets the options for the popup.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        ValueTask SetOptions(Map map, PopupOptions options);
+
+        #endregion
     }
 
     internal class AzPopups(Lazy<Task<IJSObjectReference>> moduleTask) : IAtlasPopups
@@ -142,6 +169,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
             return await moduleTask.InvokeAsyncTC<MapObjectReference?>(GetJsInteropMethod(), map.MapReference, layer.Id, item, placeholders, getReference);
         }
 
+        public async ValueTask<bool> IsOpen(Map map, Popup popup)
+        {
+            return await moduleTask.InvokeAsyncTC<bool>(GetJsInteropMethod(), map.MapReference, popup);
+        }
+
         public async ValueTask<IMapObjectReference> GetReference(Map map, Popup item)
         {
             var results = await GetReferences(map, [item]);
@@ -153,6 +185,20 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
             var results = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, items);
             return [.. results.Cast<IMapObjectReference>()];
         }
+
+        #region Options
+
+        public async ValueTask<PopupOptions?> GetOptions(Map map)
+        {
+            return await moduleTask.InvokeAsyncTC<PopupOptions?>(GetJsInteropMethod(), map.MapReference);
+        }
+
+        public async ValueTask SetOptions(Map map, PopupOptions options)
+        {
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, options);
+        }
+
+        #endregion
 
         #region Remove
 
