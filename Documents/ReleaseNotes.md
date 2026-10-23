@@ -1,6 +1,8 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-4.6`
+  - `Sandbox`: Demo updates.
 - `11.0.0-Preview-4.5`
   - `IAtlasLayers`.
 	- `Add(Map map, ILayer layer, bool getReference = false)`. New overloaded method that takes a single instance of `ILayer`.
