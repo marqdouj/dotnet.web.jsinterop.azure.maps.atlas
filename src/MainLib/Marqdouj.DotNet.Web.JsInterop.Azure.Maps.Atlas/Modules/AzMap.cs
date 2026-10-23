@@ -1,6 +1,7 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Sources;
+using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
 
@@ -30,6 +31,43 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// <param name="animation"></param>
         /// <returns></returns>
         ValueTask SetCamera(Map map, CameraOptions? camera, CameraBoundsOptions? cameraBounds = null, AnimationOptions? animation = null);
+
+        #endregion
+
+        #region Elevation
+
+        /// <summary>
+        /// Loads a 3D terrain mesh, based on a "raster-dem" source.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="source"><see cref="ElevationTileSource"/> Id or <see cref="IJSObjectReference"/>.</param>
+        /// <param name="exaggeration"></param>
+        /// <returns></returns>
+        ValueTask EnableElevation(Map map, object source, double? exaggeration = null);
+
+        /// <summary>
+        /// Disables the 3D terrain mesh.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <returns></returns>
+        ValueTask DisableElevation(Map map);
+
+        #endregion
+
+        #region Language
+
+        /// <summary>
+        /// Gets the default language used by the map and service modules.
+        /// </summary>
+        /// <returns></returns>
+        ValueTask<string> GetLanguage();
+
+        /// <summary>
+        /// Sets the default language used by the map and service modules.
+        /// </summary>
+        /// <param name="language"></param>
+        /// <returns></returns>
+        ValueTask SetLanguage(string language);
 
         #endregion
 
@@ -113,17 +151,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
 
         #endregion
 
-        /// <summary>
-        /// Gets the default language used by the map and service modules.
-        /// </summary>
-        /// <returns></returns>
-        ValueTask<string> GetLanguage();
-
-        /// <summary>
-        /// Gets the current API version number based on build number.
-        /// </summary>
-        /// <returns></returns>
-        ValueTask<string> GetVersion();
+        #region View
 
         /// <summary>
         /// Gets which set of geopolitically disputed borders and labels are displayed on the map.
@@ -132,49 +160,73 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         ValueTask<string> GetView();
 
         /// <summary>
-        /// Sets the default language used by the map and service modules.
-        /// </summary>
-        /// <param name="language"></param>
-        /// <returns></returns>
-        ValueTask SetLanguage(string language);
-
-        /// <summary>
         /// Specifies which set of geopolitically disputed borders and labels are displayed on the map.
         /// </summary>
         /// <param name="view"></param>
         /// <returns></returns>
         ValueTask SetView(string view);
 
-        /// <summary>
-        /// Loads a 3D terrain mesh, based on a "raster-dem" source.
-        /// </summary>
-        /// <param name="map"></param>
-        /// <param name="source"><see cref="ElevationTileSource"/> Id or <see cref="IJSObjectReference"/>.</param>
-        /// <param name="exaggeration"></param>
-        /// <returns></returns>
-        ValueTask EnableElevation(Map map, object source, double? exaggeration = null);
+        #endregion
 
         /// <summary>
-        /// Disables the 3D terrain mesh.
+        /// Indicates if all tiles in the current viewport for all sources have loaded or not.
         /// </summary>
         /// <param name="map"></param>
         /// <returns></returns>
-        ValueTask DisableElevation(Map map);
+        ValueTask<bool> AreTilesLoaded(Map map);
+
+        /// <summary>
+        /// Removes all sources, layers, markers, and popups from the map.
+        /// User added images are preserved.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <returns></returns>
+        ValueTask Clear(Map map);
+
+        /// <summary>
+        /// Gets the current API version number based on build number.
+        /// </summary>
+        /// <returns></returns>
+        ValueTask<string> GetVersion();
+
+        /// <summary>
+        /// Converts a list of Pixel objects to a list of geographic Positions objects on the map.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="pixels"></param>
+        /// <returns></returns>
+        ValueTask<List<Position>> PixelsToPositions(Map map, IEnumerable<Pixel> pixels);
+
+        /// <summary>
+        /// Converts a list of Positions to a list of Pixels relative to the map container.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="positions"></param>
+        /// <returns></returns>
+        ValueTask<List<Pixel>> PositionsToPixels(Map map, IEnumerable<Position> positions);
+
+        /// <summary>
+        /// Stops any animated transition that is currently underway.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <returns></returns>
+        ValueTask Stop(Map map);
+
+        /// <summary>
+        /// Trigger the rendering of a single frame.
+        /// Use this method with WebGL layers to repaint the map when the layer's
+        /// properties or properties associated with the layer's source change.
+        /// Calling this multiple times before the next frame is rendered will still
+        /// result in only a single frame being rendered.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <returns></returns>
+        ValueTask TriggerRepaint(Map map);
     }
 
     internal class AzMap(Lazy<Task<IJSObjectReference>> moduleTask) : IAtlasMap
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = moduleTask;
-
-        public async ValueTask EnableElevation(Map map, object source, double? exaggeration = null)
-        {
-            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, source, exaggeration);
-        }
-
-        public async ValueTask DisableElevation(Map map)
-        {
-            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference);
-        }
 
         #region Camera
 
@@ -186,6 +238,34 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         public async ValueTask SetCamera(Map map, CameraOptions? camera, CameraBoundsOptions? cameraBounds = null, AnimationOptions? animation = null)
         {
             await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, camera, cameraBounds, animation);
+        }
+
+        #endregion
+
+        #region Elevation
+
+        public async ValueTask EnableElevation(Map map, object source, double? exaggeration = null)
+        {
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, source, exaggeration);
+        }
+
+        public async ValueTask DisableElevation(Map map)
+        {
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference);
+        }
+
+        #endregion
+
+        #region Language
+
+        public async ValueTask<string> GetLanguage()
+        {
+            return await moduleTask.InvokeAsyncTC<string>(GetJsInteropMethod());
+        }
+
+        public async ValueTask SetLanguage(string language)
+        {
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), language);
         }
 
         #endregion
@@ -246,26 +326,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
 
         #endregion
 
-        #region Language, View, Version
-
-        public async ValueTask<string> GetLanguage()
-        {
-            return await moduleTask.InvokeAsyncTC<string>(GetJsInteropMethod());
-        }
-
-        public async ValueTask<string> GetVersion()
-        {
-            return await moduleTask.InvokeAsyncTC<string>(GetJsInteropMethod());
-        }
+        #region View
 
         public async ValueTask<string> GetView()
         {
             return await moduleTask.InvokeAsyncTC<string>(GetJsInteropMethod());
-        }
-
-        public async ValueTask SetLanguage(string language)
-        {
-            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), language);
         }
 
         public async ValueTask SetView(string view)
@@ -274,6 +339,41 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         }
 
         #endregion
+
+        public async ValueTask<bool> AreTilesLoaded(Map map)
+        {
+            return await moduleTask.InvokeAsyncTC<bool>(GetJsInteropMethod(), map.MapReference);
+        }
+
+        public async ValueTask Clear(Map map)
+        {
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference);
+        }
+
+        public async ValueTask<string> GetVersion()
+        {
+            return await moduleTask.InvokeAsyncTC<string>(GetJsInteropMethod());
+        }
+
+        public async ValueTask<List<Position>> PixelsToPositions(Map map, IEnumerable<Pixel> pixels)
+        {
+            return await moduleTask.InvokeAsyncTC<List<Position>>(GetJsInteropMethod(), map.MapReference, pixels);
+        }
+
+        public async ValueTask<List<Pixel>> PositionsToPixels(Map map, IEnumerable<Position> positions)
+        {
+            return await moduleTask.InvokeAsyncTC<List<Pixel>>(GetJsInteropMethod(), map.MapReference, positions);
+        }
+
+        public async ValueTask Stop(Map map)
+        {
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference);
+        }
+
+        public async ValueTask TriggerRepaint(Map map)
+        {
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference);
+        }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")
             => JsModule.Map.GetJsModuleMethod(name);

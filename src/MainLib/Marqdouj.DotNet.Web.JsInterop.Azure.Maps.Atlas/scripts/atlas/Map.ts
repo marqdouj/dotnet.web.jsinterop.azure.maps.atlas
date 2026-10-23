@@ -3,14 +3,6 @@ import { Helpers } from "./common/Helpers";
 import { EditAction } from "./common";
 
 export class Map {
-    public static enableElevation(map: atlas.Map, elevationSource: string | atlas.source.ElevationTileSource, exaggeration?: number): void {
-        map.enableElevation(elevationSource, exaggeration);
-    }
-
-    public static disableElevation(map: atlas.Map) {
-        map.disableElevation();
-    }
-
     // #region Camera
     public static getCamera(map: atlas.Map) {
         return map.getCamera();
@@ -41,6 +33,30 @@ export class Map {
             map.setCamera(options);
         }
     }
+    // #endregion
+
+    // #region Elevation
+
+    public static enableElevation(map: atlas.Map, elevationSource: string | atlas.source.ElevationTileSource, exaggeration?: number): void {
+        map.enableElevation(elevationSource, exaggeration);
+    }
+
+    public static disableElevation(map: atlas.Map) {
+        map.disableElevation();
+    }
+
+    // #endregion
+
+    // #region Language
+
+    public static getLanguage() {
+        return atlas.getLanguage();
+    }
+
+    public static setLanguage(language: string) {
+        atlas.setLanguage(language);
+    }
+
     // #endregion
 
     // #region Service
@@ -139,20 +155,8 @@ export class Map {
 
     // #region View
 
-    public static getLanguage() {
-        return atlas.getLanguage();
-    }
-
-    public static getVersion(): string {
-        return atlas.getVersion();
-    }
-
     public static getView() {
         return atlas.getView();
-    }
-
-    public static setLanguage(language: string) {
-        atlas.setLanguage(language);
     }
 
     public static setView(view: string) {
@@ -160,4 +164,32 @@ export class Map {
     }
 
     // #endregion
+
+    public static areTilesLoaded(map: atlas.Map): boolean {
+        return map.areTilesLoaded();
+    }
+
+    public static clear(map: atlas.Map): void {
+        map.clear();
+    }
+
+    public static getVersion(): string {
+        return atlas.getVersion();
+    }
+
+    public static pixelsToPositions(map: atlas.Map, pixels: atlas.Pixel[]): atlas.data.Position[] {
+        return map.pixelsToPositions(pixels);
+    }
+
+    public static positionsToPixels(map: atlas.Map, positions: atlas.data.Position[]): atlas.Pixel[] {
+        return map.positionsToPixels(positions);
+    }
+
+    public static stop(map: atlas.Map): void {
+        map.stop();
+    }
+
+    public static triggerRepaint(map: atlas.Map): void {
+        map.triggerRepaint();
+    }
 }
