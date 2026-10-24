@@ -1,7 +1,7 @@
 import * as atlas from "azure-maps-control"
 import { Helpers } from "./common/Helpers";
 import { Logger, LogLevel } from "./common/Logger";
-import { MapObjectReference } from "./common";
+import { EditAction, MapObjectReference } from "./common";
 
 export class DataSource {
     public static clear(map: atlas.Map, sources: any[]) {
@@ -43,7 +43,7 @@ export class DataSource {
             await ds.importDataFromUrl(url);
     }
 
-    static getDataSourceFromSource(map: atlas.Map, mapId: string, source: any, eventName: string, logNotFound: boolean) {
+    public static getDataSourceFromSource(map: atlas.Map, mapId: string, source: any, eventName: string, logNotFound: boolean) {
         let ds: atlas.source.DataSource | undefined;
 
         if (source instanceof atlas.source.DataSource) {
@@ -65,4 +65,34 @@ export class DataSource {
 
         return ds;
     }
+
+    // #region Options
+
+    public static getOptions(map: atlas.Map, source: any) {
+        const eventName = "DataSource.getOptions";
+        const mapId = Helpers.getMapId(map);
+        const ds = this.getDataSourceFromSource(map, mapId, source, eventName, true);
+
+        return ds?.getOptions();
+    }
+
+    public static setOptions(map: atlas.Map, source: any, options: any, action: EditAction) {
+        const eventName = "DataSource.getOptions";
+        const mapId = Helpers.getMapId(map);
+        const ds = this.getDataSourceFromSource(map, mapId, source, eventName, true);
+
+        let updatedOptions = options;
+
+        switch (action) {
+            case EditAction.Replace:
+                break;
+            case EditAction.Update:
+                updatedOptions = Helpers.removeNullish(updatedOptions);
+                break;
+        }
+
+        ds?.setOptions(updatedOptions);
+    }
+
+    // #endregion
 }

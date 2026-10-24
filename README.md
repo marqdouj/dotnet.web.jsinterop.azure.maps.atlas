@@ -30,6 +30,10 @@ In the source code, see the `Sandbox` web app for examples on using this library
 
 ## Release Notes (Current)
 - `11.0.0-Preview-4.6`
+  - `IAtlasDataSource`.
+	- `New Methods`.
+	   - `GetOptions`. Gets the options used by the data source.
+	   - `SetOptions`. Sets the data source options.
   - `IAtlasLayers`.
 	- `New Methods`.
 	   - `Clear`. Removes all layers from the map.
