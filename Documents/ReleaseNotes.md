@@ -2,6 +2,10 @@
 
 ### [<- Go Back](../README.md)
 - `11.0.0-Preview-4.6`
+  - `IAtlasLayers`.
+	- `New Methods`.
+	   - `Clear`. Removes all layers from the map.
+	   - `Move`. Moves a layer to a different z-position.
   - `IAtlasMap`.
 	- `New Methods`.
 	   - `AreTilesLoaded`. Indicates if all tiles in the current viewport for all sources have loaded or not.

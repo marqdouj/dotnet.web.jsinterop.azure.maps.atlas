@@ -30,6 +30,13 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         ValueTask<IMapObjectReference?> Add(Map map, ILayer layer, bool getReference = false);
 
         /// <summary>
+        /// Removes all layers from the map.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <returns></returns>
+        ValueTask Clear(Map map);
+
+        /// <summary>
         /// Gets the layer options.
         /// </summary>
         /// <param name="map"></param>
@@ -60,6 +67,15 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// <param name="layerIds"></param>
         /// <returns></returns>
         ValueTask<List<IMapObjectReference>> GetReferences(Map map, IEnumerable<string> layerIds);
+
+        /// <summary>
+        /// Moves a layer to a different z-position.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="id">The id of the layer to move.</param>
+        /// <param name="before">Optionally specify to move the layer before this layer.</param>
+        /// <returns></returns>
+        ValueTask Move(Map map, string id, string? before);
 
         /// <summary>
         /// Remove the layers from the map.
@@ -142,6 +158,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
             return items.FirstOrDefault();
         }
 
+        public async ValueTask Clear(Map map)
+        {
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference);
+        }
+
         public async ValueTask<List<IMapObjectReference>> GetReferences(Map map)
         {
             var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference);
@@ -157,6 +178,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         public async ValueTask<List<IMapObjectReference>> GetReferences(Map map, IEnumerable<ILayer> layers)
         {
             return  await GetReferences(map, layers.Select(e => e.Id));
+        }
+
+        public async ValueTask Move(Map map, string id, string? before)
+        {
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, id, before);
         }
 
         public async ValueTask Remove(Map map, ILayer layer)
