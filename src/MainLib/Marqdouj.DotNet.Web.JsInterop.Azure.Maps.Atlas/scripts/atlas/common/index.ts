@@ -15,6 +15,6 @@ export interface MapObjectReference {
 }
 
 export enum EditAction {
-    Update = 'update',
-    Replace = 'replace',
+    Update = 'Update',
+    Replace = 'Replace',
 }

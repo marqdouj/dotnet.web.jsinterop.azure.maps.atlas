@@ -19,7 +19,7 @@
             <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
             <FluentSpacer Width="8px" />
             <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.Eraser())" Title="Clear Events" OnClick="@(() => ClearEvents(true))" />
-            <FluentCheckbox Label="Multiliine" @bind-Value="@multiline" />
+            <FluentCheckbox Label="Multiline" @bind-Value="@multiline" />
         </Toolbar>
 
         <FluentStack>

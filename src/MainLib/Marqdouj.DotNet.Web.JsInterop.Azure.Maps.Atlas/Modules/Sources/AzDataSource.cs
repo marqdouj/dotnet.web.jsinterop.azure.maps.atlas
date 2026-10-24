@@ -1,5 +1,6 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Common;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Sources;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
@@ -87,6 +88,46 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         /// <param name="url"></param>
         /// <returns></returns>
         ValueTask ImportDataFromUrl(Map map, string source, string url);
+
+        #region Options
+
+        /// <summary>
+        /// Gets the options used by the data source.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        ValueTask<DataSourceOptions?> GetOptions(Map map, DataSource source);
+
+        /// <summary>
+        /// Gets the options used by the data source.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        ValueTask<DataSourceOptions?> GetOptions(Map map, string id);
+
+        /// <summary>
+        /// Sets the data source options.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="source"></param>
+        /// <param name="options"></param>
+        /// <param name="action"><see cref="SetOptionsAction"/></param>
+        /// <returns></returns>
+        ValueTask SetOptions(Map map, DataSource source, DataSourceOptions options, SetOptionsAction action = SetOptionsAction.Update);
+
+        /// <summary>
+        /// Sets the data source options.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="id"></param>
+        /// <param name="options"></param>
+        /// <param name="action"><see cref="SetOptionsAction"/></param>
+        /// <returns></returns>
+        ValueTask SetOptions(Map map, string id, DataSourceOptions options, SetOptionsAction action = SetOptionsAction.Update);
+
+        #endregion
     }
 
     internal class AzDataSource(Lazy<Task<IJSObjectReference>> moduleTask) : IAtlasDataSource
@@ -141,6 +182,30 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         {
             await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, source, url);
         }
+
+        #region Options
+
+        public async ValueTask<DataSourceOptions?> GetOptions(Map map, DataSource source)
+        {
+            return await GetOptions(map, source.Id);
+        }
+
+        public async ValueTask<DataSourceOptions?> GetOptions(Map map, string id)
+        {
+            return await moduleTask.InvokeAsyncTC<DataSourceOptions?>(GetJsInteropMethod(), map.MapReference, id);
+        }
+
+        public async ValueTask SetOptions(Map map, DataSource source, DataSourceOptions options, SetOptionsAction action = SetOptionsAction.Update)
+        {
+            await SetOptions(map, source.Id, options, action);
+        }
+
+        public async ValueTask SetOptions(Map map, string id, DataSourceOptions options, SetOptionsAction action = SetOptionsAction.Update)
+        {
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, id, options, action);
+        }
+
+        #endregion
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")
             => JsModule.DataSource.GetJsModuleMethod(name);

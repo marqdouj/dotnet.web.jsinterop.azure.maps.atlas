@@ -101,9 +101,11 @@
     private readonly SymbolLayer pinLayer = new();
     private readonly ImageTemplate image = new ImageTemplate("arrow-icon", ImageTemplateName.Marker_Arrow) { Color = "teal", SecondaryColor = "#fff" };
     private readonly PanelInfo panelInfo = new();
+    private const int defaultSpeed = 15;
+    private const bool defaultFollow = true;
     private readonly List<double> speeds = [0.5, 1, 2, 5, 15, 30, 60, 100, 3600];
-    private double speed = 15;
-    private bool follow = true;
+    private double speed = defaultSpeed;
+    private bool follow = defaultFollow;
     private List<DatasetInfo> datasets = [];
     private DatasetInfo? selectedDataset;
     private IJSObjectReference? animation;
@@ -364,6 +366,8 @@
                 return;
 
             await OnDatasetInfoChanged(null);
+            speed = defaultSpeed;
+            follow = defaultFollow;
             await atlasInterop.Map.SetCamera(map, mapOptions.Camera);
         }
         catch (Exception ex)

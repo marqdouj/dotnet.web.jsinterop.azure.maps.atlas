@@ -54,6 +54,10 @@ export class Layers {
         return results;
     }
 
+    public static clear(map: atlas.Map) {
+        map.layers.clear();
+    }
+
     public static getOptions(map: atlas.Map, source: any) {
         return this.getLayer(map, source)?.getOptions();
     }
@@ -104,6 +108,11 @@ export class Layers {
         }
 
         return layer;
+    }
+
+    public static move(map: atlas.Map, source: any, before?: string): void {
+        const id = Helpers.getSourceId(source)!;
+        map.layers.move(id, before);
     }
 
     public static remove(map: atlas.Map, layers: any[]) {

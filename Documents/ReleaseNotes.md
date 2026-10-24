@@ -1,6 +1,33 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-4.6`
+  - `IAtlasDataSource`.
+	- `New Methods`.
+	   - `GetOptions`. Gets the options used by the data source.
+	   - `SetOptions`. Sets the data source options.
+  - `IAtlasLayers`.
+	- `New Methods`.
+	   - `Clear`. Removes all layers from the map.
+	   - `Move`. Moves a layer to a different z-position.
+  - `IAtlasMap`.
+	- `New Methods`.
+	   - `AreTilesLoaded`. Indicates if all tiles in the current viewport for all sources have loaded or not.
+	   - `Clear`. Removes all sources, layers, markers, and popups from the map.
+       - `PixelsToPositions`. Converts a list of Pixel objects to a list of geographic Positions objects on the map.
+	   - `PositionsToPixels`. Converts a list of Positions to a list of Pixels relative to the map container.
+	   - `Stop`. Stops any animated transition that is currently underway.
+       - `TriggerRepaint`. Trigger the rendering of a single frame.
+  - `IAtlasPopups`.
+	- `New Methods`.
+	  - `GetOptions`. Returns the options for the popup.
+	  - `IsOpen`. Indicates if the popup is open.
+	  - `SetOptions`. Sets the options for the popup.
+  - `IAtlasSources`.
+	- `New Methods`.
+	  - `Clear`. Removes all sources from the map.
+	  - `IsSourceLoaded`. Indicates if a source is loaded or not.
+  - `Sandbox`: Demo updates.
 - `11.0.0-Preview-4.5`
   - `IAtlasLayers`.
 	- `Add(Map map, ILayer layer, bool getReference = false)`. New overloaded method that takes a single instance of `ILayer`.

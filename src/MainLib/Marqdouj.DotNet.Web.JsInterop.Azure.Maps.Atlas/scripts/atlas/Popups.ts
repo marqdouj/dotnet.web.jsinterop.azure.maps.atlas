@@ -52,6 +52,11 @@ export class Popups {
         return results;
     }
 
+    public static isOpen(map: atlas.Map, source: any): boolean {
+        const popup = this.#getInstance(map, source);
+        return popup?.isOpen() ?? false;
+    }
+
     public static remove(map: atlas.Map, sources: any[]): void {
         if (Helpers.hasNoElements(sources))
             return;
@@ -85,7 +90,6 @@ export class Popups {
     }
 
     // #region Hover Popup
-
     public static addHoverPopup(map: atlas.Map, layerId: string, info: PopupInfo, placeholders: string[], getReference: boolean = false) {
         const mapId = Helpers.getMapId(map);
         const lyr = map.layers.getLayerById(layerId);
@@ -176,7 +180,22 @@ export class Popups {
         }
     }
 
-    // #endRegion
+
+    // #endregion
+
+    // #region Options
+
+    public static getOptions(map: atlas.Map, source: any): atlas.PopupOptions | undefined {
+        const popup = this.#getInstance(map, source);
+        return popup?.getOptions();
+    }
+
+    public static setOptions(map: atlas.Map, source: any, options?: atlas.PopupOptions): void {
+        const popup = this.#getInstance(map, source);
+        popup?.setOptions(options);
+    }
+
+    // #endregion
 
     static #getInstance(map: atlas.Map, source: any, popups?: atlas.Popup[], logIfNotFound: boolean = true): atlas.Popup | undefined {
         const eventName = "Popups.#getPopupFromSource";

@@ -1,7 +1,7 @@
 ﻿@rendermode InteractiveServer
 @inject AppConfiguration AppConfig
 
-<FluentNav @ref="@nav" Id="main-menu" Width="260px" UseSingleExpanded="true">
+<FluentNav Id="main-menu" Width="260px" UseSingleExpanded="true">
     @if (AppConfig.IsDevelopment && showDev)
     {
         <FluentNavItem Href="design" IconRest="@((new Icons.Regular.Size20.DesignIdeas()))">Design</FluentNavItem>
@@ -72,14 +72,5 @@
 </FluentNav>
 
 @code {
-    FluentNav nav = default!;
     private bool showDev = false;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await nav.ExpandCategoryAsync("maps");
-        }
-    }
 }
