@@ -41,6 +41,29 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         ValueTask<IMapObjectReference?> Add(Map map, MapSource source, bool getReference = false);
 
         /// <summary>
+        /// Removes all sources from the map.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <returns></returns>
+        ValueTask Clear(Map map);
+
+        /// <summary>
+        /// Get the <see cref="IMapObjectReference"/> for the source (if found).
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        ValueTask<IMapObjectReference?> GetReference(Map map, MapSource source);
+
+        /// <summary>
+        /// Get the <see cref="IMapObjectReference"/> for the source (if found).
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        ValueTask<IMapObjectReference?> GetReference(Map map, string id);
+
+        /// <summary>
         /// Get the <see cref="IMapObjectReference"/> for the sources.
         /// IMPORTANT! Ensure the <see cref="IMapObjectReference"/> items are disposed when you are done with them.
         /// </summary>
@@ -57,6 +80,22 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         /// <param name="sourceIds"></param>
         /// <returns></returns>
         ValueTask<List<IMapObjectReference>> GetReferences(Map map, IEnumerable<string> sourceIds);
+
+        /// <summary>
+        /// Indicates if a source is loaded or not.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        ValueTask<bool> IsSourceLoaded(Map map, MapSource source);
+
+        /// <summary>
+        /// Indicates if a source is loaded or not.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        ValueTask<bool> IsSourceLoaded(Map map, string id);
 
         /// <summary>
         /// Remove the sources from the map.
@@ -131,6 +170,22 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
             return items.FirstOrDefault();
         }
 
+        public async ValueTask Clear(Map map)
+        {
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference);
+        }
+
+        public async ValueTask<IMapObjectReference?> GetReference(Map map, MapSource source)
+        {
+            return await GetReference(map, source.Id);
+        }
+
+        public async ValueTask<IMapObjectReference?> GetReference(Map map, string id)
+        {
+            var items = await GetReferences(map, [id]);
+            return items.FirstOrDefault();
+        }
+
         public async ValueTask<List<IMapObjectReference>> GetReferences(Map map, IEnumerable<string> sourceIds)
         {
             var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, sourceIds);
@@ -141,6 +196,16 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         {
             var items = await moduleTask.InvokeAsyncTC<List<MapObjectReference>>(GetJsInteropMethod(), map.MapReference, sources.Select(e => e.Id));
             return [.. items.Cast<IMapObjectReference>()];
+        }
+
+        public async ValueTask<bool> IsSourceLoaded(Map map, MapSource source)
+        {
+            return await IsSourceLoaded(map, source.Id);
+        }
+
+        public async ValueTask<bool> IsSourceLoaded(Map map, string id)
+        {
+            return await moduleTask.InvokeAsyncTC<bool>(GetJsInteropMethod(), map.MapReference, id);
         }
 
         public async ValueTask Remove(Map map, IEnumerable<IMapObjectReference> sources)

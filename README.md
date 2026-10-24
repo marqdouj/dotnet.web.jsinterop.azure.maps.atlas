@@ -38,9 +38,13 @@ In the source code, see the `Sandbox` web app for examples on using this library
 	   - `PositionsToPixels`. Converts a list of Positions to a list of Pixels relative to the map container.
 	   - `Stop`. Stops any animated transition that is currently underway.
        - `TriggerRepaint`. Trigger the rendering of a single frame.
-  - IAtlasPopups.
-	- New Methods.
+  - `IAtlasPopups`.
+	- `New Methods`.
 	  - `GetOptions`. Returns the options for the popup.
 	  - `IsOpen`. Indicates if the popup is open.
 	  - `SetOptions`. Sets the options for the popup.
+  - `IAtlasSources`.
+	- `New Methods`.
+	  - `Clear`. Removes all sources from the map.
+	  - `IsSourceLoaded`. Indicates if a source is loaded or not.
   - `Sandbox`: Demo updates.

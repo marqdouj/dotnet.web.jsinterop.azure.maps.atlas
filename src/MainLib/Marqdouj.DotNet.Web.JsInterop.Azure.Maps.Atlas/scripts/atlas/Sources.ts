@@ -47,6 +47,10 @@ export class Sources {
         return results;
     }
 
+    public static clear(map: atlas.Map) {
+        map.clear();
+    }
+
     public static getReferences(map: atlas.Map, sources?: any[]): MapObjectReference[] {
         const results: MapObjectReference[] = [];
         const mapId = Helpers.getMapId(map);
@@ -62,6 +66,11 @@ export class Sources {
         });
 
         return results;
+    }
+
+    public static isSourceLoaded(map: atlas.Map, source: any) {
+        const id = Helpers.getSourceId(source);
+        map.sources.isSourceLoaded(id!);
     }
 
     public static remove(map: atlas.Map, sources: string | atlas.source.Source | Array<string | atlas.source.Source>) {
