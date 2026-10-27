@@ -20,6 +20,8 @@
             <FluentSpacer Width="10px" />
             <FluentLabel>Layer:</FluentLabel>
             <FluentSelect Items="@layerTypes" TValue="LayerType?" TOption="LayerType?" @bind-Value:get="@selectedLayer" @bind-Value:set="@SelectedLayerChanged" Placeholder="Select a layer..." />
+            <FluentSpacer Width="10px" />
+            <FluentButton Disabled="@isNotDataSource" IconStart="@(new Icons.Regular.Size20.DesignIdeas())" Title="Export JSON" OnClick="@ToJson" />
         </Toolbar>
 
         <MapContainer MapId="@mapId" />
@@ -36,6 +38,8 @@
     private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
     private ILayer? layer;
     private MapSource? source;
+    private bool isDataSource => (source is DataSource);
+    private bool isNotDataSource => !isDataSource;
     private readonly List<LayerType?> layerTypes = Enum.GetValues<LayerType>().OrderBy(e => e.ToString()).Cast<LayerType?>().ToList();
     private LayerType? selectedLayer;
     private bool hasInterop => atlasInterop != null;
@@ -70,6 +74,26 @@
         }
         catch (JSDisconnectedException)
         {
+        }
+    }
+
+    private async Task ToJson()
+    {
+        try
+        {
+            if (source is DataSource ds)
+            {
+                await atlasInterop.Sources.DataSource.ToJson(map!, ds, $"{layer!.Type}.json");
+                // var json = await atlasInterop.Sources.DataSource.ToJsonString(map!, ds);
+                // Console.WriteLine(json);
+            }
+            else
+                await ToastService.ShowError("Only a DataSource can be exported to JSON.");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
         }
     }
 

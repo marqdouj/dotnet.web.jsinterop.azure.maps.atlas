@@ -70,7 +70,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         ValueTask<IMapObjectReference> GetShapes(Map map, object source);
 
         /// <summary>
-        /// Downloads a GeoJSON document and imports its data into the data source.
+        /// Downloads a GeoJSON document and imports its data into the data id.
         /// The GeoJSON document must be on the same domain or accessible using CORS.
         /// </summary>
         /// <param name="map"></param>
@@ -80,7 +80,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         ValueTask ImportDataFromUrl(Map map, IMapObjectReference source, string url);
 
         /// <summary>
-        /// Downloads a GeoJSON document and imports its data into the data source.
+        /// Downloads a GeoJSON document and imports its data into the data id.
         /// The GeoJSON document must be on the same domain or accessible using CORS.
         /// </summary>
         /// <param name="map"></param>
@@ -92,7 +92,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         #region Options
 
         /// <summary>
-        /// Gets the options used by the data source.
+        /// Gets the options used by the data id.
         /// </summary>
         /// <param name="map"></param>
         /// <param name="source"></param>
@@ -100,7 +100,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         ValueTask<DataSourceOptions?> GetOptions(Map map, DataSource source);
 
         /// <summary>
-        /// Gets the options used by the data source.
+        /// Gets the options used by the data id.
         /// </summary>
         /// <param name="map"></param>
         /// <param name="id"></param>
@@ -108,7 +108,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         ValueTask<DataSourceOptions?> GetOptions(Map map, string id);
 
         /// <summary>
-        /// Sets the data source options.
+        /// Sets the data id options.
         /// </summary>
         /// <param name="map"></param>
         /// <param name="source"></param>
@@ -118,7 +118,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         ValueTask SetOptions(Map map, DataSource source, DataSourceOptions options, SetOptionsAction action = SetOptionsAction.Update);
 
         /// <summary>
-        /// Sets the data source options.
+        /// Sets the data id options.
         /// </summary>
         /// <param name="map"></param>
         /// <param name="id"></param>
@@ -128,6 +128,40 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         ValueTask SetOptions(Map map, string id, DataSourceOptions options, SetOptionsAction action = SetOptionsAction.Update);
 
         #endregion
+
+        /// <summary>
+        /// Exports the datasource to a feature collection and then saves it as JSON.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="source"><see cref="DataSource"/>.</param>
+        /// <param name="filename">Valid filename and extension: i.e. 'myDataSource.json'</param>
+        /// <returns></returns>
+        ValueTask ToJson(Map map, DataSource source, string filename);
+
+        /// <summary>
+        /// Exports the datasource to a feature collection and then saves it as JSON.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="id">Id for a <see cref="DataSource"/>.</param>
+        /// <param name="filename">Valid filename and extension: i.e. 'myDataSource.json'</param>
+        /// <returns></returns>
+        ValueTask ToJson(Map map, string id, string filename);
+
+        /// <summary>
+        /// Exports the datasource to a feature collection and then returns it as a JSON string.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="source"><see cref="DataSource"/>.</param>
+        /// <returns></returns>
+        ValueTask<string?> ToJsonString(Map map, DataSource source);
+
+        /// <summary>
+        /// Exports the datasource to a feature collection and then returns it as a JSON string.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="id">Id for a <see cref="DataSource"/>.</param>
+        /// <returns></returns>
+        ValueTask<string?> ToJsonString(Map map, string id);
     }
 
     internal class AzDataSource(Lazy<Task<IJSObjectReference>> moduleTask) : IAtlasDataSource
@@ -206,6 +240,26 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         }
 
         #endregion
+
+        public async ValueTask ToJson(Map map, DataSource source, string filename)
+        {
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, source, filename);
+        }
+
+        public async ValueTask ToJson(Map map, string id, string filename)
+        {
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, id, filename);
+        }
+
+        public async ValueTask<string?> ToJsonString(Map map, DataSource source)
+        {
+            return await moduleTask.InvokeAsyncTC<string?>(GetJsInteropMethod(), map.MapReference, source);
+        }
+
+        public async ValueTask<string?> ToJsonString(Map map, string id)
+        {
+            return await moduleTask.InvokeAsyncTC<string?>(GetJsInteropMethod(), map.MapReference, id);
+        }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")
             => JsModule.DataSource.GetJsModuleMethod(name);
