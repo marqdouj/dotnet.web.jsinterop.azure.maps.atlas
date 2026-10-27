@@ -2,7 +2,11 @@
 
 ### [<- Go Back](../README.md)
 - `11.0.0-Preview-5.0`
-  - `Sandbox`: Demo updates.
+  - `IAtlasInterop.Sources.DataSource`.
+	- `ToJson`. New method. Exports the datasource to a feature collection and then saves it as JSON.
+	- `ToJsonString`. New method. Exports the datasource to a feature collection and then returns it as a JSON string.
+  - `Sandbox`.
+	- `Basic/Layers (Basic)`. Update demo to support `ToJson`.
 - `11.0.0-Preview-4.6`
   - `IAtlasDataSource`.
 	- `New Methods`.

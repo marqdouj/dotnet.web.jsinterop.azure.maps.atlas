@@ -95,4 +95,38 @@ export class DataSource {
     }
 
     // #endregion
+
+    public static toJson(map: atlas.Map, source: any, filename: string) {
+        const eventName = "DataSource.toJson";
+        const mapId = Helpers.getMapId(map);
+        const ds = this.getDataSourceFromSource(map, mapId, source, eventName, true);
+        let link: any;
+
+        if (ds) {
+            try {
+                const content = JSON.stringify(ds.toJson());
+                const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                link = undefined;
+            } catch (e: any) {
+                if (link) {
+                    document.body.removeChild(link);
+                }
+            }
+        }
+    }
+
+    public static toJsonString(map: atlas.Map, source: any) {
+        const eventName = "DataSource.ToJsonString";
+        const mapId = Helpers.getMapId(map);
+        const ds = this.getDataSourceFromSource(map, mapId, source, eventName, true);
+
+        if (ds)
+            return JSON.stringify(ds.toJson());
+    }
 }
