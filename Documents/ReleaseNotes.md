@@ -1,6 +1,8 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-5.0`
+  - `Sandbox`: Demo updates.
 - `11.0.0-Preview-4.6`
   - `IAtlasDataSource`.
 	- `New Methods`.
