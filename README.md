@@ -29,9 +29,5 @@ In the source code, see the `Sandbox` web app for examples on using this library
 ## [Release Notes (All)](Documents/ReleaseNotes.md)
 
 ## Release Notes (Current)
-- `11.0.0-Preview-5.0`
-  - `IAtlasInterop.Sources.DataSource`.
-	- `ToJson`. New method. Exports the datasource to a feature collection and then saves it as JSON.
-	- `ToJsonString`. New method. Exports the datasource to a feature collection and then returns it as a JSON string.
-  - `Sandbox`.
-	- `Basic/Layers (Basic)`. Update demo to support `ToJson`.
+- `11.0.0-Preview-5.1`
+  - `Sandbox`: Demo updates.
