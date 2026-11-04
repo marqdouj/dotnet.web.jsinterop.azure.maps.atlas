@@ -30,4 +30,7 @@ In the source code, see the `Sandbox` web app for examples on using this library
 
 ## Release Notes (Current)
 - `11.0.0-Preview-5.1`
+  - `IAtlasDataSource`.
+	- `ImportDataFromUrl`. Added optional parameters `zoomToBBox` and `padding`.
+	- `ZoomToBBox`. New method. Zooms the map to the bounding box of the data source.
   - `Sandbox`: Demo updates.

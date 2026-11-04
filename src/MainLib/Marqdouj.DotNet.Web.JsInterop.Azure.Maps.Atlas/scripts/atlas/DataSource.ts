@@ -1,7 +1,8 @@
 import * as atlas from "azure-maps-control"
 import { Helpers } from "./common/Helpers";
 import { Logger, LogLevel } from "./common/Logger";
-import { EditAction, MapObjectReference } from "./common";
+import { EditAction } from "./common";
+import { BoundingBox } from "../atlas";
 
 export class DataSource {
     public static clear(map: atlas.Map, sources: any[]) {
@@ -34,13 +35,24 @@ export class DataSource {
         return getReference ? Helpers.createMapObjectReference(mapId, "Shapes", shapes, ds?.getId()) : shapes;
     }
 
-    public static async importDataFromUrl(map: atlas.Map, source: any, url: string) {
+    public static async importDataFromUrl(map: atlas.Map, source: any, url: string, zoomToBBox: boolean = false, padding?: any) {
         const eventName = "DataSource.importDataFromUrl";
         const mapId = Helpers.getMapId(map);
         const ds = this.getDataSourceFromSource(map, mapId, source, eventName, true);
 
-        if (ds)
+        if (ds) {
             await ds.importDataFromUrl(url);
+            
+            if (zoomToBBox) {
+                const bbox = BoundingBox.fromData(ds.getShapes());
+                if (bbox) {
+                    map.setCamera({
+                        bounds: bbox,
+                        padding: padding ?? 50
+                    });
+                }
+            }
+        }
     }
 
     public static getDataSourceFromSource(map: atlas.Map, mapId: string, source: any, eventName: string, logNotFound: boolean) {
@@ -128,5 +140,21 @@ export class DataSource {
 
         if (ds)
             return JSON.stringify(ds.toJson());
+    }
+
+    public static zoomToBBox(map: atlas.Map, source: any, padding?: any) {
+        const eventName = "DataSource.ZoomToBBox";
+        const mapId = Helpers.getMapId(map);
+        const ds = this.getDataSourceFromSource(map, mapId, source, eventName, true);
+
+        if (ds) {
+            const bbox = BoundingBox.fromData(ds.getShapes());
+            if (bbox) {
+                map.setCamera({
+                    bounds: bbox,
+                    padding: padding ?? 50
+                });
+            }
+        }
     }
 }

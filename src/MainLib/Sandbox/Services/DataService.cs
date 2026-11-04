@@ -22,6 +22,7 @@ namespace Sandbox.Services
     public interface IMapDataExamples
     {
         ISpatialExamples Spatial { get; }
+        SDKRawUrls RawUrls { get; }
     }
 
     public enum SpatialGetReadUrl
@@ -39,6 +40,7 @@ namespace Sandbox.Services
     internal class MapDataExamples : IMapDataExamples
     {
         public ISpatialExamples Spatial { get; } = new SpatialExamples();
+        public SDKRawUrls RawUrls { get; } = new();
     }
 
     internal class SpatialExamples : ISpatialExamples

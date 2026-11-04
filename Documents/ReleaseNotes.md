@@ -2,6 +2,9 @@
 
 ### [<- Go Back](../README.md)
 - `11.0.0-Preview-5.1`
+  - `IAtlasDataSource`.
+	- `ImportDataFromUrl`. Added optional parameters `zoomToBBox` and `padding`.
+	- `ZoomToBBox`. New method. Zooms the map to the bounding box of the data source.
   - `Sandbox`: Demo updates.
 - `11.0.0-Preview-5.0`
   - `IAtlasInterop.Sources.DataSource`.

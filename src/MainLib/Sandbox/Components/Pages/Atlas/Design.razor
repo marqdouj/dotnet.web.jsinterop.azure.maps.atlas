@@ -32,6 +32,16 @@
     private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
     private Map? map;
     private bool mapNotReady => map == null;
+    private readonly DataSource dataSource = new();
+    private readonly LineLayer lineLayer = new LineLayer()
+    {
+        Before = "labels",
+        Options = new()
+        {
+            StrokeColor = "Blue",
+            StrokeWidth = 4,
+        }
+    };
 
     protected override void OnInitialized()
     {
@@ -106,6 +116,24 @@
     public async Task NotifyMapEvent(MapEventArgs e)
     {
         await e.ErrorEventProcessed(Logger, ToastService);
+
+        if (e.IsReadyEvent)
+        {
+            try
+            {
+                lineLayer.Source = dataSource.Id;
+                await atlasInterop.Sources.Add(map!, dataSource);
+                await atlasInterop.Layers.Add(map!, lineLayer);
+                await atlasInterop.Sources.DataSource.ImportDataFromUrl(map!, dataSource.Id, DataService.Examples.RawUrls.GeoJson.RouteNetworks.IpswichRoadNetwork);
+
+                await atlasInterop.Sources.DataSource.ZoomToBBox(map!, dataSource.Id, 50);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogMapError(ex);
+                await ToastService.ShowError(ex.Message);
+            }
+        }
     }
 
     #endregion

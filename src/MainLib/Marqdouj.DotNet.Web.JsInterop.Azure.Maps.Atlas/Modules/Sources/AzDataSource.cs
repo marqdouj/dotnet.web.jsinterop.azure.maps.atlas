@@ -76,8 +76,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         /// <param name="map"></param>
         /// <param name="source"><see cref="IMapObjectReference"/> for a <see cref="DataSource"/></param>
         /// <param name="url"></param>
+        /// <param name="zoomToBBox">If true, zooms the map to the bounding box of of all shapes in the datasource.</param>
+        /// <param name="padding">The padding to use for <paramref name="zoomToBBox"/>. Can be a number or a <see cref="Padding"/>. Default is 50.</param>
         /// <returns></returns>
-        ValueTask ImportDataFromUrl(Map map, IMapObjectReference source, string url);
+        ValueTask ImportDataFromUrl(Map map, IMapObjectReference source, string url, bool zoomToBBox = false, object? padding = null);
 
         /// <summary>
         /// Downloads a GeoJSON document and imports its data into the data id.
@@ -86,8 +88,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         /// <param name="map"></param>
         /// <param name="source">Id</param>
         /// <param name="url"></param>
+        /// <param name="zoomToBBox">If true, zooms the map to the bounding box of of all shapes in the datasource.</param>
+        /// <param name="padding">The padding to use for <paramref name="zoomToBBox"/>. Can be a number or a <see cref="Padding"/>. Default is 50.</param>
         /// <returns></returns>
-        ValueTask ImportDataFromUrl(Map map, string source, string url);
+        ValueTask ImportDataFromUrl(Map map, string source, string url, bool zoomToBBox = false, object? padding = null);
 
         #region Options
 
@@ -162,6 +166,15 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         /// <param name="id">Id for a <see cref="DataSource"/>.</param>
         /// <returns></returns>
         ValueTask<string?> ToJsonString(Map map, string id);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="source"></param>
+        /// <param name="padding">Can be a number or a <see cref="Padding"/>. Default is 50.</param>
+        /// <returns></returns>
+        ValueTask ZoomToBBox(Map map, string source, object? padding = null);
     }
 
     internal class AzDataSource(Lazy<Task<IJSObjectReference>> moduleTask) : IAtlasDataSource
@@ -205,16 +218,16 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
             return await moduleTask.InvokeAsyncTC<MapObjectReference>(GetJsInteropMethod(), map.MapReference, source);
         }
 
-        public async ValueTask ImportDataFromUrl(Map map, IMapObjectReference source, string url)
+        public async ValueTask ImportDataFromUrl(Map map, IMapObjectReference source, string url, bool zoomToBBox = false, object? padding = null)
         {
             source.ValidateReferenceType<SourceType>(SourceType.Data);
 
-            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, source.JsReference, url);
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, source.JsReference, url, zoomToBBox, padding);
         }
 
-        public async ValueTask ImportDataFromUrl(Map map, string source, string url)
+        public async ValueTask ImportDataFromUrl(Map map, string source, string url, bool zoomToBBox = false, object? padding = null)
         {
-            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, source, url);
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, source, url, zoomToBBox, padding);
         }
 
         #region Options
@@ -259,6 +272,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         public async ValueTask<string?> ToJsonString(Map map, string id)
         {
             return await moduleTask.InvokeAsyncTC<string?>(GetJsInteropMethod(), map.MapReference, id);
+        }
+
+        public async ValueTask ZoomToBBox(Map map, string source, object? padding = null)
+        {
+            await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, source, padding);
         }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")

@@ -39,7 +39,7 @@
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
     private MapConfiguration config = default!;
-    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions(new Position(-113.08237963, 52.32390956), 9);
+    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
     private Map? map;
     private bool mapNotReady => map == null;
     private readonly DataSource pipelinesSource = LayerType.Line.GetDefaultSource();
@@ -149,6 +149,9 @@
                     }
                 }
 
+                await atlasInterop.Sources.DataSource.ZoomToBBox(map!, pipelinesSource.Id);
+                var cameraOptions = await atlasInterop.Map.GetCamera(map!);
+                mapOptions.Camera = cameraOptions.ToCameraOptions();
                 await ResetMap();
             }
             catch (Exception ex)
