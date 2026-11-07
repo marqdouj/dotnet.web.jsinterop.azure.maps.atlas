@@ -106,11 +106,11 @@
 
     #region Animation
 
-    private async Task MoveCar(int increment)
+    private async Task MoveCar(int increment, bool reset = false)
     {
         try
         {
-            var newIndex = carIndex + increment;
+            var newIndex = reset ? 0 : carIndex + increment;
 
             if (newIndex < 0)
                 newIndex = 0;
@@ -126,7 +126,7 @@
             var pointTo = lineData[newIndex];
             var heading = await atlasInterop.Math.GetHeading(pointFrom, pointTo);
 
-            featureProperties["heading"] = heading;
+            featureProperties["heading"] = newIndex == 0 ? 90 : heading;
 
             await atlasInterop.Features.SetProperties(map!, pinSource, featureId, featureProperties);
 
@@ -176,6 +176,7 @@
             if (map == null)
                 return;
 
+            await MoveCar(-carIndex, reset: true); // reset car to start position
             await atlasInterop.Map.SetCamera(map, mapOptions.Camera);
         }
         catch (Exception ex)
