@@ -1,6 +1,14 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-5.1`
+  - `IAtlasDataSource`.
+	- `ImportDataFromUrl`. 
+	  - Added optional parameters `zoomToBBox` and `padding`.
+	  - `Returns(New)` the id of the *last* imported shape. 
+		- Useful when adding GeoJSON that gets imported to the datasource as a single shape, i.e. LineString/MultiLineString etc.
+	- `ZoomToBBox`. New method. Zooms the map to the bounding box of the data source, or based on shapeId(s).
+  - `Sandbox`: Demo updates.
 - `11.0.0-Preview-5.0`
   - `IAtlasInterop.Sources.DataSource`.
 	- `ToJson`. New method. Exports the datasource to a feature collection and then saves it as JSON.

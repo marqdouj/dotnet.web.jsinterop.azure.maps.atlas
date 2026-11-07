@@ -1,7 +1,8 @@
 import * as atlas from "azure-maps-control"
 import { Helpers } from "./common/Helpers";
 import { Logger, LogLevel } from "./common/Logger";
-import { EditAction, MapObjectReference } from "./common";
+import { EditAction } from "./common";
+import { BoundingBox } from "../atlas";
 
 export class DataSource {
     public static clear(map: atlas.Map, sources: any[]) {
@@ -34,13 +35,29 @@ export class DataSource {
         return getReference ? Helpers.createMapObjectReference(mapId, "Shapes", shapes, ds?.getId()) : shapes;
     }
 
-    public static async importDataFromUrl(map: atlas.Map, source: any, url: string) {
+    public static async importDataFromUrl(map: atlas.Map, source: any, url: string, zoomToBBox: boolean = false, padding?: any) : Promise<string> {
         const eventName = "DataSource.importDataFromUrl";
         const mapId = Helpers.getMapId(map);
         const ds = this.getDataSourceFromSource(map, mapId, source, eventName, true);
 
-        if (ds)
+        if (ds) {
             await ds.importDataFromUrl(url);
+            const shapes = ds.getShapes();
+
+            if (zoomToBBox) {
+                const bbox = BoundingBox.fromData(shapes);
+                if (bbox) {
+                    map.setCamera({
+                        bounds: bbox,
+                        padding: padding ?? 50
+                    });
+                }
+            }
+
+            return shapes.findLast((s) => s instanceof atlas.Shape)!.getId().toString();
+        }
+
+        return "";
     }
 
     public static getDataSourceFromSource(map: atlas.Map, mapId: string, source: any, eventName: string, logNotFound: boolean) {
@@ -128,5 +145,40 @@ export class DataSource {
 
         if (ds)
             return JSON.stringify(ds.toJson());
+    }
+
+    public static zoomToBBox(map: atlas.Map, source: any, padding?: any, shapeIDs?:string[]) {
+        const eventName = "DataSource.ZoomToBBox";
+        const mapId = Helpers.getMapId(map);
+        const ds = this.getDataSourceFromSource(map, mapId, source, eventName, true);
+
+        Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: Zooming to bounding box of DataSource.`, source, shapeIDs);
+
+        if (ds) {
+            let shapes: atlas.Shape[] = [];
+
+            if (Helpers.hasElements(shapeIDs)) {
+                shapeIDs!.forEach((id) => {
+                    const shape = ds.getShapeById(id);
+                    if (shape)
+                        shapes.push(shape);
+                    else 
+                        Logger.logMapMessage(mapId, LogLevel.Warn, `${eventName}: Shape with id ${id} not found in DataSource.`, source);
+                });
+            }
+
+            if (shapes.length === 0) {
+                shapes = ds.getShapes()
+            }
+
+            Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: Zooming to bounding box of ${shapes.length} shapes.`, shapes);
+            const bbox = BoundingBox.fromData(shapes);
+            if (bbox) {
+                map.setCamera({
+                    bounds: bbox,
+                    padding: padding ?? 50
+                });
+            }
+        }
     }
 }

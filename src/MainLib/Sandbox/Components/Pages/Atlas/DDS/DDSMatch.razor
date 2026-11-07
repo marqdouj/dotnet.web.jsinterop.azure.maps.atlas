@@ -39,7 +39,7 @@
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
     private MapConfiguration config = default!;
-    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions(new Position(-113.08237963, 52.32390956), 9);
+    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
     private Map? map;
     private bool mapNotReady => map == null;
     private readonly DataSource pipelinesSource = LayerType.Line.GetDefaultSource();
@@ -141,14 +141,28 @@
                 await atlasInterop.Sources.Add(map!, pipelinesSource);
                 await atlasInterop.Layers.Add(map!, pipelinesLayer);
 
+                var shapeIDs = new List<string>();
+
                 foreach (var vpm in pipelines)
                 {
                     foreach (var part in vpm.Parts)
                     {
-                        await atlasInterop.Sources.DataSource.ImportDataFromUrl(map!, pipelinesSource.Id, part);
+                        var id = await atlasInterop.Sources.DataSource.ImportDataFromUrl(map!, pipelinesSource.Id, part);
+                        shapeIDs.Add(id);
                     }
                 }
 
+                //For this example, we will zoom to the bounding box of all the shapes in the datasource.
+                //await atlasInterop.Sources.DataSource.ZoomToBBox(map!, pipelinesSource.Id);
+
+                //For this example, we will zoom to the bounding box of only the shapes we just imported.
+                await atlasInterop.Sources.DataSource.ZoomToBBox(map!, pipelinesSource, shapeIDs);
+
+                //NOTE: For the purpose of this demo, either ZoomToBBox method is fine and works the same. 
+                // The first one is simpler, but the second one is more efficient if you only want to zoom to a subset of shapes in the datasource.
+
+                var cameraOptions = await atlasInterop.Map.GetCamera(map!);
+                mapOptions.Camera = cameraOptions.ToCameraOptions();
                 await ResetMap();
             }
             catch (Exception ex)
