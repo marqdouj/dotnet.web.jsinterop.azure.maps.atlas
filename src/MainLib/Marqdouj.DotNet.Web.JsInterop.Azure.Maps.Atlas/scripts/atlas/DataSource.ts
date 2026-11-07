@@ -152,8 +152,6 @@ export class DataSource {
         const mapId = Helpers.getMapId(map);
         const ds = this.getDataSourceFromSource(map, mapId, source, eventName, true);
 
-        Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: Zooming to bounding box of DataSource.`, source, shapeIDs);
-
         if (ds) {
             let shapes: atlas.Shape[] = [];
 
@@ -171,7 +169,6 @@ export class DataSource {
                 shapes = ds.getShapes()
             }
 
-            Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: Zooming to bounding box of ${shapes.length} shapes.`, shapes);
             const bbox = BoundingBox.fromData(shapes);
             if (bbox) {
                 map.setCamera({
