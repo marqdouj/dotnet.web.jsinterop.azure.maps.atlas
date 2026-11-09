@@ -1,0 +1,26 @@
+﻿@page "/howto-summary"
+@rendermode InteractiveServer
+
+<MapPage Title="@title">
+    <SummaryContent>
+        <FluentText As="TextTag.Paragraph">
+            This page provides navigation to other pages that demonstrate working with various map objects.
+            <br />
+            Please select a topic from the tree view.
+        </FluentText>
+    </SummaryContent>
+
+    <ChildContent>
+        <FluentTreeView>
+            <FluentTreeItem Title="DataSource" IconStart="@(new Icons.Regular.Size20.DesignIdeas())" Expanded="true">
+                <FluentTreeItem Title="Shapes" IconStart="@(new Icons.Regular.Size20.Shapes())">
+                    <FluentLink Href="/howto-shapes" Tooltip="Go to Shapes">Shapes</FluentLink>
+                </FluentTreeItem>
+            </FluentTreeItem>
+        </FluentTreeView>
+    </ChildContent>
+</MapPage>
+
+@code {
+    private const string title = "How To";
+}

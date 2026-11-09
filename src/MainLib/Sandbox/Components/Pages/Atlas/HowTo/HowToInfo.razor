@@ -1,0 +1,12 @@
+﻿<FluentText As="TextTag.Paragraph">
+    This page demonstrates how to work with @Subject.
+    @ChildContent
+</FluentText>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Subject { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

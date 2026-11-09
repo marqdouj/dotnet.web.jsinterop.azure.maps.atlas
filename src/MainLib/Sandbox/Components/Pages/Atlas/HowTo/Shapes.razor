@@ -1,0 +1,176 @@
+﻿@page "/howto-shapes"
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@inject IOptions<MapConfiguration> Configuration
+@inject IJSRuntime JSRuntime
+@inject ILogger<Shapes> Logger
+@inject INotificationService ToastService
+@inject IMapDataService DataService
+
+<MapPage Title="@title">
+    <HeaderContentPre>
+        <HowToHeader/>
+    </HeaderContentPre>
+    <SummaryContent>
+        <HowToInfo Subject="@subject">
+            <br /><br />
+            This is the summary content notes for the shapes how-to page.
+        </HowToInfo>
+    </SummaryContent>
+
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
+            <FluentSpacer Width="10px"/>
+            <FluentButton Disabled="@getShapeInfoDisabled" IconStart="@(new Icons.Regular.Size20.Info())" Title="Get Shape Info" OnClick="@GetShapeInfo" />
+        </Toolbar>
+
+        <FluentGrid Spacing="2">
+            <FluentGridItem>
+                <MapContainer MapId="@mapId" Height="400px" MinWidth="400px"/>
+            </FluentGridItem>
+            <FluentGridItem>
+                @if (shapeInfo != null)
+                {
+                    <div style="height:400px; min-width: 400px;overflow:auto">
+                        <FluentDataGrid Items="@shapeInfo?.AsQueryable()">
+                            <PropertyColumn Property="@(p => p.Type)" />
+                            <PropertyColumn Property="@(p => p.Id)" />
+                            <PropertyColumn Property="@(p => p.Bounds)" />
+                            <PropertyColumn Property="@(p => p.Properties.ToJsonMin())" />
+                        </FluentDataGrid>
+                    </div>
+                }
+            </FluentGridItem>
+        </FluentGrid>
+    </ChildContent>
+</MapPage>
+
+@code {
+    private const string mapId = "mapShapes";
+    private const string title = "Shapes";
+    private string subject => title; //Customize the subject as needed for the page context
+    private DotNetObjectReference<ComponentBase>? dotNetRef;
+    private AtlasInterop atlasInterop = default!;
+    private MapConfiguration config = default!;
+    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
+    private Map? map;
+    private bool mapNotReady => map == null;
+    private DataSource? dataSource;
+    private SymbolLayer? symbolLayer;
+    private bool layerNotReady => symbolLayer == null;
+    private List<ShapeInfo>? shapeInfo;
+    private bool getShapeInfoDisabled => layerNotReady || shapeInfo != null && shapeInfo.Count > 0;
+    protected override void OnInitialized()
+    {
+        config = Configuration.GetValue(LogLevel.Trace);
+        atlasInterop = new(JSRuntime);
+        dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await CreateMap();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            dotNetRef?.Dispose();
+
+            if (map != null)
+                await map.DisposeAsync();
+
+            if (atlasInterop != null)
+                await atlasInterop.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+
+    private async Task GetShapeInfo()
+    {
+        try
+        {
+            shapeInfo = await atlasInterop.Sources.DataSource.GetShapeInfo(map!, dataSource!);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    #region Map
+
+    private async Task CreateMap()
+    {
+        try
+        {
+            if (map != null)
+                return;
+
+            config.MapOptions = mapOptions;
+            map = await atlasInterop.Factory.CreateMap(dotNetRef!, mapId, config!, MapExtensions.GetDefaultControls());
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task ResetMap()
+    {
+        try
+        {
+            if (map == null)
+                return;
+
+            shapeInfo = null;
+            await atlasInterop.Map.SetCamera(map, mapOptions.Camera);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    [JSInvokable]
+    public async Task NotifyMapEvent(MapEventArgs e)
+    {
+        await e.ErrorEventProcessed(Logger, ToastService);
+
+        if (e.IsReadyEvent)
+        {
+            try
+            {
+                var results = await LayerType.Symbol.AddDefaultLayer(atlasInterop, map!, DataService);
+                dataSource = (DataSource)results.Source!;
+                symbolLayer = (SymbolLayer)results.Layer!;
+
+                var camera = await atlasInterop.Map.GetCamera(map!);
+                mapOptions.Camera = camera.ToCameraOptions();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogMapError(ex);
+                await ToastService.ShowError(ex.Message);
+            }
+            finally
+            {
+                StateHasChanged();
+            }
+        }
+    }
+
+    #endregion
+}

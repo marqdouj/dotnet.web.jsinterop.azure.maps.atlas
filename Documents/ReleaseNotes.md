@@ -2,7 +2,12 @@
 
 ### [<- Go Back](../README.md)
 - `11.0.0-Preview-5.2`
-  - `Sandbox`: Demo updates.
+  - `IAtlasDataSource`.
+	- `ShapeInfo`. New class. Contains information about a shape in the DataSource.
+	- `GetShapeInfo`. New method. Gets a list of `ShapeInfo` for the shapes in the DataSource.
+  - `Sandbox`.
+	- `How To`. New navigation link for "How To" demos.
+	  - `Shapes`. New demo for working with shapes.
 - `11.0.0-Preview-5.1`
   - `IAtlasDataSource`.
 	- `ImportDataFromUrl`. 

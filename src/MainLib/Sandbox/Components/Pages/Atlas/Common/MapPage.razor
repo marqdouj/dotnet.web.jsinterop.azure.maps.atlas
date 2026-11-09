@@ -2,7 +2,9 @@
 
 <FluentStack Height="100%" Orientation="Orientation.Vertical" VerticalGap="@verticalGap">
     <MapPageHeader>
+        @HeaderContentPre
         @pageHeader
+        @HeaderContentPost
         @if (hasSummary)
         {
             <FluentSpacer />
@@ -29,6 +31,12 @@
 
     [Parameter, EditorRequired]
     public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? HeaderContentPre { get; set; }
+
+    [Parameter]
+    public RenderFragment? HeaderContentPost { get; set; }
 
     [Parameter]
     public RenderFragment? SummaryContent { get; set; }
