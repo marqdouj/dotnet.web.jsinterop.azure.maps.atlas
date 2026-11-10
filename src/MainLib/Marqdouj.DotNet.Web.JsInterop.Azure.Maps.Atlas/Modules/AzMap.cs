@@ -32,6 +32,15 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         /// <returns></returns>
         ValueTask SetCamera(Map map, CameraOptions? camera, CameraBoundsOptions? cameraBounds = null, AnimationOptions? animation = null);
 
+        /// <summary>
+        /// Centers the map at the requested <see cref="Position"/> and zoom level.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="position"></param>
+        /// <param name="zoomLevel"></param>
+        /// <returns></returns>
+        ValueTask ZoomTo(Map map, Position position, double zoomLevel);
+
         #endregion
 
         #region Elevation
@@ -238,6 +247,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules
         public async ValueTask SetCamera(Map map, CameraOptions? camera, CameraBoundsOptions? cameraBounds = null, AnimationOptions? animation = null)
         {
             await moduleTask.InvokeVoidAsyncTC(GetJsInteropMethod(), map.MapReference, camera, cameraBounds, animation);
+        }
+
+        public async ValueTask ZoomTo(Map map, Position position, double zoomLevel)
+        {
+            await SetCamera(map!, new CameraOptions { Center = position, Zoom = zoomLevel });
         }
 
         #endregion

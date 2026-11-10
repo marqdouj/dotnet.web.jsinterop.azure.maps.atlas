@@ -2,7 +2,7 @@ import * as atlas from "azure-maps-control"
 import { Helpers } from "./common/Helpers";
 import { Logger, LogLevel } from "./common/Logger";
 import { EditAction } from "./common";
-import { BoundingBox } from "../atlas";
+import { BoundingBox } from "./data/BoundingBox";
 
 export class DataSource {
     public static clear(map: atlas.Map, sources: any[]) {
@@ -47,6 +47,7 @@ export class DataSource {
         results = shapes.map((p): ShapeInfo => ({
             id: p.getId().toString(),
             type: p.getType(),
+            center: BoundingBox.getCenter(p.getBounds()),
             bounds: p.getBounds(),
             properties: p.getProperties()
         }));
@@ -211,6 +212,7 @@ export class DataSource {
 type ShapeInfo = {
     id: string;
     type: string;
+    center: atlas.data.Position | null;
     bounds: atlas.data.BoundingBox | null;
     properties: any;
 }

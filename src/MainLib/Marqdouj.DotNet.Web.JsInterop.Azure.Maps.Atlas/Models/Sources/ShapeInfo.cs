@@ -21,6 +21,12 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Sources
         public string Type { get; internal set; } = default!;
 
         /// <summary>
+        /// The center of the shape, which is the center of the <see cref="BoundingBox"/> of the shape.
+        /// </summary>
+        [JsonInclude]
+        public Position Center { get; internal set; } = default!;
+
+        /// <summary>
         /// Gets the <see cref="BoundingBox"/> of the shape.
         /// </summary>
         [JsonInclude]

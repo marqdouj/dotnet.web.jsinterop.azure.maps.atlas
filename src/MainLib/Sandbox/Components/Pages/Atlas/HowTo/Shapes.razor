@@ -7,42 +7,47 @@
 @inject INotificationService ToastService
 @inject IMapDataService DataService
 
-<MapPage Title="@title">
+<MapPage Title="@title" ShowSummary="@showSummary">
     <HeaderContentPre>
         <HowToHeader/>
     </HeaderContentPre>
     <SummaryContent>
-        <HowToInfo Subject="@subject">
-            <br /><br />
-            This is the summary content notes for the shapes how-to page.
-        </HowToInfo>
+        <HowToInfo Subject="@subject"/>
     </SummaryContent>
 
     <ChildContent>
         <Toolbar>
             <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
             <FluentSpacer Width="10px"/>
-            <FluentButton Disabled="@getShapeInfoDisabled" IconStart="@(new Icons.Regular.Size20.Info())" Title="Get Shape Info" OnClick="@GetShapeInfo" />
+            <FluentButton Disabled="@getShapeInfoDisabled" IconStart="@(new Icons.Regular.Size20.Info())" Title="@getShapeInfoTitle" OnClick="@GetShapeInfo">GetShapeInfo</FluentButton>
         </Toolbar>
 
-        <FluentGrid Spacing="2">
-            <FluentGridItem>
-                <MapContainer MapId="@mapId" Height="400px" MinWidth="400px"/>
-            </FluentGridItem>
-            <FluentGridItem>
-                @if (shapeInfo != null)
-                {
-                    <div style="height:400px; min-width: 400px;overflow:auto">
-                        <FluentDataGrid Items="@shapeInfo?.AsQueryable()">
-                            <PropertyColumn Property="@(p => p.Type)" />
-                            <PropertyColumn Property="@(p => p.Id)" />
-                            <PropertyColumn Property="@(p => p.Bounds)" />
-                            <PropertyColumn Property="@(p => p.Properties.ToJsonMin())" />
-                        </FluentDataGrid>
-                    </div>
-                }
-            </FluentGridItem>
-        </FluentGrid>
+        <FluentStack Orientation="Orientation.Vertical">
+            <MapContainer MapId="@mapId" Height="250px" MinWidth="400px" />
+
+            @if (shapeInfo != null)
+            {
+                <div style="height:250px; min-width: 400px;overflow:auto">
+                    <FluentDataGrid Items="@shapeInfo?.AsQueryable()"
+                                    TGridItem="ShapeInfo"
+                                    GridTemplateColumns="auto, auto, auto, auto, auto"
+                                    GenerateHeader="DataGridGeneratedHeaderType.Sticky"
+                                    MultiLine="true">
+                        <PropertyColumn Property="@(p => p.Type)" />
+                        <PropertyColumn Property="@(p => p.Id)" />
+                        <PropertyColumn Property="@(p => p.Center)" />
+                        <PropertyColumn Property="@(p => p.Bounds)" />
+                        <PropertyColumn Property="@(p => p.Properties.ToJsonMin())" Title="Properties" />
+                        <TemplateColumn Title="Actions">
+                            <FluentStack>
+                                <FluentButton IconStart="@(new Icons.Regular.Size20.ZoomIn())" Title="@zoomToShapeTitle" OnClick="@(() => ZoomToShape(context))"/>
+                                <FluentButton IconStart="@(new Icons.Regular.Size20.Clipboard())" Title="Copy JSON to clipboard" @onclick="@(() => CopyToClipboard(context))" />
+                            </FluentStack>
+                        </TemplateColumn>
+                    </FluentDataGrid>
+                </div>
+            }
+        </FluentStack>
     </ChildContent>
 </MapPage>
 
@@ -61,6 +66,10 @@
     private bool layerNotReady => symbolLayer == null;
     private List<ShapeInfo>? shapeInfo;
     private bool getShapeInfoDisabled => layerNotReady || shapeInfo != null && shapeInfo.Count > 0;
+    private string getShapeInfoTitle = "Gets shape information for a DataSource";
+    private string zoomToShapeTitle = "Zoom to the center of the shape";
+    private bool showSummary = true;
+
     protected override void OnInitialized()
     {
         config = Configuration.GetValue(LogLevel.Trace);
@@ -96,10 +105,40 @@
         try
         {
             shapeInfo = await atlasInterop.Sources.DataSource.GetShapeInfo(map!, dataSource!);
+            showSummary = false;
         }
         catch (Exception ex)
         {
             Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task ZoomToShape(ShapeInfo shapeInfo)
+    {
+        try
+        {
+            await atlasInterop.Map.ZoomTo(map!, shapeInfo.Center, 15);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task CopyToClipboard(ShapeInfo shapeInfo)
+    {
+        try
+        {
+            var result = await atlasInterop.Navigator.CopyTextToClipboard(shapeInfo.ToJsonMin());
+
+            if (!string.IsNullOrWhiteSpace(result.Message))
+                await ToastService.ShowInfo(result.Message);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
             await ToastService.ShowError(ex.Message);
         }
     }
