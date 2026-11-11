@@ -1,10 +1,8 @@
 # dotnet.web.jsinterop.azure.maps.atlas
-![](https://img.shields.io/badge/Status-Preview%20.NET%2011-yellowgreen)
+![](https://img.shields.io/badge/.NET_11-blueviolet)
 ### [NuGet Package](https://www.nuget.org/packages/Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas/)
 
 # A .NET library for working with the Azure Maps SDK in JavaScript interop scenarios.
-
-## NOTE: This library is in preview and is not yet production-ready.
 
 ## [JSInterop](https://learn.microsoft.com/en-us/aspnet/core/blazor/javascript-interoperability/)
 In most cases, interactions with the map using this library allow for creation of an
@@ -29,12 +27,4 @@ In the source code, see the `Sandbox` web app for examples on using this library
 ## [Release Notes (All)](Documents/ReleaseNotes.md)
 
 ## Release Notes (Current)
-- `11.0.0-Preview-5.2`
-  - `IAtlasDataSource`.
-	- `ShapeInfo`. New class. Contains information about a shape in the DataSource.
-	- `GetShapeInfo`. New method. Gets a list of `ShapeInfo` for the shapes in the DataSource.
-  - `IAtlasMap`.
-	- `ZoomTo`. New method. Zooms the map to a specific position and zoom level.
-  - `Sandbox`.
-	- `How To`. New navigation link for "How To" demos.
-	  - `Shapes`. New demo for working with shapes.
+- `11.0.0`. Initial Production release of the library.
