@@ -56,10 +56,19 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         /// Gets an <see cref="IMapObjectReference"/> to a Shape.
         /// </summary>
         /// <param name="map"></param>
-        /// <param name="source">DataSource.Id or an <see cref="IJSObjectReference"/> to a DataSource.</param>
+        /// <param name="source">Id, <see cref="DataSource"/>, or an <see cref="IJSObjectReference"/> to a DataSource.</param>
         /// <param name="shapeId"></param>
         /// <returns><see cref="IMapObjectReference"/> to a Shape or null if not found.</returns>
         ValueTask<IMapObjectReference?> GetShapeById(Map map, object source, string shapeId);
+
+        /// <summary>
+        /// Gets a list of <see cref="ShapeInfo"/> for the shapes in the DataSource.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="source">Id, <see cref="DataSource"/>, or an <see cref="IJSObjectReference"/> to a DataSource.</param>
+        /// <param name="shapeIds">If null, return info for all shapes; otherwise only the shapes with listed id.</param>
+        /// <returns></returns>
+        ValueTask<List<ShapeInfo>?> GetShapeInfo(Map map, object source, IEnumerable<string>? shapeIds = null);
 
         /// <summary>
         /// Gets a <see cref="IMapObjectReference"/> to a list of all shapes in the DataSource.
@@ -230,6 +239,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources
         public async ValueTask<IMapObjectReference?> GetShapeById(Map map, object source, string shapeId)
         {
             return await moduleTask.InvokeAsyncTC<MapObjectReference?>(GetJsInteropMethod(), map.MapReference, source, shapeId);
+        }
+
+        public async ValueTask<List<ShapeInfo>?> GetShapeInfo(Map map, object source, IEnumerable<string>? shapeIds = null)
+        {
+            return await moduleTask.InvokeAsyncTC<List<ShapeInfo>?>(GetJsInteropMethod(), map.MapReference, source, shapeIds);
         }
 
         public async ValueTask<IMapObjectReference> GetShapes(Map map, object source)

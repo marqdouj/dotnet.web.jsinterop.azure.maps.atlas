@@ -29,11 +29,12 @@ In the source code, see the `Sandbox` web app for examples on using this library
 ## [Release Notes (All)](Documents/ReleaseNotes.md)
 
 ## Release Notes (Current)
-- `11.0.0-Preview-5.1`
+- `11.0.0-Preview-5.2`
   - `IAtlasDataSource`.
-	- `ImportDataFromUrl`. 
-	  - Added optional parameters `zoomToBBox` and `padding`.
-	  - `Returns(New)` the id of the *last* imported shape. 
-		- Useful when adding GeoJSON that gets imported to the datasource as a single shape, i.e. LineString/MultiLineString etc.
-	- `ZoomToBBox`. New method. Zooms the map to the bounding box of the data source, or based on shapeId(s).
-  - `Sandbox`: Demo updates.
+	- `ShapeInfo`. New class. Contains information about a shape in the DataSource.
+	- `GetShapeInfo`. New method. Gets a list of `ShapeInfo` for the shapes in the DataSource.
+  - `IAtlasMap`.
+	- `ZoomTo`. New method. Zooms the map to a specific position and zoom level.
+  - `Sandbox`.
+	- `How To`. New navigation link for "How To" demos.
+	  - `Shapes`. New demo for working with shapes.

@@ -2,7 +2,7 @@ import * as atlas from "azure-maps-control"
 import { Helpers } from "./common/Helpers";
 import { Logger, LogLevel } from "./common/Logger";
 import { EditAction } from "./common";
-import { BoundingBox } from "../atlas";
+import { BoundingBox } from "./data/BoundingBox";
 
 export class DataSource {
     public static clear(map: atlas.Map, sources: any[]) {
@@ -26,6 +26,35 @@ export class DataSource {
         return getReference ? Helpers.createMapObjectReference(mapId, "Shape", shape, shapeId) : shape;
     }
 
+    public static getShapeInfo(map: atlas.Map, source: any, shapeIds?: string[]) {
+        const eventName = "DataSource.getShapeInfo";
+        const mapId = Helpers.getMapId(map);
+        const ds = this.getDataSourceFromSource(map, mapId, source, eventName, true);
+
+        if (!ds) 
+            return;
+
+        let results: ShapeInfo[] = [];
+        let shapes = ds.getShapes();
+
+        if (shapes.length === 0)
+            return results;
+
+        if (shapeIds) {
+            shapes = shapes.filter((s) => shapeIds.includes(s.getId().toString()));
+        }
+
+        results = shapes.map((p): ShapeInfo => ({
+            id: p.getId().toString(),
+            type: p.getType(),
+            center: BoundingBox.getCenter(p.getBounds()),
+            bounds: p.getBounds(),
+            properties: p.getProperties()
+        }));
+
+        return results;
+    }
+    
     public static getShapes(map: atlas.Map, source: any, getReference: boolean = true) {
         const eventName = "DataSource.getShapes";
         const mapId = Helpers.getMapId(map);
@@ -178,4 +207,12 @@ export class DataSource {
             }
         }
     }
+}
+
+type ShapeInfo = {
+    id: string;
+    type: string;
+    center: atlas.data.Position | null;
+    bounds: atlas.data.BoundingBox | null;
+    properties: any;
 }
