@@ -1,6 +1,7 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Definitions;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Payloads;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Geolocation;
+using Marqdouj.DotNet.Web.JsInterop.Extensions;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
 

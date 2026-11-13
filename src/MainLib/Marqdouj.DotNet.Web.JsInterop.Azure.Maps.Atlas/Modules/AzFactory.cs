@@ -2,6 +2,7 @@
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Configuration;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Controls;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Definitions;
+using Marqdouj.DotNet.Web.JsInterop.Extensions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;

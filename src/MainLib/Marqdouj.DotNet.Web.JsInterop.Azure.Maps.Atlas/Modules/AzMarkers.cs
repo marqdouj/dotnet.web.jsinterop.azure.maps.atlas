@@ -1,5 +1,6 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Layers;
+using Marqdouj.DotNet.Web.JsInterop.Extensions;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
 

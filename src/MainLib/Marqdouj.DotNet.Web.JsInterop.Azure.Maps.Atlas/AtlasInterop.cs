@@ -4,6 +4,7 @@ using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Data;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Events;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Sources;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Spatial;
+using Marqdouj.DotNet.Web.JsInterop.Extensions;
 using Microsoft.JSInterop;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
@@ -107,10 +108,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         /// <param name="jsRuntime"></param>
         public AtlasInterop(IJSRuntime jsRuntime)
         {
-#pragma warning disable BL0016 // Unguarded JS interop call
-            moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
-               "import", "./_content/Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas/atlas.js").AsTask());
-#pragma warning restore BL0016 // Unguarded JS interop call
+            moduleTask = jsRuntime.CreateModuleTask("./_content/Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas/atlas.js");
 
             Animations = new AzAnimations(moduleTask);
             Controls = new AzControls(moduleTask);

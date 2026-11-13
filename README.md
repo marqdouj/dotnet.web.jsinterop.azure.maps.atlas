@@ -1,10 +1,13 @@
 # dotnet.web.jsinterop.azure.maps.atlas
-![](https://img.shields.io/badge/.NET_11-blueviolet)
-### [NuGet Package](https://www.nuget.org/packages/Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas/)
+[![.NET](https://img.shields.io/badge/.NET-blueviolet.svg)](https://github.com/dotnet/aspnetcore)
+[![MIT License](https://img.shields.io/github/license/marqdouj/dotnet.web.jsinterop.azure.maps.atlas?color=%230b0&style=flat-square)](https://github.com/marqdouj/dotnet.web.jsinterop.azure.maps.atlas/blob/master/LICENSE.txt)
+[![NuGet](https://img.shields.io/badge/nuget-repo-blue?logo=nuget)](https://www.nuget.org/packages/Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas/)
 
-# A .NET library for working with the Azure Maps SDK in JavaScript interop scenarios.
+# Overview
+A .NET library for working with the [Azure Maps SDK](https://learn.microsoft.com/en-us/azure/azure-maps/how-to-use-map-control)
+using [JS Interop](https://learn.microsoft.com/en-us/aspnet/core/blazor/javascript-interoperability/).
 
-## [JSInterop](https://learn.microsoft.com/en-us/aspnet/core/blazor/javascript-interoperability/)
+# Features
 In most cases, interactions with the map using this library allow for creation of an
 [IJSObjectReference](https://learn.microsoft.com/en-us/dotnet/api/microsoft.jsinterop.ijsobjectreference) 
 to the map objects you are working with.
@@ -14,8 +17,8 @@ to the map objects you are working with.
 - `AtlasInterop.Factory` Create/Remove instances of the map. When creating a map instance it is always returned as an `IMapObjectReference` wrapper.
 - `Custom JSInterop`. If required, you can create your own custom *.js scripts to work with map using the created `IMapObjectReference` wrappers.
 
-## Demos
-In the source code, see the `Sandbox` web app for examples on using this library.
+## Demo
+See the `Sandbox` project for a working example of the library in action.
 
 ## Components
 - `MapContainer`. Helper component to display the map. Use is not required, but recommended for simple control of the map display.
@@ -27,4 +30,5 @@ In the source code, see the `Sandbox` web app for examples on using this library
 ## [Release Notes (All)](Documents/ReleaseNotes.md)
 
 ## Release Notes (Current)
-- `11.0.0`. Initial Production release of the library.
+- ### `11.0.1`. 
+  - Replace existing 'module task' extensions with new [Extensions Package](https://www.nuget.org/packages/Marqdouj.DotNet.Web.JsInterop.Extensions/).
