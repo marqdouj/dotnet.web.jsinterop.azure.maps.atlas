@@ -56,7 +56,7 @@
   <ItemGroup>
     <PackageReference Include="Marqdouj.DotNet.EnumConverters" Version="10.0.1" />
     <PackageReference Include="Marqdouj.DotNet.Web.JsInterop.Extensions" Version="11.0.0" />
-    <PackageReference Include="Marqdouj.DotNet.Web.JsInterop.GeoJson" Version="10.7.0" />
+    <PackageReference Include="Marqdouj.DotNet.Web.JsInterop.GeoJson" Version="10.7.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="11.0.0" />
     <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="7.0.1">
       <PrivateAssets>all</PrivateAssets>
