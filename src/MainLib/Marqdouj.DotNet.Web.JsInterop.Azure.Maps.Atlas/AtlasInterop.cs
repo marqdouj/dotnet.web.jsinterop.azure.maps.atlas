@@ -212,13 +212,6 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas
         /// <inheritdoc/>
         /// </summary>
         /// <returns></returns>
-        public async ValueTask DisposeAsync()
-        {
-            if (moduleTask.IsValueCreated)
-            {
-                var module = await moduleTask.Value;
-                await module.DisposeAsync();
-            }
-        }
+        public async ValueTask DisposeAsync() => await moduleTask.DisposeAsync();
     }
 }
