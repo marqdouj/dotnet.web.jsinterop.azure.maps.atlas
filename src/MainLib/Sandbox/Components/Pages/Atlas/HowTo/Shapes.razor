@@ -17,6 +17,9 @@
             NOTE: The <FluentText Color="Color.Primary">GetShapeInfo</FluentText> method works on small sets of data.
             For larger sets of data, request using a smaller specific set of shapeIds or use the <FluentText Color="Color.Primary">ToJson</FluentText> 
             method and save the JSON to file.
+            <br /><br />
+            If the <FluentText Color="Color.Primary">Symbol</FluentText> layer is loaded, 
+            <FluentText Color="Color.Primary">click</FluentText> on a symbol to load the info for that specifc symbol (or for the symbols within the click coordinates).
         </HowToInfo>
     </SummaryContent>
 
@@ -48,7 +51,7 @@
                         <PropertyColumn Property="@(p => p.Properties.ToJsonMin())" Title="Properties" />
                         <TemplateColumn Title="Actions">
                             <FluentStack>
-                                @if (canZoomToShape)
+                                @if (isSymbolLayer)
                                 {
                                     <FluentButton IconStart="@(new Icons.Regular.Size20.ZoomIn())" Title="@zoomToShapeTitle" OnClick="@(() => ZoomToShape(context))" />
                                 }
@@ -71,7 +74,7 @@
 
 @code {
     private const string mapId = "mapShapes";
-    private const string title = "Shapes";
+    private const string title = "DataSource Shapes";
     private string subject => title; //Customize the subject as needed for the page context
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
@@ -92,7 +95,9 @@
     private string getJsonTitle = "Gets a JSON string reprsentation of the DataSource shapes.";
     private bool showSummary = true;
     private readonly List<LayerType> layerTypes = Enum.GetValues<LayerType>().OrderBy(e => e.ToString()).Cast<LayerType>().ToList();
-    private bool canZoomToShape => layer?.Type == LayerType.Symbol;
+    private bool isSymbolLayer => layer?.Type == LayerType.Symbol;
+    private readonly List<LayerEvent> events = new List<LayerEvent> { new LayerEvent(LayerEventType.Click) { EventName = nameof(NotifyLayerEvent) } };
+
     protected override void OnInitialized()
     {
         config = Configuration.GetValue(LogLevel.Trace);
@@ -216,6 +221,14 @@
             await ZoomToDataSource();
             var camera = await atlasInterop.Map.GetCamera(map!);
             mapOptions.Camera = camera.ToCameraOptions();
+
+            if (layer.Type == LayerType.Symbol)
+            {
+                foreach (var e in events)
+                    e.Source = layer.Id;
+
+                await atlasInterop.Events.Layers.Add(dotNetRef!, map!, events);
+            }
         }
         catch (Exception ex)
         {
@@ -300,6 +313,23 @@
         if (e.IsReadyEvent)
         {
             await AddLayer(layerTypes.First());
+        }
+    }
+
+    [JSInvokable]
+    public async Task NotifyLayerEvent(MapEventArgs e)
+    {
+        try
+        {
+            var payload = e.GetPayloadItem<MousePayload>("Mouse");
+            var shapeIds = payload!.Shapes!.Select(e => e.Id).ToList();
+            shapeInfo = await atlasInterop.Sources.DataSource.GetShapeInfo(map!, dataSource!, shapeIds!);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
         }
     }
 
