@@ -1,5 +1,5 @@
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Controls;
-using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules;
+using Marqdouj.DotNet.Web.JsInterop.Extensions;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
 
@@ -7,10 +7,7 @@ namespace Sandbox.CustomJs
 {
     public sealed class CustomInterop(IJSRuntime jsRuntime) : IAsyncDisposable
     {
-#pragma warning disable BL0016 // Unguarded JS interop call
-        private readonly Lazy<Task<IJSObjectReference>> moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/Sandbox.CustomJs/customInterop.js").AsTask());
-#pragma warning restore BL0016 // Unguarded JS interop call
+        private readonly Lazy<Task<IJSObjectReference>> moduleTask = jsRuntime.CreateModuleTask("./_content/Sandbox.CustomJs/customInterop.js");
 
         public async ValueTask AddControls(IJSObjectReference azmap, IEnumerable<MapControl> controls)
         {

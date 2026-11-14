@@ -1,4 +1,5 @@
-﻿using Marqdouj.DotNet.Web.JsInterop.GeoJson;
+﻿using Marqdouj.DotNet.Web.JsInterop.Extensions;
+using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
 

@@ -3,7 +3,7 @@ using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Controls;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Payloads;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Events.Types;
-using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Exceptions;
+using Marqdouj.DotNet.Web.JsInterop.Extensions;
 using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using Microsoft.FluentUI.AspNetCore.Components;
 using System.Text.Json;
@@ -43,7 +43,7 @@ namespace Sandbox.Components.Pages.Atlas
         {
             if (ex is JS2CSharpException jsEx)
             {
-                jsEx.LogError(logger);
+                logger.LogError(jsEx, "JS2CSharpException: {Message}", jsEx.Message);
             }
             else
             {

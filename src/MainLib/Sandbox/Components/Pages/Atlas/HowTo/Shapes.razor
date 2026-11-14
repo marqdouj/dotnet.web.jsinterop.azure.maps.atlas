@@ -12,14 +12,25 @@
         <HowToHeader/>
     </HeaderContentPre>
     <SummaryContent>
-        <HowToInfo Subject="@subject"/>
+        <HowToInfo Subject="@subject">
+            <br /><br />
+            NOTE: The <FluentText Color="Color.Primary">GetShapeInfo</FluentText> method works on small sets of data.
+            For larger sets of data, request using a smaller specific set of shapeIds or use the <FluentText Color="Color.Primary">ToJson</FluentText> 
+            method and save the JSON to file.
+            <br /><br />
+            If the <FluentText Color="Color.Primary">Symbol</FluentText> layer is loaded, 
+            <FluentText Color="Color.Primary">click</FluentText> on a symbol to load the info for that specifc symbol (or for the symbols within the click coordinates).
+        </HowToInfo>
     </SummaryContent>
 
     <ChildContent>
         <Toolbar>
             <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset Map" OnClick="@ResetMap" />
-            <FluentSpacer Width="10px"/>
+            <FluentLabel>Layer:</FluentLabel>
+            <FluentSelect Items="@layerTypes" TValue="LayerType" TOption="LayerType" ValueChanged="@((e) => AddLayer(e))" Placeholder="Select a layer..." />
+            <FluentSpacer Width="10px" />
             <FluentButton Disabled="@getShapeInfoDisabled" IconStart="@(new Icons.Regular.Size20.Info())" Title="@getShapeInfoTitle" OnClick="@GetShapeInfo">GetShapeInfo</FluentButton>
+            <FluentButton Disabled="@toJsonDisabled" IconStart="@(new Icons.Regular.Size20.Javascript())" Title="@getJsonTitle" OnClick="@GetJsonString">ToJsonString</FluentButton>
         </Toolbar>
 
         <FluentStack Orientation="Orientation.Vertical">
@@ -27,7 +38,7 @@
 
             @if (shapeInfo != null)
             {
-                <div style="height:250px; min-width: 400px;overflow:auto">
+                <div style="max-height:250px; min-width: 400px;overflow:auto">
                     <FluentDataGrid Items="@shapeInfo?.AsQueryable()"
                                     TGridItem="ShapeInfo"
                                     GridTemplateColumns="auto, auto, auto, auto, auto"
@@ -40,12 +51,22 @@
                         <PropertyColumn Property="@(p => p.Properties.ToJsonMin())" Title="Properties" />
                         <TemplateColumn Title="Actions">
                             <FluentStack>
-                                <FluentButton IconStart="@(new Icons.Regular.Size20.ZoomIn())" Title="@zoomToShapeTitle" OnClick="@(() => ZoomToShape(context))"/>
+                                @if (isSymbolLayer)
+                                {
+                                    <FluentButton IconStart="@(new Icons.Regular.Size20.ZoomIn())" Title="@zoomToShapeTitle" OnClick="@(() => ZoomToShape(context))" />
+                                }
                                 <FluentButton IconStart="@(new Icons.Regular.Size20.Clipboard())" Title="Copy JSON to clipboard" @onclick="@(() => CopyToClipboard(context))" />
                             </FluentStack>
                         </TemplateColumn>
                     </FluentDataGrid>
                 </div>
+            }
+
+            @if (hasJsonString)
+            {
+                <FluentText As="TextTag.Paragraph">
+                    @jsonString
+                </FluentText>
             }
         </FluentStack>
     </ChildContent>
@@ -53,7 +74,7 @@
 
 @code {
     private const string mapId = "mapShapes";
-    private const string title = "Shapes";
+    private const string title = "DataSource Shapes";
     private string subject => title; //Customize the subject as needed for the page context
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
@@ -62,19 +83,31 @@
     private Map? map;
     private bool mapNotReady => map == null;
     private DataSource? dataSource;
-    private SymbolLayer? symbolLayer;
-    private bool layerNotReady => symbolLayer == null;
+    private ILayer? layer;
+    private bool layerNotReady => layer == null;
     private List<ShapeInfo>? shapeInfo;
-    private bool getShapeInfoDisabled => layerNotReady || shapeInfo != null && shapeInfo.Count > 0;
+    private bool getShapeInfoDisabled => layerNotReady;
     private string getShapeInfoTitle = "Gets shape information for a DataSource";
     private string zoomToShapeTitle = "Zoom to the center of the shape";
+    private bool toJsonDisabled => layerNotReady;
+    private string? jsonString;
+    private bool hasJsonString => !string.IsNullOrWhiteSpace(jsonString);
+    private string getJsonTitle = "Gets a JSON string reprsentation of the DataSource shapes.";
     private bool showSummary = true;
+    private readonly List<LayerType> layerTypes = Enum.GetValues<LayerType>().OrderBy(e => e.ToString()).Cast<LayerType>().ToList();
+    private bool isSymbolLayer => layer?.Type == LayerType.Symbol;
+    private readonly List<LayerEvent> events = new List<LayerEvent> { new LayerEvent(LayerEventType.Click) { EventName = nameof(NotifyLayerEvent) } };
 
     protected override void OnInitialized()
     {
         config = Configuration.GetValue(LogLevel.Trace);
         atlasInterop = new(JSRuntime);
         dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
+
+        // Remove unsupported layer types for this example
+        layerTypes.Remove(LayerType.HeatMap); //Data is too large
+        layerTypes.Remove(LayerType.Image); // DataSource is not supported
+        layerTypes.Remove(LayerType.Tile); // DataSource is not supported
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -114,6 +147,21 @@
         }
     }
 
+    private async Task GetJsonString()
+    {
+        try
+        {
+            jsonString = await atlasInterop.Sources.DataSource.ToJsonString(map!, dataSource!);
+            await CopyToClipboard(jsonString!);
+            showSummary = false;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
     private async Task ZoomToShape(ShapeInfo shapeInfo)
     {
         try
@@ -127,11 +175,29 @@
         }
     }
 
-    private async Task CopyToClipboard(ShapeInfo shapeInfo)
+    private async Task ZoomToDataSource()
     {
         try
         {
-            var result = await atlasInterop.Navigator.CopyTextToClipboard(shapeInfo.ToJsonMin());
+            await atlasInterop.Sources.DataSource.ZoomToBBox(map!, dataSource!);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task CopyToClipboard(ShapeInfo shapeInfo)
+    {
+        await CopyToClipboard(shapeInfo.ToJsonMin());
+    }
+
+    private async Task CopyToClipboard(string value)
+    {
+        try
+        {
+            var result = await atlasInterop.Navigator.CopyTextToClipboard(value);
 
             if (!string.IsNullOrWhiteSpace(result.Message))
                 await ToastService.ShowInfo(result.Message);
@@ -143,6 +209,37 @@
         }
     }
 
+    private async Task AddLayer(LayerType layerType)
+    {
+        try
+        {
+            await ClearMap();
+            var results = await layerType.AddDefaultLayer(atlasInterop, map!, DataService);
+            dataSource = (DataSource)results.Source!;
+            layer = results.Layer!;
+
+            await ZoomToDataSource();
+            var camera = await atlasInterop.Map.GetCamera(map!);
+            mapOptions.Camera = camera.ToCameraOptions();
+
+            if (layer.Type == LayerType.Symbol)
+            {
+                foreach (var e in events)
+                    e.Source = layer.Id;
+
+                await atlasInterop.Events.Layers.Add(dotNetRef!, map!, events);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
     #region Map
 
     private async Task CreateMap()
@@ -166,6 +263,26 @@
         }
     }
 
+    private async Task ClearMap()
+    {
+        try
+        {
+            if (dataSource == null && layer == null)
+                return;
+            await atlasInterop.Layers.Remove(map!, layer!.Id);
+            await atlasInterop.Sources.Remove(map!, dataSource!.Id);
+            dataSource = null;
+            layer = null;
+            shapeInfo = null;
+            jsonString = null;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
     private async Task ResetMap()
     {
         try
@@ -174,7 +291,12 @@
                 return;
 
             shapeInfo = null;
-            await atlasInterop.Map.SetCamera(map, mapOptions.Camera);
+            jsonString = null;
+
+            if (dataSource != null)
+                await ZoomToDataSource();
+            else
+                await atlasInterop.Map.SetCamera(map, mapOptions.Camera);
         }
         catch (Exception ex)
         {
@@ -190,24 +312,24 @@
 
         if (e.IsReadyEvent)
         {
-            try
-            {
-                var results = await LayerType.Symbol.AddDefaultLayer(atlasInterop, map!, DataService);
-                dataSource = (DataSource)results.Source!;
-                symbolLayer = (SymbolLayer)results.Layer!;
+            await AddLayer(layerTypes.First());
+        }
+    }
 
-                var camera = await atlasInterop.Map.GetCamera(map!);
-                mapOptions.Camera = camera.ToCameraOptions();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogMapError(ex);
-                await ToastService.ShowError(ex.Message);
-            }
-            finally
-            {
-                StateHasChanged();
-            }
+    [JSInvokable]
+    public async Task NotifyLayerEvent(MapEventArgs e)
+    {
+        try
+        {
+            var payload = e.GetPayloadItem<MousePayload>("Mouse");
+            var shapeIds = payload!.Shapes!.Select(e => e.Id).ToList();
+            shapeInfo = await atlasInterop.Sources.DataSource.GetShapeInfo(map!, dataSource!, shapeIds!);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
         }
     }
 

@@ -1,6 +1,7 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Models.Animations;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
+using Marqdouj.DotNet.Web.JsInterop.Extensions;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Animations
 {
