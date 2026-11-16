@@ -11,11 +11,9 @@
 
     <FluentNavCategory Id="maps" Title="Basic" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
         <FluentNavItem Href="maps-create" IconRest="@((new Icons.Regular.Size20.Map()))">Map</FluentNavItem>
+        <FluentNavItem Href="maps-multiple" IconRest="@((new Icons.Regular.Size20.Map()))">Maps - Multiple</FluentNavItem>
         <FluentNavItem Href="maps-geolocation" IconRest="@(new Icons.Regular.Size20.GlobeLocation())">Geolocation</FluentNavItem>
-        <FluentNavItem Href="maps-layers" IconRest="@((new Icons.Regular.Size20.LayerDiagonal()))">Layers (Basic)</FluentNavItem>
-        <FluentNavItem Href="maps-layers-elevation" IconRest="@((new Icons.Regular.Size20.LayerDiagonal()))">Layers (3D Elevation)</FluentNavItem>
-        <FluentNavItem Href="maps-layers-vector" IconRest="@((new Icons.Regular.Size20.LayerDiagonal()))">Layers (Vector Tile Service)</FluentNavItem>
-        <FluentNavItem Href="maps-multiple" IconRest="@((new Icons.Regular.Size20.Map()))">Multiple</FluentNavItem>
+        <FluentNavItem Href="maps-layers" IconRest="@((new Icons.Regular.Size20.LayerDiagonal()))">Layers</FluentNavItem>
         <FluentNavItem Href="maps-popups" IconRest="@((new Icons.Regular.Size20.Map()))">Popups</FluentNavItem>
     </FluentNavCategory>
 
@@ -47,30 +45,20 @@
 
     <FluentNavItem Href="howto-summary" IconRest="@(new Icons.Regular.Size20.Info())">How To</FluentNavItem>
 
-    <FluentNavCategory Title="Images" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
-        <FluentNavItem Href="maps-image-sprites" IconRest="@((new Icons.Regular.Size20.LayerDiagonal()))">Sprites</FluentNavItem>
-    </FluentNavCategory>
+    @if (AppConfig.IsDevelopment && showDev)
+    {
+        <FluentNavCategory Title="Modules" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
+            <FluentNavSectionHeader Title="Data" />
+            <FluentNavItem Href="tests-bbox" IconRest="@(new Icons.Regular.Size20.DesignIdeas())">BoundingBox</FluentNavItem>
+            <FluentNavItem Href="tests-mercator-point" IconRest="@(new Icons.Regular.Size20.DesignIdeas())">MercatorPoint</FluentNavItem>
+            <FluentNavItem Href="tests-position" IconRest="@(new Icons.Regular.Size20.DesignIdeas())">Position</FluentNavItem>
 
-    <FluentNavCategory Title="Modules" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
-        <FluentNavSectionHeader Title="Data" />
-        <FluentNavItem Href="tests-bbox" IconRest="@(new Icons.Regular.Size20.DesignIdeas())">BoundingBox</FluentNavItem>
-        <FluentNavItem Href="tests-mercator-point" IconRest="@(new Icons.Regular.Size20.DesignIdeas())">MercatorPoint</FluentNavItem>
-        <FluentNavItem Href="tests-position" IconRest="@(new Icons.Regular.Size20.DesignIdeas())">Position</FluentNavItem>
+            <FluentNavSectionHeader Title="General" />
+            <FluentNavItem Href="tests-math" IconRest="@(new Icons.Regular.Size20.DesignIdeas())">Math</FluentNavItem>
+        </FluentNavCategory>
+    }
 
-        <FluentNavSectionHeader Title="General" />
-        <FluentNavItem Href="tests-math" IconRest="@(new Icons.Regular.Size20.DesignIdeas())">Math</FluentNavItem>
-    </FluentNavCategory>
-
-    <FluentNavCategory Title="Scripts (Optional)" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
-        <FluentNavSectionHeader Title="Animations" />
-        <FluentNavItem Href="anims-summary" IconRest="@((new Icons.Regular.Size20.Map()))">Summary</FluentNavItem>
-        <FluentNavItem Href="anims-shapes" IconRest="@((new Icons.Regular.Size20.Map()))">Shapes</FluentNavItem>
-
-        <FluentNavSectionHeader Title="Spatial IO" />
-        <FluentNavItem Href="spatial-summary" IconRest="@((new Icons.Regular.Size20.Map()))">Summary</FluentNavItem>
-        <FluentNavItem Href="spatial-gpstrace" IconRest="@((new Icons.Regular.Size20.Map()))">GPS Trace (Animation)</FluentNavItem>
-        <FluentNavItem Href="spatial-simplelayer" IconRest="@((new Icons.Regular.Size20.Map()))">SimpleDataLayer</FluentNavItem>
-    </FluentNavCategory>
+    <FluentNavItem Href="sdk-examples" IconRest="@(new Icons.Regular.Size20.MapPin())">SDK Examples</FluentNavItem>
 </FluentNav>
 
 @code {

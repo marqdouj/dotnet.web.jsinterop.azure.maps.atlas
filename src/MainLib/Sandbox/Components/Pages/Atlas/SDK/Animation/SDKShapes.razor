@@ -1,9 +1,9 @@
-﻿@page "/anims-shapes"
+﻿@page "/sdk-animation-shapes"
 @rendermode InteractiveServer
 @implements IAsyncDisposable
 @inject IOptions<MapConfiguration> Configuration
 @inject IJSRuntime JSRuntime
-@inject ILogger<Shapes> Logger
+@inject ILogger<SDKShapes> Logger
 @inject INotificationService ToastService
 @inject IMapDataService DataService
 
@@ -33,7 +33,7 @@
 
 @code {
     private const string mapId = "mapAnimsShapes";
-    private const string title = "Animations - Shapes";
+    private const string title = "SDK Animation - Shapes";
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
     private MapConfiguration config = default!;

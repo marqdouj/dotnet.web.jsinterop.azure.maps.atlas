@@ -1,9 +1,9 @@
-﻿@page "/spatial-gpstrace"
+﻿@page "/sdk-animation-route-trace"
 @rendermode InteractiveServer
 @implements IAsyncDisposable
 @inject IOptions<MapConfiguration> Configuration
 @inject IJSRuntime JSRuntime
-@inject ILogger<GpsTrace> Logger
+@inject ILogger<SDKRouteTrace> Logger
 @inject INotificationService ToastService
 
 <MapPage Title="@title">
@@ -86,8 +86,8 @@
 </MapPage>
 
 @code {
-    private const string mapId = "mapGpsTrace";
-    private const string title = "Spatial - GpsTrace";
+    private const string mapId = "mapRouteTrace";
+    private const string title = "SDK Animation - Route Trace";
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
     private MapConfiguration config = default!;

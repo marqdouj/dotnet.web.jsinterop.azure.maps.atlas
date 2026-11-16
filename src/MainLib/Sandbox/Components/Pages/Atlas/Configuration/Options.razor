@@ -21,12 +21,12 @@
         
         <FluentStack Style="overflow:auto">
             <FluentCard Height="@height" Width="265px" Style="overflow:auto;">
-                <FluentText Color="Color.Primary" As="TextTag.H6">Style</FluentText>
+                <ColorText>Style</ColorText>
                 @foreach (var item in styleViewModel.Items)
                 {
                     <FluentCheckbox Disabled="@mapNotReady" Tooltip="@item.Tooltip" Label="@item.Label" @bind-Value:get="@item.Value" @bind-Value:set="@((e) => OnStyleOptionsChanged(e, item))" />
                 }
-                <FluentText Color="Color.Primary" As="TextTag.H6">User Interaction</FluentText>
+                <ColorText>User Interaction</ColorText>
                 @foreach (var item in userViewModel.Items)
                 {
                     <FluentCheckbox Disabled="@mapNotReady" Tooltip="@item.Tooltip" Label="@item.Label" @bind-Value:get="@item.Value" @bind-Value:set="@((e) => OnUserOptionsChanged(e, item))" />

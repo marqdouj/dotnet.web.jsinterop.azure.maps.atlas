@@ -1,16 +1,16 @@
-﻿@page "/maps-image-sprites"
+﻿@page "/howto-sprites"
 @rendermode InteractiveServer
 @implements IAsyncDisposable
 @inject IOptions<MapConfiguration> Configuration
 @inject IJSRuntime JSRuntime
-@inject ILogger<ImageSprites> Logger
+@inject ILogger<Sprites> Logger
 @inject INotificationService ToastService
 @inject IMapDataService DataService
 
 <MapPage Title="@title">
     <SummaryContent>
         <FluentText As="TextTag.Paragraph">
-            This page demonstrates working with image sprites.
+            This page demonstrates working with <ColorText>@subject</ColorText>.
             <br />
             You can create an image based on an existing map template, 
             or load a custom image (which is a copy of the NuGet package icon placed in the wwwroot/img folder).
@@ -39,7 +39,8 @@
 
 @code {
     private const string mapId = "mapImageSprites";
-    private const string title = "Maps - Image Sprites";
+    private const string title = "How To - Sprites";
+    private const string subject = "Sprites";
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
     private MapConfiguration config = default!;
