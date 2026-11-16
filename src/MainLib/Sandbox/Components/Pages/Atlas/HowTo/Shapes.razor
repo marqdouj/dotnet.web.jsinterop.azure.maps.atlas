@@ -94,7 +94,7 @@
     private string? jsonString;
     private bool hasJsonString => !string.IsNullOrWhiteSpace(jsonString);
     private string getJsonTitle = "Gets a JSON string reprsentation of the DataSource shapes.";
-    private string saveToJsonTitle = "Saves a JSON string reprsentation of the DataSource to a file.";
+    private string saveToJsonTitle = "Saves a JSON string reprsentation of the DataSource shapes to a file.";
     private readonly List<LayerType> layerTypes = Enum.GetValues<LayerType>().OrderBy(e => e.ToString()).Cast<LayerType>().ToList();
     private bool isSymbolLayer => layer?.Type == LayerType.Symbol;
     private readonly List<LayerEvent> events = new List<LayerEvent> { new LayerEvent(LayerEventType.Click) { EventName = nameof(NotifyLayerEvent) } };
