@@ -1,16 +1,16 @@
-﻿@page "/spatial-simplelayer"
+﻿@page "/sdk-simple-data-layer"
 @rendermode InteractiveServer
 @implements IAsyncDisposable
 @inject IOptions<MapConfiguration> Configuration
 @inject IJSRuntime JSRuntime
-@inject ILogger<SimpleLayer> Logger
+@inject ILogger<SDKSimpleDataLayer> Logger
 @inject INotificationService ToastService
 @inject IMapDataService DataService
 
 <MapPage Title="@title">
     <SummaryContent>
         <FluentText As="TextTag.Paragraph">
-            This page demonstrates a SimpleDataLayer.
+            This page demonstrates using a <ColorText>SimpleDataLayer</ColorText>.
         </FluentText>
     </SummaryContent>
 
@@ -38,7 +38,7 @@
 
 @code {
     private const string mapId = "mapSimpleLayer";
-    private const string title = "Spatial - SimpleDataLayer";
+    private const string title = "SDK - Simple Data Layer";
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
     private MapConfiguration config = default!;

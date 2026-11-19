@@ -1,0 +1,12 @@
+﻿<FluentText Color="@Color" As="@As">@ChildContent</FluentText>
+
+@code {
+    [Parameter]
+    public Color Color { get; set; } = Color.Primary;
+
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public TextTag? As { get; set; }
+}

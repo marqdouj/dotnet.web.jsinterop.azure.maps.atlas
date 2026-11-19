@@ -12,9 +12,21 @@
 
     <ChildContent>
         <FluentTreeView>
-            <FluentTreeItem Text="DataSource" IconStart="@(new Icons.Regular.Size20.DesignIdeas())" Expanded="true">
+            <FluentTreeItem Text="DataSource" IconStart="@(new Icons.Regular.Size20.DesignIdeas())">
                 <FluentTreeItem IconStart="@(new Icons.Regular.Size20.Shapes())">
-                    <FluentLink Href="/howto-shapes" Tooltip="Go to Shapes">Shapes</FluentLink>
+                    <FluentLink Href="/howto-shapes">Shapes</FluentLink>
+                </FluentTreeItem>
+            </FluentTreeItem>
+
+            <FluentTreeItem Text="Images" IconStart="@(new Icons.Regular.Size20.DesignIdeas())">
+                <FluentTreeItem IconStart="@(new Icons.Regular.Size20.Shapes())">
+                    <FluentLink Href="/howto-sprites">Sprites</FluentLink>
+                </FluentTreeItem>
+            </FluentTreeItem>
+
+            <FluentTreeItem Text="Layers" IconStart="@(new Icons.Regular.Size20.DesignIdeas())">
+                <FluentTreeItem IconStart="@(new Icons.Regular.Size20.Shapes())">
+                    <FluentLink Href="/howto-layers-vector">Layers (Vector)</FluentLink>
                 </FluentTreeItem>
             </FluentTreeItem>
         </FluentTreeView>

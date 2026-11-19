@@ -9,14 +9,14 @@
 <MapPage Title="@title">
     <SummaryContent>
         <FluentText As="TextTag.Paragraph">
-            This page demonstrates how to create/remove a map instance, and its controls.
+            This page demonstrates how to add/remove a map instance, and its controls.
         </FluentText>
     </SummaryContent>
 
     <ChildContent>
         <Toolbar>
             <FluentLabel>Map:</FluentLabel>
-            <FluentButton Disabled="@createMapDisabled" IconStart="@(new Icons.Regular.Size20.Add())" Title="Create Map" OnClick="@CreateMap" />
+            <FluentButton Disabled="@createMapDisabled" IconStart="@(new Icons.Regular.Size20.Add())" Title="Add Map" OnClick="@AddMap" />
             <FluentButton Disabled="@removeMapDisabled" IconStart="@(new Icons.Regular.Size20.Delete())" Title="Remove Map" OnClick="@RemoveMap" />
             <FluentSpacer Width="10px"/>
             <FluentLabel>Controls:</FluentLabel>
@@ -29,8 +29,8 @@
 </MapPage>
 
 @code {
-    private const string mapId = "mapCreate";
-    private const string title = "Maps - Create";
+    private const string mapId = "mapAddRemove";
+    private const string title = "Maps - Add/Remove";
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
     private MapConfiguration config = default!;
@@ -52,7 +52,7 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await CreateMap();
+            await AddMap();
     }
 
     public async ValueTask DisposeAsync()
@@ -108,7 +108,7 @@
         }
     }
 
-    private async Task CreateMap()
+    private async Task AddMap()
     {
         try
         {

@@ -6,21 +6,20 @@
 @inject ILogger<Shapes> Logger
 @inject INotificationService ToastService
 @inject IMapDataService DataService
+@inject IDialogService DialogService
 
 <MapPage Title="@title" ShowSummary="@showSummary">
-    <HeaderContentPre>
-        <HowToHeader/>
-    </HeaderContentPre>
     <SummaryContent>
-        <HowToInfo Subject="@subject">
+        <FluentText As="TextTag.Paragraph">
+            This page demonstrates working with <ColorText>@subject</ColorText>.
             <br /><br />
-            NOTE: The <FluentText Color="Color.Primary">GetShapeInfo</FluentText> method works on small sets of data.
-            For larger sets of data, request using a smaller specific set of shapeIds or use the <FluentText Color="Color.Primary">ToJson</FluentText> 
-            method and save the JSON to file.
+            NOTE: The <ColorText>GetShapeInfo</ColorText> method works on small sets of data.
+            For larger sets of data, call the method using a specific set of shapeIds, or use the <ColorText>ToJson</ColorText>
+            method to save the JSON to a file.
             <br /><br />
-            If the <FluentText Color="Color.Primary">Symbol</FluentText> layer is loaded, 
-            <FluentText Color="Color.Primary">click</FluentText> on a symbol to load the info for that specifc symbol (or for the symbols within the click coordinates).
-        </HowToInfo>
+            If the <ColorText>Symbol</ColorText> layer is loaded,
+            <ColorText>click</ColorText> on a symbol to load the info for that specifc symbol (or for the symbols within the click coordinates).
+        </FluentText>
     </SummaryContent>
 
     <ChildContent>
@@ -31,6 +30,7 @@
             <FluentSpacer Width="10px" />
             <FluentButton Disabled="@getShapeInfoDisabled" IconStart="@(new Icons.Regular.Size20.Info())" Title="@getShapeInfoTitle" OnClick="@GetShapeInfo">GetShapeInfo</FluentButton>
             <FluentButton Disabled="@toJsonDisabled" IconStart="@(new Icons.Regular.Size20.Javascript())" Title="@getJsonTitle" OnClick="@GetJsonString">ToJsonString</FluentButton>
+            <FluentButton Disabled="@layerNotReady" IconStart="@(new Icons.Regular.Size20.DocumentSave())" Title="@saveToJsonTitle" OnClick="@SaveJsonString">ToJson</FluentButton>
         </Toolbar>
 
         <FluentStack Orientation="Orientation.Vertical">
@@ -74,8 +74,9 @@
 
 @code {
     private const string mapId = "mapShapes";
-    private const string title = "DataSource Shapes";
-    private string subject => title; //Customize the subject as needed for the page context
+    private const string title = "How To: Shapes";
+    private string subject = "Shapes";
+    private bool showSummary = true;
     private DotNetObjectReference<ComponentBase>? dotNetRef;
     private AtlasInterop atlasInterop = default!;
     private MapConfiguration config = default!;
@@ -93,7 +94,7 @@
     private string? jsonString;
     private bool hasJsonString => !string.IsNullOrWhiteSpace(jsonString);
     private string getJsonTitle = "Gets a JSON string reprsentation of the DataSource shapes.";
-    private bool showSummary = true;
+    private string saveToJsonTitle = "Saves a JSON string reprsentation of the DataSource shapes to a file.";
     private readonly List<LayerType> layerTypes = Enum.GetValues<LayerType>().OrderBy(e => e.ToString()).Cast<LayerType>().ToList();
     private bool isSymbolLayer => layer?.Type == LayerType.Symbol;
     private readonly List<LayerEvent> events = new List<LayerEvent> { new LayerEvent(LayerEventType.Click) { EventName = nameof(NotifyLayerEvent) } };
@@ -154,6 +155,47 @@
             jsonString = await atlasInterop.Sources.DataSource.ToJsonString(map!, dataSource!);
             await CopyToClipboard(jsonString!);
             showSummary = false;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task SaveJsonString()
+    {
+        try
+        {
+            var info = new FilenameDialogInfo("Save As...") { Name = $"{layer!.Type}.json" };
+
+            var result = await DialogService.ShowDialogAsync<FilenameDialog>(options =>
+            {
+                options.Parameters.Add(nameof(FilenameDialog.Info), info);
+            });
+
+            if (!result.Cancelled)
+            {
+                await ToJson(info.Name);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogMapError(ex);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task ToJson(string filename)
+    {
+        try
+        {
+            if (dataSource is DataSource ds)
+            {
+                await atlasInterop.Sources.DataSource.ToJson(map!, ds, $"{filename}.json");
+            }
+            else
+                await ToastService.ShowError("Only a DataSource can be exported to JSON.");
         }
         catch (Exception ex)
         {

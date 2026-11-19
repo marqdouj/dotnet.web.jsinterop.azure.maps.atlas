@@ -1,0 +1,52 @@
+﻿@page "/sdk-examples"
+@rendermode InteractiveServer
+
+<MapPage Title="@title">
+    <SummaryContent>
+        <FluentText As="TextTag.Paragraph">
+            This page provides navigation to other pages that demonstrate various 
+            <FluentLink Href="@hrefSDKExamples" Target="LinkTarget.Blank">SDK Examples</FluentLink>.
+            <br /><br />
+            To use <ColorText>Animation</ColorText> you must download the
+            <FluentLink Href="@hrefAnimation" Target="LinkTarget.Blank">Animation Script</FluentLink>
+            , add it to your wwwroot folder, and then reference it using a script tag in App.Razor.
+            <br /><br />
+            To use <ColorText>Spatial</ColorText> you must include the Azure Maps
+            <FluentLink Href="@hrefSpatial" Target="LinkTarget.Blank">Spatial IO Module</FluentLink> script reference in App.Razor.
+            <br /><br />
+            Please select an example from the tree view.
+        </FluentText>
+    </SummaryContent>
+
+    <ChildContent>
+        <FluentTreeView>
+            <FluentTreeItem Text="Animation" IconStart="@(new Icons.Regular.Size20.DesignIdeas())">
+                <FluentTreeItem IconStart="@(new Icons.Regular.Size20.Map())">
+                    <FluentLink Href="/sdk-animation-route-trace">Route Trace</FluentLink>
+                </FluentTreeItem>
+                <FluentTreeItem IconStart="@(new Icons.Regular.Size20.VehicleCar())">
+                    <FluentLink Href="/sdk-animation-shapes">Shapes</FluentLink>
+                </FluentTreeItem>
+            </FluentTreeItem>
+
+            <FluentTreeItem Text="Spatial" IconStart="@(new Icons.Regular.Size20.DesignIdeas())">
+                <FluentTreeItem IconStart="@(new Icons.Regular.Size20.Shapes())">
+                    <FluentLink Href="/sdk-simple-data-layer">Simple Data Layer</FluentLink>
+                </FluentTreeItem>
+            </FluentTreeItem>
+
+            <FluentTreeItem Text="Web GL" IconStart="@(new Icons.Regular.Size20.DesignIdeas())">
+                <FluentTreeItem IconStart="@(new Icons.Regular.Size20.Shapes())">
+                    <FluentLink Href="/sdk-3d-terrain-elevation">3D Terrain Elevation</FluentLink>
+                </FluentTreeItem>
+            </FluentTreeItem>
+        </FluentTreeView>
+    </ChildContent>
+</MapPage>
+
+@code {
+    private const string title = "SDK Examples";
+    private const string hrefSDKExamples = "https://samples.azuremaps.com/";
+    private const string hrefAnimation = "https://github.com/Azure-Samples/AzureMapsCodeSamples/blob/main/Static/lib/azure-maps/azure-maps-animations.min.js";
+    private const string hrefSpatial = "https://learn.microsoft.com/en-us/azure/azure-maps/how-to-use-spatial-io-module";
+}

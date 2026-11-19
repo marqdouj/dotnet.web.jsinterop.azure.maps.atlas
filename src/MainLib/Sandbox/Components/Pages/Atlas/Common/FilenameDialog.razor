@@ -1,0 +1,34 @@
+﻿@inherits FluentDialogInstance
+@inject INotificationService ToastService
+
+<FluentDialogBody>
+    <FluentTextInput @bind-Value="@Info.Name"/>
+</FluentDialogBody>
+
+@code {
+    [Parameter, EditorRequired]
+    public FilenameDialogInfo Info { get; set; }
+
+    protected override void OnInitializeDialog(DialogOptionsHeader header, DialogOptionsFooter footer)
+    {
+        header.Title = Info.Title;
+        footer.SecondaryAction.Visible = true;
+    }
+
+    protected override async Task OnActionClickedAsync(bool primary)
+    {
+        if (primary)
+        {
+            if (string.IsNullOrWhiteSpace(Info.Name))
+            {
+                await ToastService.ShowErrorToastAsync("Filename may not be empty.");
+                return;
+            }
+            await DialogInstance.CloseAsync("OK");
+        }
+        else
+        {
+            await DialogInstance.CancelAsync();
+        }
+    }
+}
