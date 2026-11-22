@@ -9,14 +9,14 @@ namespace Sandbox.CustomJs
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = jsRuntime.CreateModuleTask("./_content/Sandbox.CustomJs/customInterop.js");
 
-        public async ValueTask AddControls(IJSObjectReference azmap, IEnumerable<MapControl> controls)
+        public async ValueTask AddControls(IJSObjectReference azmap, IEnumerable<MapControl> controls, bool useGlobalScript = false)
         {
-            await moduleTask.InvokeVoidAsyncTC(GetCustomMapMethod(), azmap, controls.Cast<object>().ToList());
+            await moduleTask.InvokeVoidAsyncTC(GetCustomMapMethod(), azmap, controls.Cast<object>().ToList(), useGlobalScript);
         }
 
-        public async ValueTask RemoveControls(IJSObjectReference azmap, IEnumerable<MapControl> controls)
+        public async ValueTask RemoveControls(IJSObjectReference azmap, IEnumerable<MapControl> controls, bool useGlobalScript = false)
         {
-            await moduleTask.InvokeVoidAsyncTC(GetCustomMapMethod(), azmap, controls.Cast<object>().ToList());
+            await moduleTask.InvokeVoidAsyncTC(GetCustomMapMethod(), azmap, controls.Cast<object>().ToList(), useGlobalScript);
         }
 
         internal static string GetCustomMapMethod([CallerMemberName] string name = "")

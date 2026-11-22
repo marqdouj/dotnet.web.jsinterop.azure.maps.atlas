@@ -65,7 +65,7 @@ export class Controls {
         return results;
     }
 
-    public static remove(map: atlas.Map, mapControls: MapControl[]) {
+    public static remove(map: atlas.Map, mapControls: MapControl[], logIfNotFound: boolean = true) {
         const eventName = "Controls.remove";
 
         if (JsHelpers.hasNoElements(mapControls))
@@ -78,7 +78,8 @@ export class Controls {
             let control = this.#getItemFromSource(map, mc, controls, false);
 
             if (!control) {
-                Logger.logMapMessage(mapId, LogLevel.Warn, `${eventName}: Control does not exists where id = '${mc.id}'.`);
+                if (logIfNotFound)
+                    Logger.logMapMessage(mapId, LogLevel.Warn, `${eventName}: Control does not exists where id = '${mc.id}'.`);
                 return; //continue
             }
 
