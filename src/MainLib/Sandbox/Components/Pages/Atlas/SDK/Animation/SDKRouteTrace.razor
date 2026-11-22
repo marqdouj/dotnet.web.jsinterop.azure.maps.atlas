@@ -5,6 +5,7 @@
 @inject IJSRuntime JSRuntime
 @inject ILogger<SDKRouteTrace> Logger
 @inject INotificationService ToastService
+@inject IMapDataService DataService
 
 <MapPage Title="@title">
     <SummaryContent>
@@ -118,10 +119,14 @@
         dotNetRef = DotNetObjectReference.Create<ComponentBase>(this);
 
         datasets = [
-            new DatasetInfo("GPS Trace (GeoJSON)", "examples/GpsTrace.json"){ TimestampProperty = "time" },
-            new DatasetInfo("Bike race GPS trace (GPX)", "examples/race-gps-trace.xml"){ ValueInterpolations =  [ new PointPairValueInterpolation( "ele") ], Zoom = 18 }
+            new DatasetInfo("GPS Trace (GeoJSON)", DataService.Examples.RawUrls.Data.GeoJson.GpsTrace){ TimestampProperty = "time" },
+            new DatasetInfo("Bike race GPS trace (GPX)", DataService.Examples.RawUrls.Data.Gpx.RaceGpsTrace){ ValueInterpolations =  [ new PointPairValueInterpolation( "ele") ], Zoom = 18 }
         ];
 
+        foreach (var item in datasets)
+        {
+            Console.WriteLine(item.Url);
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

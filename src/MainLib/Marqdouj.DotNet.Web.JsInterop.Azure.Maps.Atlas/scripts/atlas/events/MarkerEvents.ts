@@ -1,18 +1,20 @@
 import * as atlas from "azure-maps-control"
-import { Helpers } from "../common/Helpers";
+import { JsHelpers } from "../common/JsHelpers";
 import * as events from "."
 import { EventsMap } from "./EventsMap";
 import { Logger, LogLevel } from "../common/Logger";
 import { Markers } from "../Markers";
+import { MapHelpers } from "../common/MapHelpers";
+import { EventHelpers } from "./EventHelpers";
 
 export class MarkerEvents {
     static readonly #eventsMap: EventsMap = new EventsMap();
 
     public static add(dotNetRef: any, map: atlas.Map, markerEvents?: events.EventInfo[]) {
         const eventName = "MarkerEvents.add";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
 
-        if (Helpers.hasNoElements(markerEvents))
+        if (JsHelpers.hasNoElements(markerEvents))
             return;
 
         markerEvents!.forEach((me) => {
@@ -21,7 +23,7 @@ export class MarkerEvents {
             const target = this.#getTarget(map, me);
 
             if (target) {
-                if (Helpers.isValueInEnum(MarkerEventGeneral, me.type)) {
+                if (JsHelpers.isValueInEnum(MarkerEventGeneral, me.type)) {
                     callback = this.#getNotifyEventGeneralCallback(dotNetRef, mapId, me);
                 }
 
@@ -45,9 +47,9 @@ export class MarkerEvents {
 
     public static remove(map: atlas.Map, markerEvents: events.EventInfo[]) {
         const eventName = "MarkerEvents.remove";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
 
-        if (Helpers.hasNoElements(markerEvents))
+        if (JsHelpers.hasNoElements(markerEvents))
             return;
 
         markerEvents.forEach((me) => {
@@ -72,9 +74,9 @@ export class MarkerEvents {
 
     public static removeBySource(map: atlas.Map, sources: any[]) {
         const eventName = "MarkerEvents.removeBySource";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
 
-        if (Helpers.hasNoElements(sources))
+        if (JsHelpers.hasNoElements(sources))
             return;
 
         sources.forEach((source) => {
@@ -129,8 +131,8 @@ export class MarkerEvents {
     }
 
     static #notifyEventGeneral = (callback: atlas.TargetedEvent, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
-        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent);
-        dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
+        const args = EventHelpers.buildNotifyEventArgs(mapId, mapEvent);
+        dotNetRef.invokeMethodAsync(mapEvent.eventName ??= callback.type, args);
     };
 
     // #endRegion

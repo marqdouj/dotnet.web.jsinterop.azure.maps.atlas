@@ -1,5 +1,5 @@
-import { Logger, LogLevel } from "./common/Logger";
 import * as events from "./events"
+import { EventHelpers } from "./events/EventHelpers";
 
 export class Geolocation {
     //https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/getCurrentPosition
@@ -32,12 +32,12 @@ export class Geolocation {
         const id = navigator.geolocation.watchPosition(
             (position: GeolocationPosition) => {
                 const payload: GeolocationPayload = { type: GeolocationEventType.WatchSuccess, position: position, error: null };
-                const args: events.NotifyMapEventArgs = events.Helpers.buildNotifyEventArgs(mapId, undefined, { geolocation: payload });
+                const args: events.NotifyMapEventArgs = EventHelpers.buildNotifyEventArgs(mapId, undefined, { geolocation: payload });
                 dotNetRef.invokeMethodAsync(callbackMethod, args);
             },
             (error: any) => {
                 const payload: GeolocationPayload = { type: GeolocationEventType.WatchError, position: null, error: { code: error.code, message: error.message } };
-                const args: events.NotifyMapEventArgs = events.Helpers.buildNotifyEventArgs(mapId, undefined, { geolocation: payload });
+                const args: events.NotifyMapEventArgs = EventHelpers.buildNotifyEventArgs(mapId, undefined, { geolocation: payload });
                 dotNetRef.invokeMethodAsync(callbackMethod, args);
             },
             Geolocation.#buildOptions(options)

@@ -1,5 +1,5 @@
 import * as atlas from "azure-maps-control"
-import { Helpers } from "./common/Helpers";
+import { JsHelpers } from "./common/JsHelpers";
 import { EditAction } from "./common";
 
 export class Map {
@@ -11,25 +11,25 @@ export class Map {
     public static setCamera(map: atlas.Map, cameraOptions?: any, cameraBoundsOptions?: any, animationOptions?: any) {
         let options: (atlas.CameraOptions | (atlas.CameraBoundsOptions & { pitch?: number, bearing?: number })) & atlas.AnimationOptions = {};
 
-        cameraOptions = Helpers.removeNullish(cameraOptions) ?? {};
-        cameraBoundsOptions = Helpers.removeNullish(cameraBoundsOptions) ?? {};
-        animationOptions = Helpers.removeNullish(animationOptions) ?? {};
+        cameraOptions = JsHelpers.removeNullish(cameraOptions) ?? {};
+        cameraBoundsOptions = JsHelpers.removeNullish(cameraBoundsOptions) ?? {};
+        animationOptions = JsHelpers.removeNullish(animationOptions) ?? {};
 
         //cameraOptions and cameraBoundsOptions are mutually exclusive.
-        if (Helpers.isObjectNotEmptyOrNull(cameraOptions)) {
+        if (JsHelpers.isObjectNotEmptyOrNull(cameraOptions)) {
             options = { ...options, ...cameraOptions };
         }
-        else if (Helpers.isObjectNotEmptyOrNull(cameraBoundsOptions)) {
+        else if (JsHelpers.isObjectNotEmptyOrNull(cameraBoundsOptions)) {
             options = { ...options, ...cameraBoundsOptions };
         }
 
-        if (Helpers.isObjectNotEmptyOrNull(animationOptions)) {
+        if (JsHelpers.isObjectNotEmptyOrNull(animationOptions)) {
             options = { ...options, ...animationOptions };
         }
 
-        options = Helpers.removeNullish(options);
+        options = JsHelpers.removeNullish(options);
 
-        if (Helpers.isObjectNotEmptyOrNull(options)) {
+        if (JsHelpers.isObjectNotEmptyOrNull(options)) {
             map.setCamera(options);
         }
     }
@@ -74,7 +74,7 @@ export class Map {
             case EditAction.Replace:
                 break;
             case EditAction.Update:
-                updatedOptions = Helpers.removeNullish(updatedOptions);
+                updatedOptions = JsHelpers.removeNullish(updatedOptions);
                 break;
         }
 
@@ -98,7 +98,7 @@ export class Map {
             case EditAction.Replace:
                 break;
             case EditAction.Update:
-                updatedOptions = Helpers.removeNullish(updatedOptions);
+                updatedOptions = JsHelpers.removeNullish(updatedOptions);
                 break;
         }
 
@@ -122,7 +122,7 @@ export class Map {
             case EditAction.Replace:
                 break;
             case EditAction.Update:
-                updatedOptions = Helpers.removeNullish(updatedOptions);
+                updatedOptions = JsHelpers.removeNullish(updatedOptions);
                 break;
         }
 
@@ -145,7 +145,7 @@ export class Map {
             case EditAction.Replace:
                 break;
             case EditAction.Update:
-                updatedOptions = Helpers.removeNullish(updatedOptions);
+                updatedOptions = JsHelpers.removeNullish(updatedOptions);
                 break;
         }
 

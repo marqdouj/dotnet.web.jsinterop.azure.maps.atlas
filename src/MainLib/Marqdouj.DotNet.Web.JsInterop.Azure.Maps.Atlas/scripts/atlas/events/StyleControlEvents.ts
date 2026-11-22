@@ -1,17 +1,19 @@
 import * as atlas from "azure-maps-control"
-import { Helpers } from "../common/Helpers";
+import { JsHelpers } from "../common/JsHelpers";
 import * as events from "."
 import { EventsMap } from "./EventsMap";
 import { Logger, LogLevel } from "../common/Logger";
+import { MapHelpers } from "../common/MapHelpers";
+import { EventHelpers } from "./EventHelpers";
 
 export class StyleControlEvents {
     static readonly #eventsMap: EventsMap = new EventsMap();
 
     public static add(dotNetRef: any, map: atlas.Map, controlEvents?: events.EventInfo[]) {
         const eventName = "StyleControlEvents.add";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
 
-        if (Helpers.hasNoElements(controlEvents))
+        if (JsHelpers.hasNoElements(controlEvents))
             return;
 
         controlEvents!.forEach((me) => {
@@ -20,7 +22,7 @@ export class StyleControlEvents {
             const target = this.#getTarget(map, me);
 
             if (target) {
-                if (Helpers.isValueInEnum(StyleControlEventGeneral, me.type)) {
+                if (JsHelpers.isValueInEnum(StyleControlEventGeneral, me.type)) {
                     callback = this.#getNotifyEventGeneralCallback(dotNetRef, mapId, me);
                 }
 
@@ -44,9 +46,9 @@ export class StyleControlEvents {
 
     public static remove(map: atlas.Map, controlEvents: events.EventInfo[]) {
         const eventName = "StyleControlEvents.remove";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
 
-        if (Helpers.hasNoElements(controlEvents))
+        if (JsHelpers.hasNoElements(controlEvents))
             return;
 
         controlEvents.forEach((me) => {
@@ -71,9 +73,9 @@ export class StyleControlEvents {
 
     public static removeBySource(map: atlas.Map, sources: any[]) {
         const eventName = "StyleControlEvents.removeBySource";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
 
-        if (Helpers.hasNoElements(sources))
+        if (JsHelpers.hasNoElements(sources))
             return;
 
         sources.forEach((source) => {
@@ -120,7 +122,7 @@ export class StyleControlEvents {
             return;
 
         const controls = map.controls.getControls();
-        const control = controls.findLast(value => Helpers.hasId(value, id));
+        const control = controls.findLast(value => JsHelpers.hasId(value, id));
 
         return (control instanceof atlas.control.StyleControl) ? control : undefined;
     }
@@ -143,7 +145,7 @@ export class StyleControlEvents {
 
     static #notifyEventGeneral = (callback: string, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
         const payload = { styleControl: { style: callback } };
-        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
+        const args = EventHelpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 

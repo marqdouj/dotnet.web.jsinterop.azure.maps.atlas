@@ -1,15 +1,16 @@
 import * as atlas from "azure-maps-control"
-import { Helpers } from "./common/Helpers";
+import { JsHelpers } from "./common/JsHelpers";
 import { Logger, LogLevel } from "./common/Logger";
 import { EditAction } from "./common";
 import { BoundingBox } from "./data/BoundingBox";
+import { MapHelpers } from "./common/MapHelpers";
 
 export class DataSource {
     public static clear(map: atlas.Map, sources: any[]) {
         const eventName = "DataSource.clear";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
 
-        if (Helpers.hasNoElements(sources))
+        if (JsHelpers.hasNoElements(sources))
             return;
 
         sources.forEach((source) => {
@@ -20,15 +21,15 @@ export class DataSource {
 
     public static getShapeById(map: atlas.Map, source: any, shapeId: string, getReference: boolean = true) {
         const eventName = "DataSource.getShapeById";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
         const ds = this.getDataSourceFromSource(map, mapId, source, eventName, true);
         const shape = ds?.getShapeById(shapeId);
-        return getReference ? Helpers.createMapObjectReference(mapId, "Shape", shape, shapeId) : shape;
+        return getReference ? MapHelpers.createMapObjectReference(mapId, "Shape", shape, shapeId) : shape;
     }
 
     public static getShapeInfo(map: atlas.Map, source: any, shapeIds?: string[]) {
         const eventName = "DataSource.getShapeInfo";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
         const ds = this.getDataSourceFromSource(map, mapId, source, eventName, true);
 
         if (!ds) 
@@ -57,16 +58,16 @@ export class DataSource {
     
     public static getShapes(map: atlas.Map, source: any, getReference: boolean = true) {
         const eventName = "DataSource.getShapes";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
         const ds = this.getDataSourceFromSource(map, mapId, source, eventName, true);
         const shapes = ds?.getShapes();
 
-        return getReference ? Helpers.createMapObjectReference(mapId, "Shapes", shapes, ds?.getId()) : shapes;
+        return getReference ? MapHelpers.createMapObjectReference(mapId, "Shapes", shapes, ds?.getId()) : shapes;
     }
 
     public static async importDataFromUrl(map: atlas.Map, source: any, url: string, zoomToBBox: boolean = false, padding?: any) : Promise<string> {
         const eventName = "DataSource.importDataFromUrl";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
         const ds = this.getDataSourceFromSource(map, mapId, source, eventName, true);
 
         if (ds) {
@@ -96,8 +97,8 @@ export class DataSource {
             ds = source;
         }
         else {
-            const id = Helpers.getSourceId(source);
-            if (Helpers.isNotEmptyOrNull(id)) {
+            const id = MapHelpers.getSourceId(source);
+            if (JsHelpers.isNotEmptyOrNull(id)) {
                 const src = map.sources.getById(id!);
                 if (src instanceof atlas.source.DataSource) {
                     ds = src;
@@ -116,7 +117,7 @@ export class DataSource {
 
     public static getOptions(map: atlas.Map, source: any) {
         const eventName = "DataSource.getOptions";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
         const ds = this.getDataSourceFromSource(map, mapId, source, eventName, true);
 
         return ds?.getOptions();
@@ -124,7 +125,7 @@ export class DataSource {
 
     public static setOptions(map: atlas.Map, source: any, options: any, action: EditAction) {
         const eventName = "DataSource.getOptions";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
         const ds = this.getDataSourceFromSource(map, mapId, source, eventName, true);
 
         let updatedOptions = options;
@@ -133,7 +134,7 @@ export class DataSource {
             case EditAction.Replace:
                 break;
             case EditAction.Update:
-                updatedOptions = Helpers.removeNullish(updatedOptions);
+                updatedOptions = JsHelpers.removeNullish(updatedOptions);
                 break;
         }
 
@@ -144,7 +145,7 @@ export class DataSource {
 
     public static toJson(map: atlas.Map, source: any, filename: string) {
         const eventName = "DataSource.toJson";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
         const ds = this.getDataSourceFromSource(map, mapId, source, eventName, true);
         let link: any;
 
@@ -169,7 +170,7 @@ export class DataSource {
 
     public static toJsonString(map: atlas.Map, source: any) {
         const eventName = "DataSource.ToJsonString";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
         const ds = this.getDataSourceFromSource(map, mapId, source, eventName, true);
 
         if (ds)
@@ -178,13 +179,13 @@ export class DataSource {
 
     public static zoomToBBox(map: atlas.Map, source: any, padding?: any, shapeIDs?:string[]) {
         const eventName = "DataSource.ZoomToBBox";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
         const ds = this.getDataSourceFromSource(map, mapId, source, eventName, true);
 
         if (ds) {
             let shapes: atlas.Shape[] = [];
 
-            if (Helpers.hasElements(shapeIDs)) {
+            if (JsHelpers.hasElements(shapeIDs)) {
                 shapeIDs!.forEach((id) => {
                     const shape = ds.getShapeById(id);
                     if (shape)

@@ -1,18 +1,19 @@
 import * as atlas from "azure-maps-control"
 import { MapObjectReference } from "./common"
-import { Helpers } from "./common/Helpers";
+import { JsHelpers } from "./common/JsHelpers";
 import { Logger, LogLevel } from "./common/Logger";
+import { MapHelpers } from "./common/MapHelpers";
 
 export class Sources {
     public static add(map: atlas.Map, sources?: MapSource[], getReferences: boolean = false): MapObjectReference[] {
         const eventName = "Sources.add";
         const results: MapObjectReference[] = [];
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
 
-        if (Helpers.hasNoElements(sources))
+        if (JsHelpers.hasNoElements(sources))
             return results;
 
-        if (Helpers.hasDuplicates(sources, "id", true, true))
+        if (JsHelpers.hasDuplicates(sources, "id", true, true))
             return results; //Will never reach here if true.
 
         const existing = map.sources.getSources(); 
@@ -53,10 +54,10 @@ export class Sources {
 
     public static getReferences(map: atlas.Map, sources?: any[]): MapObjectReference[] {
         const results: MapObjectReference[] = [];
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
         const existing = map.sources.getSources();
 
-        if (Helpers.hasNoElements(sources)) {
+        if (JsHelpers.hasNoElements(sources)) {
             return results;
         }
 
@@ -69,7 +70,7 @@ export class Sources {
     }
 
     public static isSourceLoaded(map: atlas.Map, source: any) {
-        const id = Helpers.getSourceId(source);
+        const id = MapHelpers.getSourceId(source);
         map.sources.isSourceLoaded(id!);
     }
 
@@ -84,7 +85,7 @@ export class Sources {
 
     static #getReference(mapId: string, ds?: atlas.source.Source, id?: string) {
         const type = this.#getSourceType(ds);
-        return Helpers.createMapObjectReference(mapId, type, ds, id ?? ds?.getId());
+        return MapHelpers.createMapObjectReference(mapId, type, ds, id ?? ds?.getId());
     }
 
     static #getSourceType(ds?: atlas.source.Source | undefined): string {
@@ -110,12 +111,12 @@ export class Sources {
             item = source;
         }
         else {
-            const id = Helpers.getSourceId(source);
-            item = sources.findLast(item => Helpers.hasId(item, id));
+            const id = MapHelpers.getSourceId(source);
+            item = sources.findLast(item => JsHelpers.hasId(item, id));
         }
 
-        if (!item && Helpers.isNotEmptyOrNull(eventName)) {
-            const mapId = Helpers.getMapId(map);
+        if (!item && JsHelpers.isNotEmptyOrNull(eventName)) {
+            const mapId = MapHelpers.getMapId(map);
             Logger.logMessage(mapId, LogLevel.Warn, `${eventName}: instance not found.`, source);
         }
 

@@ -1,5 +1,6 @@
-import { EventInfo, Helpers as EventHelpers, MapEventTarget } from ".";
-import { Helpers } from "../common/Helpers";
+import { EventInfo, MapEventTarget } from ".";
+import { MapHelpers } from "../common/MapHelpers";
+import { EventHelpers } from "./EventHelpers";
 
 export class EventsMap {
     #eventsMap: Map<string, object> = new Map<string, object>();
@@ -43,19 +44,12 @@ export class EventsMap {
         return false;
     }
 
-    // removeCallbacksBySource(mapId: string, target: MapEventTarget, source: object) {
-    //     const callbacks = this.getCallbacksBySource(mapId, target, source);
-    //     for (const callbackInfo of callbacks) {
-    //         this.#eventsMap.delete(callbackInfo.eventId);
-    //     }
-    // }
-
     #getCallbackId(mapId: string, event: EventInfo) {
         return `${mapId}.${event.target}.${EventHelpers.getEventInfoSourceId(event)}.${event.type}`;
     }
 
     #getCallbackSourceId(mapId: string, target: MapEventTarget, source: any) {
-        return `${mapId}.${target}.${Helpers.getSourceId(source)}.`;
+        return `${mapId}.${target}.${MapHelpers.getSourceId(source)}.`;
     }
 
     clear() {

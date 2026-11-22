@@ -1,23 +1,25 @@
 import * as atlas from "azure-maps-control"
 import * as anims from "azure-maps-animations"
-import { Helpers } from "../common/Helpers";
+import { JsHelpers } from "../common/JsHelpers";
 import * as events from "."
 import { EventsMap } from "./EventsMap";
 import { Logger, LogLevel } from "../common/Logger";
+import { MapHelpers } from "../common/MapHelpers";
+import { EventHelpers } from "./EventHelpers";
 
 export class AnimationEvents {
     static readonly #eventsMap: EventsMap = new EventsMap();
 
     public static add(dotNetRef: any, map: atlas.Map, target: any, mapEvents: AnimationEventInfo[]) {
         const eventName = "AnimationEvents.add";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
 
         if (!target) {
             Logger.logMapMessage(mapId, LogLevel.Warn, `${eventName}: No target provided where mapId = '${mapId}'.`);
             return;
         }
 
-        if (Helpers.hasNoElements(mapEvents, `${eventName}: No events provided where mapId = '${mapId}'.`)) {
+        if (JsHelpers.hasNoElements(mapEvents, `${eventName}: No events provided where mapId = '${mapId}'.`)) {
             return;
         }
 
@@ -26,7 +28,7 @@ export class AnimationEvents {
             let callback: any;
             const type = me.type?.toLowerCase();
 
-            if (Helpers.isValueInEnum(AnimationEventGeneral, type)) {
+            if (JsHelpers.isValueInEnum(AnimationEventGeneral, type)) {
                 switch (type as AnimationEventGeneral) {
                     case AnimationEventGeneral.OnComplete:
                     case AnimationEventGeneral.OnProgress:
@@ -68,9 +70,9 @@ export class AnimationEvents {
 
     public static remove(map: atlas.Map, target: any, mapEvents: events.EventInfo[]) {
         const eventName = "AnimationEvents.remove";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
 
-        if (Helpers.hasNoElements(mapEvents, `${eventName}: No events provided where mapId = '${mapId}'.`)) {
+        if (JsHelpers.hasNoElements(mapEvents, `${eventName}: No events provided where mapId = '${mapId}'.`)) {
             return;
         }
 
@@ -118,7 +120,7 @@ export class AnimationEvents {
             animation: mapEvent.includeJsReference ? DotNet.createJSObjectReference(callback.animation) : undefined
         };
         const payload: AnimationEventPayload = { type: AnimationEventPayloadType.Playable, playable: eventPayload };
-        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
+        const args = EventHelpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 
@@ -148,7 +150,7 @@ export class AnimationEvents {
             animation: mapEvent.includeJsReference ? DotNet.createJSObjectReference(callback.animation) : undefined
         };
         const payload: AnimationEventPayload = { type: AnimationEventPayloadType.FrameBased, frameBased: eventPayload };
-        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
+        const args = EventHelpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 
@@ -187,7 +189,7 @@ export class AnimationEvents {
             speedInMph: sp != null ? Math.round(atlas.math.convertSpeed(sp, atlas.math.SpeedUnits.metersPerSecond, atlas.math.SpeedUnits.kilometersPerHour) * 100) / 100 : undefined,
         };
         const payload: AnimationEventPayload = { type: AnimationEventPayloadType.RoutePath, routePath: eventPayload };
-        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
+        const args = EventHelpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 

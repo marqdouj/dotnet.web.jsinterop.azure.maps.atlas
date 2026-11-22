@@ -1,15 +1,17 @@
 import * as atlas from "azure-maps-control"
-import { Helpers } from "../common/Helpers";
+import { JsHelpers } from "../common/JsHelpers";
 import * as events from "."
 import { EventsMap } from "./EventsMap";
 import { Logger, LogLevel } from "../common/Logger";
+import { MapHelpers } from "../common/MapHelpers";
+import { EventHelpers } from "./EventHelpers";
 
 export class LayerEvents {
     static readonly #eventsMap: EventsMap = new EventsMap();
 
     public static add(dotNetRef: any, map: atlas.Map, mapEvents?: events.EventInfo[]) {
         const eventName = "LayerEvents.add";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
         mapEvents ??= [];
 
         mapEvents.forEach((me) => {
@@ -18,16 +20,16 @@ export class LayerEvents {
             const target = this.#getTarget(map, me);
 
             if (target) {
-                if (Helpers.isValueInEnum(LayerEventGeneral, me.type)) {
+                if (JsHelpers.isValueInEnum(LayerEventGeneral, me.type)) {
                     callback = this.#getNotifyLayerEventGeneralCallback(dotNetRef, mapId, me);
                 }
-                else if (Helpers.isValueInEnum(LayerEventMouse, me.type)) {
+                else if (JsHelpers.isValueInEnum(LayerEventMouse, me.type)) {
                     callback = this.#getNotifyLayerEventMouseCallback(dotNetRef, mapId, me);
                 }
-                else if (Helpers.isValueInEnum(LayerEventTouch, me.type)) {
+                else if (JsHelpers.isValueInEnum(LayerEventTouch, me.type)) {
                     callback = this.#getNotifyLayerEventTouchCallback(dotNetRef, mapId, me);
                 }
-                else if (Helpers.isValueInEnum(LayerEventWheel, me.type)) {
+                else if (JsHelpers.isValueInEnum(LayerEventWheel, me.type)) {
                     callback = this.#getNotifyLayerEventWheelCallback(dotNetRef, mapId, me);
                 }
 
@@ -51,9 +53,9 @@ export class LayerEvents {
 
     public static remove(map: atlas.Map, mapEvents: events.EventInfo[]) {
         const eventName = "LayerEvents.remove";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
 
-        if (Helpers.hasNoElements(mapEvents))
+        if (JsHelpers.hasNoElements(mapEvents))
             return;
 
         mapEvents.forEach((me) => {
@@ -78,9 +80,9 @@ export class LayerEvents {
 
     public static removeByLayer(map: atlas.Map, layers: any[]) {
         const eventName = "LayerEvents.removeBySource";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
 
-        if (Helpers.hasNoElements(layers))
+        if (JsHelpers.hasNoElements(layers))
             return;
 
         layers.forEach((source) => {
@@ -136,7 +138,7 @@ export class LayerEvents {
 
     static #notifyLayerEventGeneral = (callback: atlas.layer.Layer, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
         const payload = { layer: { id: callback.getId() } };
-        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
+        const args = EventHelpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 
@@ -162,8 +164,8 @@ export class LayerEvents {
         if (mapEvent.preventDefault)
             callback.preventDefault();
 
-        const payload = events.Helpers.buildMouseEventPayload(callback);
-        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
+        const payload = EventHelpers.buildMouseEventPayload(callback);
+        const args = EventHelpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 
@@ -188,8 +190,8 @@ export class LayerEvents {
     static #notifyLayerEventTouch = (callback: atlas.MapTouchEvent, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
         if (mapEvent.preventDefault)
             callback.preventDefault();
-        const payload = events.Helpers.buildTouchEventPayload(callback);
-        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
+        const payload = EventHelpers.buildTouchEventPayload(callback);
+        const args = EventHelpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 
@@ -214,8 +216,8 @@ export class LayerEvents {
     static #notifyLayerEventWheel = (callback: atlas.MapMouseWheelEvent, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
         if (mapEvent.preventDefault)
             callback.preventDefault();
-        const payload = events.Helpers.buildWheelEventPayload(callback);
-        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
+        const payload = EventHelpers.buildWheelEventPayload(callback);
+        const args = EventHelpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 

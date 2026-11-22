@@ -1,5 +1,46 @@
-export function addControls(azmap, controls) {
-    removeControls(azmap, controls); //We don't want duplicates
+export function hasAtlasGlobal(throwIfNotFound) {
+    if (window.marqdoujAtlasGlobal) {
+        return true;
+    }
+
+    if (throwIfNotFound)
+        throw new Error("'window.marqdoujAtlasGlobal' was not found.");
+
+    return false;
+}
+
+export function addControls(azmap, controls, useGlobalScript) {
+    if (useGlobalScript && hasAtlasGlobal(true)) {
+        if (hasAtlasGlobal(true)) {
+            addControlsGlobal(azmap, controls);
+        }
+    }
+    else {
+        addControlsCustom(azmap, controls);
+    }
+}
+
+export function removeControls(azmap, controls, useGlobalScript) {
+    if (useGlobalScript && hasAtlasGlobal(true)) {
+        if (hasAtlasGlobal(true)) {
+            removeControlsGlobal(azmap, controls);
+        }
+    }
+    else {
+        removeControlsCustom(azmap, controls);
+    }
+}
+
+function addControlsGlobal(azmap, controls) {
+    console.info("addControlsGlobal: adding controls using the global script.");
+    removeControlsGlobal(azmap, controls); //We don't want duplicates
+
+    window.marqdoujAtlasGlobal.Controls.add(azmap, controls);
+}
+
+function addControlsCustom(azmap, controls) {
+    console.info("addControlsCustom: adding controls using custom JS Interop.");
+    removeControlsCustom(azmap, controls); //We don't want duplicates
 
     controls.forEach((mc) => {
         let newControl;
@@ -39,7 +80,13 @@ export function addControls(azmap, controls) {
     });
 }
 
-export function removeControls(azmap, controls) {
+function removeControlsGlobal(azmap, controls) {
+    console.info("removeControlsGlobal: removing controls using the global script.");
+    window.marqdoujAtlasGlobal.Controls.remove(azmap, controls, false);
+}
+
+function removeControlsCustom(azmap, controls) {
+    console.info("removeControlsCustom: removing controls using custom JS Interop.");
     const existing = azmap.controls.getControls();
 
     controls.forEach((mc) => {

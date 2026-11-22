@@ -1,22 +1,23 @@
 import * as atlas from "azure-maps-control"
-import { Helpers } from "./common/Helpers";
+import { JsHelpers } from "./common/JsHelpers";
 import { MapObjectReference } from "./common";
 import { DataSource } from "./DataSource";
 import { Logger, LogLevel } from "./common/Logger";
+import { MapHelpers } from "./common/MapHelpers";
 
 export class Features {
     public static add(map: atlas.Map, source: any, features: any[], replace: boolean = false, getReferences: boolean = false): MapObjectReference[] {
         const eventName = "Features.add";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
         const results: MapObjectReference[] = [];
         const ds = DataSource.getDataSourceFromSource(map, mapId, source, eventName, true);
 
         if (ds) {
             features.forEach((mf) => {
-                const id = Helpers.getSourceId(mf);
+                const id = MapHelpers.getSourceId(mf);
                 let item: any;
 
-                if (Helpers.isNotEmptyOrNull(id)) {
+                if (JsHelpers.isNotEmptyOrNull(id)) {
                     item = ds.getShapeById(id!);
                     if (replace) {
                         ds.removeById(id as any);
@@ -27,7 +28,7 @@ export class Features {
                     let shape = new atlas.Shape(mf);
                     ds.add(shape);
                     if (getReferences)
-                        results.push(Helpers.createMapObjectReference(mapId, "Feature", shape, shape.getId().toString()));
+                        results.push(MapHelpers.createMapObjectReference(mapId, "Feature", shape, shape.getId().toString()));
                 }
                 else {
                     Logger.logMapMessage(mapId, LogLevel.Warn, `${eventName}: Feature already exists where id = '${id}'.`);
@@ -40,7 +41,7 @@ export class Features {
 
     public static setProperties(map: atlas.Map, source: any, shapeId: string, properties: any) {
         const eventName = "Features.setProperties";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
         const shape = DataSource.getShapeById(map, source, shapeId, false);
 
         if (shape instanceof atlas.Shape) {

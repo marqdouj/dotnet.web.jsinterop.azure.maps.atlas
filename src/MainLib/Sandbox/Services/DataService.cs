@@ -52,11 +52,14 @@ namespace Sandbox.Services
             switch (url)
             {
                 case SpatialGetReadUrl.Choropleth3D:
-                    return "examples/Choropleth3D.xml";
+                    //return "examples/Choropleth3D.xml";
+                    return DataService.rawUrls.Data.Kml.InternetUsers2005Choropleth3D;
                 case SpatialGetReadUrl.SampleGeoRSS:
-                    return "examples/SampleGeoRSS.xml";
+                    //return "examples/SampleGeoRSS.xml";
+                    return DataService.rawUrls.Data.GeoRSS.SampleGeoRSS;
                 case SpatialGetReadUrl.Route66Attractions:
-                    return "examples/Route66Attractions.xml";
+                    //return "examples/Route66Attractions.xml";
+                    return DataService.rawUrls.Data.Gpx.Route66Attractions;
                 default:
                     throw new NotSupportedException();
             }
@@ -68,6 +71,8 @@ namespace Sandbox.Services
     /// </summary>
     internal class DataService : IMapDataService
     {
+        internal static readonly SDKRawUrls rawUrls = new();
+
         public IMapDataExamples Examples { get; } = new MapDataExamples();
 
         public async Task<List<AcmePipelineInfo>> GetAcmePipelines()
@@ -219,7 +224,7 @@ namespace Sandbox.Services
 
     public class ImageLayerData()
     {
-        public string Url { get; } = "img/newark_nj_1922.jpg";
+        public string Url { get; } = DataService.rawUrls.Images.Overlays.Newark_NJ_1922; //"img/newark_nj_1922.jpg";
 
         public ImageCoordinates Coordinates { get; set; } = new ImageCoordinates(
             new Position(-74.22655, 40.773941),

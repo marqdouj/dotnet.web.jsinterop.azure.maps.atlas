@@ -1,17 +1,18 @@
 import * as atlas from "azure-maps-control"
-import { Helpers } from "./common/Helpers";
+import { JsHelpers } from "./common/JsHelpers";
 import { Logger, LogLevel } from "./common/Logger";
+import { MapHelpers } from "./common/MapHelpers";
 
 export class ImageSprite {
     public static async createFromTemplate(map: atlas.Map, templateDef: ImageTemplateDef, removeExisting: boolean = false): Promise<boolean> {
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
 
-        if (Helpers.isEmptyOrNull(templateDef.id)) {
+        if (JsHelpers.isEmptyOrNull(templateDef.id)) {
             Logger.logMessage(mapId, LogLevel.Error, "ImageTemplateDef.id is null or empty.", templateDef);
             return false;
         }
 
-        if (Helpers.isEmptyOrNull(templateDef.templateName)) {
+        if (JsHelpers.isEmptyOrNull(templateDef.templateName)) {
             Logger.logMessage(mapId, LogLevel.Error, "ImageTemplateDef.templateName is null or empty.", templateDef);
             return false;
         }
@@ -39,10 +40,10 @@ export class ImageSprite {
             this.remove(map, id);
         }
         else if (this.hasImage(map, id)) {
-            Logger.logMessage(Helpers.getMapId(map), LogLevel.Error, `ImageSprint.add: template already exists where id = '${id}'.`);
+            Logger.logMessage(MapHelpers.getMapId(map), LogLevel.Error, `ImageSprint.add: template already exists where id = '${id}'.`);
         }
 
-        meta = Helpers.nullToUndefined(meta);
+        meta = JsHelpers.nullToUndefined(meta);
         await map.imageSprite.add(id, icon, meta);
     }
 
