@@ -1,17 +1,18 @@
 import * as atlas from "azure-maps-control"
 import * as anims from "azure-maps-animations"
 import * as spatial from "azure-maps-spatial-io"
-import { Helpers } from "../common/Helpers";
+import { JsHelpers } from "../common/JsHelpers";
 import { Sources } from "../Sources";
 import { Logger, LogLevel } from "../common/Logger";
 import { AnimationEventInfo, AnimationEvents } from "../events/AnimationEvents";
 import { JsError } from "../common";
 import { Animations } from "../Animations";
+import { MapHelpers } from "../common/MapHelpers";
 
 export class SpatialIO {
     public static async loadGPSTraceRoute(dotNetRef: any, map: atlas.Map, routeParams: GPSTraceRouteParameters): Promise<GPSTraceRouteResult> {
         const eventName = "SpatialIO.read";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
         const result: GPSTraceRouteResult = {};
 
         try {
@@ -72,7 +73,7 @@ export class SpatialIO {
 
     public static async read(map: atlas.Map, datasource: any, spatialData: any, options?: ReadOptions, dsReadAction: string = "add", zoomToBBox: boolean = true, padding: number | atlas.Padding = 50) : Promise<void> {
         const eventName = "SpatialIO.read";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
 
         const ds = Sources.getSourceInstance(map, datasource) as atlas.source.DataSource;
         if (!ds) {
@@ -85,7 +86,7 @@ export class SpatialIO {
         await spatial.io.read(spatialData, readOptions).then(r => {
             if (r) {
                 //Add the feature data to the data source.
-                const dsAction = Helpers.switchCaseInsensitive(dsReadAction, {
+                const dsAction = JsHelpers.switchCaseInsensitive(dsReadAction, {
                     add: () => DsReadAction.Add,
                     setshapes: () => DsReadAction.SetShapes,
                 }, () => "");
@@ -113,7 +114,7 @@ export class SpatialIO {
     }
 
     static #buildReadOptions(options?: any) {
-        const readOptions = Helpers.removeNullish(options);
+        const readOptions = JsHelpers.removeNullish(options);
         const combinedOptions: spatial.SpatialDataReadOptions = {
             ...readOptions?.baseSpatialDataReadOptions,
             ...readOptions?.baseSpatialXmlReadOptions,

@@ -1,16 +1,17 @@
 import atlas from "azure-maps-control";
-import { Helpers } from "./common/Helpers";
+import { JsHelpers } from "./common/JsHelpers";
 import { Logger, LogLevel } from "./common/Logger";
 import { MapObjectReference } from "./common";
 import { MapEventTarget } from "./events";
+import { MapHelpers } from "./common/MapHelpers";
 
 export class Popups {
     public static add(map: atlas.Map, sources: PopupInfo[], getReferences: boolean = false): MapObjectReference[] {
         const eventName = "Popups.add";
         const results: MapObjectReference[] = [];
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
 
-        if (Helpers.hasNoElements(sources))
+        if (JsHelpers.hasNoElements(sources))
             return results;
 
         const popups = map.popups.getPopups();
@@ -24,7 +25,7 @@ export class Popups {
 
                 map.popups.add(popup);
                 if (getReferences)
-                    results.push(Helpers.createMapObjectReference(mapId, MapEventTarget.Popup, popup, info.id));
+                    results.push(MapHelpers.createMapObjectReference(mapId, MapEventTarget.Popup, popup, info.id));
             }
             else {
                 Logger.logMapMessage(mapId, LogLevel.Warn, `${eventName}: Popup already exists.`, info);
@@ -35,17 +36,17 @@ export class Popups {
     }
 
     public static getReferences(map: atlas.Map, sources: PopupInfo[]): MapObjectReference[] {
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
         const results: MapObjectReference[] = [];
 
-        if (Helpers.hasNoElements(sources))
+        if (JsHelpers.hasNoElements(sources))
             return results;
 
         const popups = map.popups.getPopups();
 
         sources.forEach(info => {
             const popup = this.#getInstance(map, info.id, popups);
-            const dnr = Helpers.createMapObjectReference(mapId, MapEventTarget.Popup, popup, info.id);
+            const dnr = MapHelpers.createMapObjectReference(mapId, MapEventTarget.Popup, popup, info.id);
             results.push(dnr);
         });
 
@@ -58,7 +59,7 @@ export class Popups {
     }
 
     public static remove(map: atlas.Map, sources: any[]): void {
-        if (Helpers.hasNoElements(sources))
+        if (JsHelpers.hasNoElements(sources))
             return;
 
         const popups = map.popups.getPopups();
@@ -72,7 +73,7 @@ export class Popups {
     }
 
     static show(map: atlas.Map, sources: any[], open: boolean) {
-        if (Helpers.hasNoElements(sources))
+        if (JsHelpers.hasNoElements(sources))
             return;
 
         const popups = map.popups.getPopups();
@@ -91,7 +92,7 @@ export class Popups {
 
     // #region Hover Popup
     public static addHoverPopup(map: atlas.Map, layerId: string, info: PopupInfo, placeholders: string[], getReference: boolean = false) {
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
         const lyr = map.layers.getLayerById(layerId);
 
         if (!lyr) {
@@ -122,7 +123,7 @@ export class Popups {
         map.events.add('touchstart', lyr, (e: atlas.MapTouchEvent) => this.#symbolHovered(e, mapId, info, popup, placeholders));
 
         if (getReference) {
-            return Helpers.createMapObjectReference(mapId, MapEventTarget.Popup, popup, info.id);
+            return MapHelpers.createMapObjectReference(mapId, MapEventTarget.Popup, popup, info.id);
         }
     }
 
@@ -146,21 +147,21 @@ export class Popups {
             let content = info.options.content as string ?? "";
             let canShow = false;
 
-            if (Helpers.isEmptyOrNull(content)) {
+            if (JsHelpers.isEmptyOrNull(content)) {
                 const tooltipText = properties.tooltip ?? properties.description;
-                if (Helpers.isNotEmptyOrNull(tooltipText)) {
+                if (JsHelpers.isNotEmptyOrNull(tooltipText)) {
                     content = `<div style="padding:5px;border-radius:6px;background-color:black;color:white">${tooltipText}</div>`;
                     canShow = true;
                 }
             }
             else {
                 let updated = content;
-                if (Helpers.hasStringIndexSignature(properties)) {
+                if (JsHelpers.hasStringIndexSignature(properties)) {
                     placeholders.forEach((key) => {
                         const name = `{${key}}`;
                         if (updated.includes(name)) {
                             const value = properties[key];
-                            if (Helpers.isNotEmptyOrNull(value))
+                            if (JsHelpers.isNotEmptyOrNull(value))
                                 canShow = true;
                             updated = updated.replace(name, value ?? "");
                         }
@@ -206,13 +207,13 @@ export class Popups {
             popup = source;
         }
         else {
-            const id = Helpers.getSourceId(source);
+            const id = MapHelpers.getSourceId(source);
             popups ??= map.popups.getPopups();
-            popup = popups.findLast(item => Helpers.hasId(item, id));
+            popup = popups.findLast(item => JsHelpers.hasId(item, id));
         }
 
         if (!popup && logIfNotFound) {
-            const mapId = Helpers.getMapId(map);
+            const mapId = MapHelpers.getMapId(map);
             Logger.logMessage(mapId, LogLevel.Warn, `${eventName}: Popup not found.`, source);
         }
 

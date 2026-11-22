@@ -1,10 +1,10 @@
 import atlas from "azure-maps-control";
 import { MarkerEvents } from "../atlas";
-import { Helpers } from "./common/Helpers";
+import { JsHelpers } from "./common/JsHelpers";
 
 export class Markers {
     public static add(map: atlas.Map, markers?: HtmlMarker[]): void {
-        if (Helpers.hasNoElements(markers))
+        if (JsHelpers.hasNoElements(markers))
             return;
 
         markers!.forEach(markerDef => {
@@ -26,7 +26,7 @@ export class Markers {
     }
 
     public static remove(map: atlas.Map, markers: HtmlMarker[]): void {
-        if (Helpers.hasNoElements(markers))
+        if (JsHelpers.hasNoElements(markers))
             return;
 
         const sourceIds = markers.map(e => e.id);
@@ -53,7 +53,7 @@ export class Markers {
             return;
 
         const markers = map.markers.getMarkers();
-        const marker = markers.findLast(value => Helpers.hasId(value, id));
+        const marker = markers.findLast(value => JsHelpers.hasId(value, id));
 
         return marker;
     }

@@ -1,8 +1,6 @@
-import * as atlas from "azure-maps-control"
 import { Logger, LogLevel } from "./Logger";
-import { MapObjectReference } from ".";
 
-export class Helpers {
+export class JsHelpers {
     static hasProperty(obj: any, key: string): boolean {
         return key in obj;
     }
@@ -50,14 +48,6 @@ export class Helpers {
         return typeof obj === "object" && obj !== null;
     }
 
-    static createMapObjectReference(mapId: string, type: string, item?: object, id?: string | undefined): MapObjectReference {
-        const dnr = !item ? null : DotNet.createJSObjectReference(item);
-        id ??= Helpers.getSourceId(item);
-        const msf: MapObjectReference = { mapId: mapId, id: id, type: type, jsReference: dnr };
-
-        return msf;
-    }
-
     static hasElements(items?: any[]): boolean {
         if (!items)
             return false;
@@ -67,39 +57,10 @@ export class Helpers {
 
     static hasNoElements(items?: any[], logMessage?: string): boolean {
         const result = !this.hasElements(items);
-        if (result && Helpers.isNotEmptyOrNull(logMessage)) {
+        if (result && JsHelpers.isNotEmptyOrNull(logMessage)) {
             Logger.logMessage("Checking for elements", LogLevel.Warn, logMessage!, items);
         }
         return result;
-    }
-
-    static getSourceId(source: any) {
-        let id: string | undefined;
-
-        if (source) {
-            if (typeof source === 'string') {
-                id = source;
-            }
-            else if (source instanceof Object) {
-                if (source.id) {
-                    id = source.id;
-                }
-                else if (source.getId) {
-                    id = source.getId();
-                }
-            }
-        }
-
-        return id;
-    }
-
-    static getMapId(map: atlas.Map) {
-        const div = map.getMapContainer();
-        if (!div) {
-            Logger.logMapMessage("mapId:?", LogLevel.Error, "Helpers.getMapId: map.getMapContainer() returned null.");
-            return "mapId:#ERROR#";
-        }
-        return div.id;
     }
 
     //Extract a specific number of elements from an array.

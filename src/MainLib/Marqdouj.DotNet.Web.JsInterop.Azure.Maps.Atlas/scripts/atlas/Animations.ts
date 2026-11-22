@@ -1,10 +1,11 @@
 import * as atlas from "azure-maps-control"
 import * as anims from "azure-maps-animations"
 import { MapObjectReference } from "./common";
-import { Helpers } from "./common/Helpers";
+import { JsHelpers } from "./common/JsHelpers";
 import { DataSource } from "../atlas";
 import { Logger, LogLevel } from "./common/Logger";
 import { AnimationEventInfo, AnimationEvents } from "./events/AnimationEvents";
+import { MapHelpers } from "./common/MapHelpers";
 
 export class Animations {
     public static doAction(animation: any, action: string, returnsValue: boolean = false) {
@@ -27,11 +28,11 @@ export class Animations {
 
     public static setCoordinates(map: atlas.Map, source: any, shapeId: string, newCoordinates: any, options?: any, getReference: boolean = false): MapObjectReference | undefined {
         const eventName = "Animations.setCoordinates";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
         const shape = DataSource.getShapeById(map, source, shapeId, false);
         if (shape instanceof atlas.Shape) {
             const result = anims.animations.setCoordinates(shape as any, newCoordinates, options);
-            return getReference ? Helpers.createMapObjectReference(mapId, "PlayableAnimation", result, "") : undefined;
+            return getReference ? MapHelpers.createMapObjectReference(mapId, "PlayableAnimation", result, "") : undefined;
         }
         else {
             Logger.logMapMessage(mapId, LogLevel.Error, `${eventName}: shape not found where id = '${shapeId}'`, source);
@@ -46,7 +47,7 @@ export class Animations {
     public static moveAlongRoute(dotNetRef: any, map: atlas.Map, route: any, shape?: any, options?: any, mapEvents?: AnimationEventInfo[]) {
         const animation = anims.animations.moveAlongRoute(route, shape, options);
 
-        if (Helpers.hasElements(mapEvents))
+        if (JsHelpers.hasElements(mapEvents))
             AnimationEvents.add(dotNetRef, map, animation, mapEvents!);
 
         return animation;

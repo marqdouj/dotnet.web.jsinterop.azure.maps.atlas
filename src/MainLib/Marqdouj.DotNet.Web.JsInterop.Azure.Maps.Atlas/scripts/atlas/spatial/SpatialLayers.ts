@@ -1,25 +1,26 @@
 import * as atlas from "azure-maps-control"
 import * as spatial from "azure-maps-spatial-io"
-import { Helpers } from "../common/Helpers";
+import { JsHelpers } from "../common/JsHelpers";
 import { Logger, LogLevel } from "../common/Logger";
 import { Sources } from "../Sources";
 import { MapObjectReference } from "../common";
 import { Layers } from "../Layers";
+import { MapHelpers } from "../common/MapHelpers";
 
 export class SpatialLayers {
     public static add(map: atlas.Map, layers: SpatialLayer[], getReferences: boolean = false) {
         const eventName = "SpatialLayers.add";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
         const results: MapObjectReference[] = [];
 
-        if (Helpers.hasNoElements(layers, `${eventName}: 'layers' has no elements where mapId = '${mapId}'.`))
+        if (JsHelpers.hasNoElements(layers, `${eventName}: 'layers' has no elements where mapId = '${mapId}'.`))
             return;
 
         layers.forEach((sl) => {
-            const id = Helpers.getSourceId(sl);
+            const id = MapHelpers.getSourceId(sl);
             let lyr: any;
 
-            if (Helpers.isEmptyOrNull(id)) {
+            if (JsHelpers.isEmptyOrNull(id)) {
                 Logger.logMapMessage(mapId, LogLevel.Error, `${eventName}: Unable to resolve layer id.`, sl);
                 return; //continue
             }

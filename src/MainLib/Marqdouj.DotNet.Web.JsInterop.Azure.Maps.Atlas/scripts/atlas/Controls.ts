@@ -1,15 +1,16 @@
 import * as atlas from "azure-maps-control"
 import { MapObjectReference } from "./common"
-import { Helpers } from "./common/Helpers";
+import { JsHelpers } from "./common/JsHelpers";
 import { Logger, LogLevel } from "./common/Logger";
+import { MapHelpers } from "./common/MapHelpers";
 
 export class Controls {
     public static add(map: atlas.Map, mapControls?: MapControl[], getReferences: boolean = false): MapObjectReference[] {
         const eventName = "Controls.add";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
         const results: MapObjectReference[] = [];
         
-        if (Helpers.hasNoElements(mapControls))
+        if (JsHelpers.hasNoElements(mapControls))
             return results;
 
         const controls = map.controls.getControls();
@@ -54,7 +55,7 @@ export class Controls {
                 (newControl as any).id = mc.id;
                 map.controls.add(newControl, mc.controlOptions);
                 if (getReferences)
-                    results.push(Helpers.createMapObjectReference(mapId, mc.type, newControl, mc.id));
+                    results.push(MapHelpers.createMapObjectReference(mapId, mc.type, newControl, mc.id));
             }
             else {
                 Logger.logMapMessage(mapId, LogLevel.Warn, `${eventName}: Control type not supported - '${mc.type}'.`);
@@ -67,10 +68,10 @@ export class Controls {
     public static remove(map: atlas.Map, mapControls: MapControl[]) {
         const eventName = "Controls.remove";
 
-        if (Helpers.hasNoElements(mapControls))
+        if (JsHelpers.hasNoElements(mapControls))
             return;
 
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
         const controls = map.controls.getControls();
 
         mapControls.forEach((mc) => {
@@ -88,14 +89,14 @@ export class Controls {
     public static getReferences(map: atlas.Map, mapControls: MapControl[]) {
         const eventName = "Controls.getReferences";
         const results: MapObjectReference[] = [];
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
         const controls = map.controls.getControls();
 
         mapControls.forEach((mc) => {
             let control = this.#getItemFromSource(map, mc, controls);
 
             if (control) {
-                results.push(Helpers.createMapObjectReference(mapId, mc.type, control, mc.id));
+                results.push(MapHelpers.createMapObjectReference(mapId, mc.type, control, mc.id));
             }
             else {
                 Logger.logMapMessage(mapId, LogLevel.Warn, `${eventName}: Control does not exists where id = '${mc.id}'.`);
@@ -114,13 +115,13 @@ export class Controls {
             item = source;
         }
         else {
-            const id = Helpers.getSourceId(source);
+            const id = MapHelpers.getSourceId(source);
             items ??= map.controls.getControls();
-            item = items.findLast(item => Helpers.hasId(item, id));
+            item = items.findLast(item => JsHelpers.hasId(item, id));
         }
 
         if (!item && logNotFound) {
-            const mapId = Helpers.getMapId(map);
+            const mapId = MapHelpers.getMapId(map);
             Logger.logMessage(mapId, LogLevel.Warn, `${eventName}: Control not found.`, source);
         }
 

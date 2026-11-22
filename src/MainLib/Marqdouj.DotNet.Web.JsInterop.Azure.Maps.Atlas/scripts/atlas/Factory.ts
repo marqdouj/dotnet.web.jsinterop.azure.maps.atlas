@@ -1,5 +1,5 @@
 import * as atlas from "azure-maps-control"
-import { Helpers } from "./common/Helpers"
+import { JsHelpers } from "./common/JsHelpers"
 import { Controls, MapControl } from "./Controls"
 import { Logger, LogLevel } from "./common/Logger"
 import * as common from "./common";
@@ -18,10 +18,10 @@ export class Factory {
     public static createMap(dotNetRef: any, mapId: string, config: MapConfiguration, mapControls?: MapControl[], mapEvents?: events.EventInfo[]) {
         const eventNames: CreateMapEventNames = (config as any).eventNames as CreateMapEventNames ?? {};
 
-        if (Helpers.isEmptyOrNull(eventNames.error)) {
+        if (JsHelpers.isEmptyOrNull(eventNames.error)) {
             eventNames.error = events.MapEventNotify.NotifyMapEvent;
         }
-        if (Helpers.isEmptyOrNull(eventNames.ready)) {
+        if (JsHelpers.isEmptyOrNull(eventNames.ready)) {
             eventNames.ready = events.MapEventNotify.NotifyMapEvent;
         }
 
@@ -53,8 +53,8 @@ export class Factory {
     static #buildOptions(config: MapConfiguration): CreateMapOptions {
         let options: CreateMapOptions = {};
 
-        const mapOptions = Helpers.nullToUndefined(config.mapOptions);
-        const authOptions = Helpers.nullToUndefined(config.authOptions);
+        const mapOptions = JsHelpers.nullToUndefined(config.mapOptions);
+        const authOptions = JsHelpers.nullToUndefined(config.authOptions);
 
         if (mapOptions) {
             //Camera and CameraBounds are mutually exclusive
@@ -80,7 +80,7 @@ export class Factory {
         const sasTokenUrl = (authOptions as any).sasTokenUrl;
         const tokenInfo: TokenInfo = (authOptions as any).tokenInfo;
 
-        if (Helpers.isNotEmptyOrNull(sasTokenUrl)) {
+        if (JsHelpers.isNotEmptyOrNull(sasTokenUrl)) {
             authOptions.getToken = function (resolve) {
                 fetch(sasTokenUrl).then(r => r.text()).then(token => resolve(token));
             }
@@ -98,7 +98,7 @@ export class Factory {
         }
 
         options.authOptions = authOptions;
-        return Helpers.removeNullish(options);
+        return JsHelpers.removeNullish(options);
     }
 }
 

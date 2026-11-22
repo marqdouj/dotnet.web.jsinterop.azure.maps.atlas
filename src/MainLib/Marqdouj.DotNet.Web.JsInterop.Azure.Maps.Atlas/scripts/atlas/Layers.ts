@@ -1,15 +1,16 @@
 import * as atlas from "azure-maps-control"
 import { MapObjectReference } from "./common"
-import { Helpers } from "./common/Helpers";
+import { JsHelpers } from "./common/JsHelpers";
 import { LayerEvents } from "../atlas";
 import { Logger, LogLevel } from "./common/Logger";
+import { MapHelpers } from "./common/MapHelpers";
 
 export class Layers {
     public static add(map: atlas.Map, mapLayers: MapLayer[], getReferences: boolean = false) {
         const results: MapObjectReference[] = [];
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
 
-        if (Helpers.hasNoElements(mapLayers))
+        if (JsHelpers.hasNoElements(mapLayers))
             return;
 
         mapLayers.forEach((ml) => {
@@ -75,7 +76,7 @@ export class Layers {
 
     static #getLayersAll(map: atlas.Map) {
         const results: MapObjectReference[] = [];
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
         const layers = map.layers.getLayers();
 
         layers.forEach((lyr) => {
@@ -87,9 +88,9 @@ export class Layers {
 
     static #getLayersById(map: atlas.Map, ids: string[]) {
         const results: MapObjectReference[] = [];
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
 
-        if (Helpers.hasNoElements(ids))
+        if (JsHelpers.hasNoElements(ids))
             return;
 
         ids.forEach((id) => {
@@ -100,18 +101,18 @@ export class Layers {
     }
 
     public static getLayer(map: atlas.Map, source: any) : atlas.layer.Layer | undefined {
-        const id = Helpers.getSourceId(source);
+        const id = MapHelpers.getSourceId(source);
         const layer = map.layers.getLayerById(id!);
 
         if (!layer) {
-            Logger.logMapMessage(Helpers.getMapId(map), LogLevel.Warn, `Layer not found where id = '${id}'.`);
+            Logger.logMapMessage(MapHelpers.getMapId(map), LogLevel.Warn, `Layer not found where id = '${id}'.`);
         }
 
         return layer;
     }
 
     public static move(map: atlas.Map, source: any, before?: string): void {
-        const id = Helpers.getSourceId(source)!;
+        const id = MapHelpers.getSourceId(source)!;
         map.layers.move(id, before);
     }
 
@@ -148,7 +149,7 @@ export class Layers {
         if (!iconOptions) return result;
 
         const imageId = iconOptions.imageId;
-        if (Helpers.isNotEmptyOrNull(imageId)) {
+        if (JsHelpers.isNotEmptyOrNull(imageId)) {
             iconOptions.image = imageId;
         }
 
@@ -162,7 +163,7 @@ export class Layers {
 
     public static getReference(mapId: string, layer?: atlas.layer.Layer, layerId?: string | undefined) {
         const type = this.#getLayerType(layer);
-        return Helpers.createMapObjectReference(mapId, type, layer, layerId);
+        return MapHelpers.createMapObjectReference(mapId, type, layer, layerId);
     }
 
     static #getLayerType(layer: atlas.layer.Layer | undefined): string {

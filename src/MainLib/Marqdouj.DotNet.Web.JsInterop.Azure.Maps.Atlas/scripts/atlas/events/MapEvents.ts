@@ -1,17 +1,19 @@
 import * as atlas from "azure-maps-control"
-import { Helpers } from "../common/Helpers";
+import { JsHelpers } from "../common/JsHelpers";
 import * as events from "."
 import { EventsMap } from "./EventsMap";
 import { Logger, LogLevel } from "../common/Logger";
+import { MapHelpers } from "../common/MapHelpers";
+import { EventHelpers } from "./EventHelpers";
 
 export class MapEvents {
     static readonly #eventsMap: EventsMap = new EventsMap ();
 
     public static add(dotNetRef: any, map: atlas.Map, mapEvents?: events.EventInfo[]) {
         const eventName = "MapEvents.add";
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
 
-        if (Helpers.hasNoElements(mapEvents))
+        if (JsHelpers.hasNoElements(mapEvents))
             return;
 
         mapEvents!.forEach((me) => {
@@ -19,31 +21,31 @@ export class MapEvents {
             let callback: any;
 
             //General/Mouse are most common so check for them first.
-            if (Helpers.isValueInEnum(MapEventGeneral, me.type)) {
+            if (JsHelpers.isValueInEnum(MapEventGeneral, me.type)) {
                 callback = this.#getNotifyMapEventGeneralCallback(dotNetRef, mapId, me);
             }
-            else if (Helpers.isValueInEnum(MapEventMouse, me.type)) {
+            else if (JsHelpers.isValueInEnum(MapEventMouse, me.type)) {
                 callback = this.#getNotifyMapEventMouseCallback(dotNetRef, mapId, me);
             }
-            else if (Helpers.isValueInEnum(MapEventConfig, me.type)) {
+            else if (JsHelpers.isValueInEnum(MapEventConfig, me.type)) {
                 callback = this.#getNotifyMapEventConfigCallback(dotNetRef, mapId, me);
             }
-            else if (Helpers.isValueInEnum(MapEventData, me.type)) {
+            else if (JsHelpers.isValueInEnum(MapEventData, me.type)) {
                 callback = this.#getNotifyMapEventDataCallback(dotNetRef, mapId, me);
             }
-            else if (Helpers.isValueInEnum(MapEventLayer, me.type)) {
+            else if (JsHelpers.isValueInEnum(MapEventLayer, me.type)) {
                 callback = this.#getNotifyMapEventLayerCallback(dotNetRef, mapId, me);
             }
-            else if (Helpers.isValueInEnum(MapEventSource, me.type)) {
+            else if (JsHelpers.isValueInEnum(MapEventSource, me.type)) {
                 callback = this.#getNotifyMapEventSourceCallback(dotNetRef, mapId, me);
             }
-            else if (Helpers.isValueInEnum(MapEventStyle, me.type)) {
+            else if (JsHelpers.isValueInEnum(MapEventStyle, me.type)) {
                 callback = this.#getNotifyMapEventStyleCallback(dotNetRef, mapId, me);
             }
-            else if (Helpers.isValueInEnum(MapEventTouch, me.type)) {
+            else if (JsHelpers.isValueInEnum(MapEventTouch, me.type)) {
                 callback = this.#getNotifyMapEventTouchCallback(dotNetRef, mapId, me);
             }
-            else if (Helpers.isValueInEnum(MapEventWheel, me.type)) {
+            else if (JsHelpers.isValueInEnum(MapEventWheel, me.type)) {
                 callback = this.#getNotifyMapEventWheelCallback(dotNetRef, mapId, me);
             }
 
@@ -62,9 +64,9 @@ export class MapEvents {
     }
 
     public static remove(map: atlas.Map, mapEvents: events.EventInfo[]) {
-        const mapId = Helpers.getMapId(map);
+        const mapId = MapHelpers.getMapId(map);
 
-        if (Helpers.hasNoElements(mapEvents))
+        if (JsHelpers.hasNoElements(mapEvents))
             return;
 
         mapEvents.forEach((me) => {
@@ -95,7 +97,7 @@ export class MapEvents {
 
     static #notifyMapEventConfig = (callback: atlas.MapConfiguration, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
         const payload = { config: { ...callback } };
-        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
+        const args = EventHelpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 
@@ -119,7 +121,7 @@ export class MapEvents {
 
     static #notifyMapEventData = (callback: atlas.MapDataEvent, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
         const payload = this.#buildMapDataEventPayload(callback);
-        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
+        const args = EventHelpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 
@@ -155,7 +157,7 @@ export class MapEvents {
 
     static #notifyMapEventGeneral = (dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
         const payload: any = undefined;
-        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
+        const args = EventHelpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 
@@ -179,7 +181,7 @@ export class MapEvents {
 
     static #notifyMapEventLayer = (callback: atlas.layer.Layer, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
         const payload = { layer: { id: callback.getId() } };
-        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
+        const args = EventHelpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 
@@ -205,8 +207,8 @@ export class MapEvents {
         if (mapEvent.preventDefault)
             callback.preventDefault();
 
-        const payload = events.Helpers.buildMouseEventPayload(callback);
-        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
+        const payload = EventHelpers.buildMouseEventPayload(callback);
+        const args = EventHelpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 
@@ -230,7 +232,7 @@ export class MapEvents {
 
     static #notifyMapEventSource = (callback: atlas.source.Source, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
         const payload = { source: { id: callback.getId() } };
-        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
+        const args = EventHelpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 
@@ -262,7 +264,7 @@ export class MapEvents {
 
     static #notifyMapEventStyle = (style: string, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
         const payload = { style: { style: style } };
-        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
+        const args = EventHelpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 
@@ -287,8 +289,8 @@ export class MapEvents {
     static #notifyMapEventTouch = (callback: atlas.MapTouchEvent, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
         if (mapEvent.preventDefault)
             callback.preventDefault();
-        const payload = events.Helpers.buildTouchEventPayload(callback);
-        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
+        const payload = EventHelpers.buildTouchEventPayload(callback);
+        const args = EventHelpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 
@@ -313,8 +315,8 @@ export class MapEvents {
     static #notifyMapEventWheel = (callback: atlas.MapMouseWheelEvent, dotNetRef: any, mapId: string, mapEvent: events.EventInfo) => {
         if (mapEvent.preventDefault)
             callback.preventDefault();
-        const payload = events.Helpers.buildWheelEventPayload(callback);
-        const args = events.Helpers.buildNotifyEventArgs(mapId, mapEvent, payload);
+        const payload = EventHelpers.buildWheelEventPayload(callback);
+        const args = EventHelpers.buildNotifyEventArgs(mapId, mapEvent, payload);
         dotNetRef.invokeMethodAsync(mapEvent.eventName, args);
     };
 
