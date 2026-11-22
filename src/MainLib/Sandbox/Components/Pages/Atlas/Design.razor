@@ -124,7 +124,7 @@
                 lineLayer.Source = dataSource.Id;
                 await atlasInterop.Sources.Add(map!, dataSource);
                 await atlasInterop.Layers.Add(map!, lineLayer);
-                await atlasInterop.Sources.DataSource.ImportDataFromUrl(map!, dataSource.Id, DataService.Examples.RawUrls.GeoJson.RouteNetworks.IpswichRoadNetwork);
+                await atlasInterop.Sources.DataSource.ImportDataFromUrl(map!, dataSource.Id, DataService.Examples.RawUrls.Data.GeoJson.RouteNetworks.IpswichRoadNetwork);
 
                 await atlasInterop.Sources.DataSource.ZoomToBBox(map!, dataSource);
             }
